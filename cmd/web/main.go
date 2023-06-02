@@ -13,6 +13,7 @@ import (
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/driver"
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
+	"github.com/ishanshre/Book-Review-Platform/internals/render"
 	"github.com/joho/godotenv"
 )
 
@@ -74,6 +75,19 @@ func Run() (*driver.DB, error) {
 	session.Cookie.Secure = app.InProduction
 	app.Session = session // make session available to whole application
 
+	// initiate the template cache
+	tc, err := render.CreateTemplateCache()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	// store the templates into global app config
+	app.TemplateCache = tc
+	app.UseCache = false
+
+	// pass the global app config reference to render app
+	render.NewRenderer(&app)
 	// connecting to database
 	log.Println("Connecting to database")
 	connString = os.Getenv("postgres")
