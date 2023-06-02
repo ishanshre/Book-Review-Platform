@@ -100,7 +100,7 @@ func Run() (*driver.DB, error) {
 	}
 
 	// connecting to database
-	repo := handler.NewRepo(&app)
+	repo := handler.NewRepo(&app, db)
 	handler.NewHandler(repo)
 
 	return db, nil
