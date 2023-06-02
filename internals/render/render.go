@@ -11,6 +11,7 @@ import (
 
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
+	"github.com/justinas/nosurf"
 )
 
 // app store the pointer to global app config
@@ -25,9 +26,7 @@ func NewRenderer(a *config.AppConfig) {
 
 // AddDefualtData returns default template data to every templates
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
-	td.Flash = app.Session.GetString(r.Context(), "flash")
-	td.Error = app.Session.GetString(r.Context(), "error")
-	td.Warning = app.Session.GetString(r.Context(), "warning")
+	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 

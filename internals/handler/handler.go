@@ -36,3 +36,7 @@ func NewHandler(r *Repository) {
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "home.page.tmpl", &models.TemplateData{})
 }
+
+func (m *Repository) Login(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "login.page.tmpl", &models.TemplateData{})
+}
