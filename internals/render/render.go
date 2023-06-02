@@ -3,6 +3,7 @@ package render
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -94,7 +95,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 		// create and parse new template
 		ts, err := template.New(name).ParseFiles(page)
 		if err != nil {
-			return myCache, err
+			return myCache, fmt.Errorf("error in parsing template %s", err)
 		}
 
 		// find the base template using filepath.Glob and pattern

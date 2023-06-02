@@ -12,6 +12,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/driver"
+	"github.com/ishanshre/Book-Review-Platform/internals/handler"
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
 	"github.com/ishanshre/Book-Review-Platform/internals/render"
 	"github.com/joho/godotenv"
@@ -88,12 +89,19 @@ func Run() (*driver.DB, error) {
 
 	// pass the global app config reference to render app
 	render.NewRenderer(&app)
-	// connecting to database
+
+	// pass the global config to handler
+
 	log.Println("Connecting to database")
 	connString = os.Getenv("postgres")
 	db, err := driver.ConnectSQL(database, connString)
 	if err != nil {
 		return nil, fmt.Errorf("error in connecting to database: %v", err)
 	}
+
+	// connecting to database
+	repo := handler.NewRepo(&app)
+	handler.NewHandler(repo)
+
 	return db, nil
 }
