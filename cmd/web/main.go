@@ -13,6 +13,7 @@ import (
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/driver"
 	"github.com/ishanshre/Book-Review-Platform/internals/handler"
+	"github.com/ishanshre/Book-Review-Platform/internals/helpers"
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
 	"github.com/ishanshre/Book-Review-Platform/internals/render"
 	"github.com/joho/godotenv"
@@ -24,6 +25,9 @@ var session *scs.SessionManager
 
 var database string = "postgres"
 var connString string
+
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 func main() {
 	// checking if command has argument
@@ -66,7 +70,16 @@ func Run() (*driver.DB, error) {
 	// store the values in the session
 	gob.Register(models.User{})
 
+	// change to true in production
 	app.InProduction = false
+
+	// create a logger with log.New()
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	// assign logs to global configs
+	app.InfoLog = infoLog
+	app.ErrorLog = errorLog
 
 	// Initiate a session and configure it
 	session = scs.New()
@@ -99,9 +112,11 @@ func Run() (*driver.DB, error) {
 		return nil, fmt.Errorf("error in connecting to database: %v", err)
 	}
 
-	// connecting to database
+	// handlers connecting to database
 	repo := handler.NewRepo(&app, db)
 	handler.NewHandler(repo)
+
+	helpers.NewHelpers(&app)
 
 	return db, nil
 }
