@@ -20,6 +20,7 @@ func router(app *config.AppConfig) http.Handler {
 	// Login routes
 	mux.Get("/user/login", handler.Repo.Login)
 	mux.Post("/user/login", handler.Repo.PostLogin)
+	mux.Get("/user/logout", handler.Repo.Logout)
 
 	// Register routes
 	mux.Get("/user/register", handler.Repo.Register)

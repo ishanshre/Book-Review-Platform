@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/ishanshre/Book-Review-Platform/internals/helpers"
 	"github.com/justinas/nosurf"
 )
 
@@ -21,4 +22,12 @@ func NoSurf(next http.Handler) http.Handler {
 		SameSite: http.SameSiteLaxMode, // allows cookies to sent in cross site
 	})
 	return csrfHandler
+}
+
+func Auth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !helpers.IsAuthenticated(r) {
+			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		}
+	})
 }

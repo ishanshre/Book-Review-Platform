@@ -27,6 +27,11 @@ func NewRenderer(a *config.AppConfig) {
 // AddDefualtData returns default template data to every templates
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
 	td.CSRFToken = nosurf.Token(r)
+
+	// checkes if user_id exists in session then set true to IsAuthenticated
+	if app.Session.Exists(r.Context(), "user_id") {
+		td.IsAuthenticated = 1
+	}
 	return td
 }
 

@@ -43,6 +43,12 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 
 // Login Handles the get method of the login
 func (m *Repository) Login(w http.ResponseWriter, r *http.Request) {
+	// Check if user is authenticated or not.
+	// If authenticated then redirects to home page
+	if helpers.IsAuthenticated(r) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 	var emptyLogin models.User
 	data := make(map[string]interface{})
 	data["user"] = emptyLogin
@@ -55,7 +61,16 @@ func (m *Repository) Login(w http.ResponseWriter, r *http.Request) {
 
 // PostLogin handles the post method of login
 func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
+
+	// Check if user is authenticated or not.
+	// If authenticated then redirects to home page
+	if helpers.IsAuthenticated(r) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	// Renew session token for user login
 	_ = m.App.Session.RenewToken(r.Context())
+
 	//Parse the PostForm and creates r.PostForm or r.Form
 	if err := r.ParseForm(); err != nil {
 		helpers.ServerError(w, err)
@@ -87,6 +102,18 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+	id, _, err := m.DB.Authenticate(user.Username, user.Password)
+	if err != nil {
+		helpers.ServerError(w, err)
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		return
+	}
+	if err := m.DB.UpdateLastLogin(id); err != nil {
+		helpers.ServerError(w, err)
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		return
+	}
+	m.App.Session.Put(r.Context(), "user_id", id)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -162,4 +189,18 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprint(w, form, "\n\n", register, "\n\n")
+}
+
+// Logout log the user out
+func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
+
+	// cannot accesss logout url if user is not authenticated
+	// unauthenticated users are redirected to login page
+	if !helpers.IsAuthenticated(r) {
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		return
+	}
+	_ = m.App.Session.Destroy(r.Context())
+	_ = m.App.Session.RenewToken(r.Context())
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
