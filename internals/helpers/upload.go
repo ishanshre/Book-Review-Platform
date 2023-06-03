@@ -9,7 +9,8 @@ import (
 	"path/filepath"
 )
 
-func UserRegiserFileUpload(r *http.Request, field, username string) (string, error) {
+// UserRegisterFileUpload uploads single file
+func UserRegitserFileUpload(r *http.Request, field, username string) (string, error) {
 	file, handler, err := r.FormFile(field)
 	if err != nil {
 		return "", fmt.Errorf("error in getting file: %s", err)

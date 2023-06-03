@@ -102,14 +102,20 @@ func (m *Repository) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
+
+	// create a new token
 	_ = m.App.Session.RenewToken(r.Context())
+
+	// Initially parse a multipart form to make use of form
 	if err := r.ParseMultipartForm(5 << 1); err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
 
+	// Creating a new form with form value
 	form := forms.New(r.MultipartForm.Value)
 
+	// storing the form value in user model
 	register := models.User{
 		FirstName:         r.Form.Get("first_name"),
 		LastName:          r.Form.Get("last_name"),
@@ -120,16 +126,23 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 		CitizenshipNumber: r.Form.Get("citizenship_number"),
 	}
 
-	citizenship_front, err := helpers.UserRegiserFileUpload(r, "citizenship_front", register.Username)
+	// Upload front part of citizenship document
+	citizenship_front, err := helpers.UserRegitserFileUpload(r, "citizenship_front", register.Username)
 	if err != nil {
 		form.Errors.Add("citizenship_front", err.Error())
 	}
-	citizenship_back, err := helpers.UserRegiserFileUpload(r, "citizenship_back", register.Username)
+
+	// Upload back part of citizenship document
+	citizenship_back, err := helpers.UserRegitserFileUpload(r, "citizenship_back", register.Username)
 	if err != nil {
 		form.Errors.Add("citizenship_back", err.Error())
 	}
+
+	// storing the uploaded file path in user model
 	register.CitizenshipFront = citizenship_front
 	register.CitizenshipBack = citizenship_back
+
+	// form.Required() for form  field validation
 	form.Required(
 		"first_name",
 		"last_name",
