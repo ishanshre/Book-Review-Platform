@@ -19,6 +19,7 @@ func router(app *config.AppConfig) http.Handler {
 
 	// User routes
 	mux.Get("/user/login", handler.Repo.Login)
+	mux.Post("/user/login", handler.Repo.PostLogin)
 
 	// create a file server with golang path implementation
 	fileServer := http.FileServer(http.Dir("./static/"))

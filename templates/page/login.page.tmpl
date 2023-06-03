@@ -3,17 +3,35 @@
 {{define "title"}}Login{{end}}
 
 {{define "content"}}
-<div>
+<div class="container">
     <h1 class="text-center mt-5">Login</h1>
+
+
+    {{$res := index .Data "user"}}
     <form action="/user/login" method="post" class="text-center">
         <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
+
         <div class="form-group mt-3">
-            <label for="username">Username: </label>
-            <input type="text" name="username" id="username">
+            <input type="text" name="username" id="username" placeholder="Username"
+            class="form-control {{with .Form.Errors.Get "username"}} is-invalid {{end}}"
+            value="{{$res.Username}}"
+            >
+            <div>
+                {{with .Form.Errors.Get "username"}}
+                    <label class="text-danger"><small>{{.}}</small></label>
+                {{end}}
+            </div>
         </div> 
         <div class="form-group mt-3">
-            <label for="password">Password: </label>
-            <input type="password" name="password" id="password">
+            <input type="password" name="password" id="password" placeholder="Password"
+            class="form-control {{with .Form.Errors.Get "password"}} is-invalid {{end}}"
+            value={{$res.Password}}
+            >
+            <div>
+                {{with .Form.Errors.Get "password"}}
+                    <label class="text-danger"><small>{{.}}</small></label>
+                {{end}}
+            </div>
         </div>        
         <input type="submit" value="Login" class="btn btn-primary m-3">
     </form>
