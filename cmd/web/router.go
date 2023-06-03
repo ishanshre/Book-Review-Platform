@@ -17,9 +17,13 @@ func router(app *config.AppConfig) http.Handler {
 	// Get route for Home page
 	mux.Get("/", handler.Repo.Home)
 
-	// User routes
+	// Login routes
 	mux.Get("/user/login", handler.Repo.Login)
 	mux.Post("/user/login", handler.Repo.PostLogin)
+
+	// Register routes
+	mux.Get("/user/register", handler.Repo.Register)
+	mux.Post("/user/register", handler.Repo.PostRegister)
 
 	// create a file server with golang path implementation
 	fileServer := http.FileServer(http.Dir("./static/"))

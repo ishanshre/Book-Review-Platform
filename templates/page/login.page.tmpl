@@ -8,13 +8,13 @@
 
 
     {{$res := index .Data "user"}}
-    <form action="/user/login" method="post" class="text-center">
+    <form action="/user/login" method="post" class="text-center" novalidate>
         <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
 
         <div class="form-group mt-3">
             <input type="text" name="username" id="username" placeholder="Username"
             class="form-control {{with .Form.Errors.Get "username"}} is-invalid {{end}}"
-            value="{{$res.Username}}"
+            value="{{$res.Username}}" required
             >
             <div>
                 {{with .Form.Errors.Get "username"}}
@@ -25,7 +25,7 @@
         <div class="form-group mt-3">
             <input type="password" name="password" id="password" placeholder="Password"
             class="form-control {{with .Form.Errors.Get "password"}} is-invalid {{end}}"
-            value={{$res.Password}}
+            value="{{$res.Password}}" required
             >
             <div>
                 {{with .Form.Errors.Get "password"}}
