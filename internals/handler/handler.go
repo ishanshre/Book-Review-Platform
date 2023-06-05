@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
@@ -12,6 +12,7 @@ import (
 	"github.com/ishanshre/Book-Review-Platform/internals/render"
 	"github.com/ishanshre/Book-Review-Platform/internals/repository"
 	"github.com/ishanshre/Book-Review-Platform/internals/repository/dbrepo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Repository used to get global app config and database access
@@ -173,6 +174,8 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 	// storing the uploaded file path in user model
 	register.CitizenshipFront = citizenship_front
 	register.CitizenshipBack = citizenship_back
+	log.Println(register.CitizenshipBack)
+	log.Println(register.CitizenshipFront)
 
 	// form.Required() for form  field validation
 	form.Required(
@@ -193,7 +196,18 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	fmt.Fprint(w, form, "\n\n", register, "\n\n")
+	hashed_password, err := bcrypt.GenerateFromPassword([]byte(register.Password), 14)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	register.Password = string(hashed_password)
+	if err := m.DB.InsertUser(&register); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+
 }
 
 // Logout log the user out

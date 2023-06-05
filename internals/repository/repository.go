@@ -15,4 +15,5 @@ type DatabaseRepo interface {
 
 	UpdateLastLogin(id int) error
 	Authenticate(username, testPassword string) (int, string, error)
+	InsertUser(*models.User) error
 }

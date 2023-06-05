@@ -205,6 +205,40 @@ func (m *postgresDBRepo) UpdateUser(u *models.User) error {
 	return nil
 }
 
+// InsertUser insert new user into database.
+// This method is used for new user sign up
+func (m *postgresDBRepo) InsertUser(u *models.User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `
+		INSERT INTO users (first_name, last_name, email, username, password, gender, citizenship_number, citizenship_front, citizenship_back, created_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+	`
+	res, err := m.DB.ExecContext(
+		ctx,
+		stmt,
+		u.FirstName,
+		u.LastName,
+		u.Email,
+		u.Username,
+		u.Password,
+		u.Gender,
+		u.CitizenshipNumber,
+		u.CitizenshipFront,
+		u.CitizenshipBack,
+		time.Now(),
+	)
+	if err != nil {
+		return fmt.Errorf("could not create new user: %s", err)
+	}
+	rows_affected, _ := res.RowsAffected()
+	if rows_affected == 0 {
+		return fmt.Errorf("no rows affected")
+	}
+	return nil
+}
+
+// UpdateLastLogin updates the last login date of the user
 func (m *postgresDBRepo) UpdateLastLogin(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -222,7 +256,7 @@ func (m *postgresDBRepo) UpdateLastLogin(id int) error {
 
 // Authenticate retrives password and id using username.
 // It compares the hash of retrived and password provided.
-// Returns id, hashed password and error
+// Returns id, hashed password and error.
 func (m *postgresDBRepo) Authenticate(username, testPassword string) (int, string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
