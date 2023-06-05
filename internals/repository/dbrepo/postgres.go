@@ -276,3 +276,32 @@ func (m *postgresDBRepo) Authenticate(username, testPassword string) (int, strin
 	}
 	return id, "auth", nil
 }
+
+func (m *postgresDBRepo) GetProfilePersonal(id int) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT first_name, last_name, username, email, gender, address, phone, profile_pic, citizenship_number, citizenship_front, citizenship_back, created_at, updated_at, last_login
+	`
+	row := m.DB.QueryRowContext(ctx, query)
+	var u *models.User
+	if err := row.Scan(
+		&u.FirstName,
+		&u.LastName,
+		&u.Username,
+		&u.Email,
+		&u.Gender,
+		&u.Address,
+		&u.Phone,
+		&u.ProfilePic,
+		&u.CitizenshipNumber,
+		&u.CitizenshipFront,
+		&u.CitizenshipBack,
+		&u.CreatedAt,
+		&u.UpdatedAt,
+		&u.LastLogin,
+	); err != nil {
+		return nil, fmt.Errorf("could not fetch data: %s", err)
+	}
+	return u, nil
+}

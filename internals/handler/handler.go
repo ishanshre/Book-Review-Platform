@@ -223,3 +223,9 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 	_ = m.App.Session.RenewToken(r.Context())
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
+
+// PersonalProfile returns profile to authenticated user.
+// Authenticated user can only view this personal profile
+func (m *Repository) PersonalProfile(w http.ResponseWriter, r *http.Request) {
+
+}
