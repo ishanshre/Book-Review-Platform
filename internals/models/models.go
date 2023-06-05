@@ -18,6 +18,7 @@ type User struct {
 	CitizenshipFront  string    `json:"citizenship_front"`
 	CitizenshipBack   string    `json:"citizenship_back"`
 	AccessLevel       int       `json:"access_level"`
+	IsValidated       bool      `json:"is_validated"`
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
 	LastLogin         time.Time `json:"last_login"`

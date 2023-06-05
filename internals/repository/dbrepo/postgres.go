@@ -17,7 +17,7 @@ func (m *postgresDBRepo) AllUsers(limit, offset int) ([]*models.User, error) {
 
 	// query stores the sql query statement
 	query := `
-		SELECT id, first_name, last_name, username, email, access_level, created_at
+		SELECT id, first_name, last_name, username, email, access_level, is_validated, created_at
 		FROM users
 		LIMIT=$1 OFFSET=$2
 	`
@@ -41,6 +41,7 @@ func (m *postgresDBRepo) AllUsers(limit, offset int) ([]*models.User, error) {
 			&user.Username,
 			&user.Email,
 			&user.AccessLevel,
+			&user.IsValidated,
 			&user.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -110,6 +111,7 @@ func (m *postgresDBRepo) GetUserByID(id int) (*models.User, error) {
 		&u.CitizenshipFront,
 		&u.CitizenshipBack,
 		&u.AccessLevel,
+		&u.IsValidated,
 		&u.CreatedAt,
 		&u.UpdatedAt,
 		&u.LastLogin,

@@ -14,6 +14,7 @@ CREATE TABLE "users" (
     citizenship_front VARCHAR(255) NOT NULL,
     citizenship_back VARCHAR(255) NOT NULL,
     access_level INTEGER DEFAULT 2,
+    is_validated BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ,
     updated_at TIMESTAMPTZ,
     last_login TIMESTAMPTZ 

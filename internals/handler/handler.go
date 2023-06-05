@@ -91,11 +91,12 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 		Username: r.Form.Get("username"),
 		Password: r.Form.Get("password"),
 	}
+
+	data := make(map[string]interface{})
+	data["user"] = user
 	// Check if the form is valid.
 	// If valid renders the form with previous data
 	if !form.Valid() {
-		data := make(map[string]interface{})
-		data["user"] = user
 		render.Template(w, r, "login.page.tmpl", &models.TemplateData{
 			Form: form,
 			Data: data,
@@ -104,8 +105,12 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	id, _, err := m.DB.Authenticate(user.Username, user.Password)
 	if err != nil {
-		helpers.ServerError(w, err)
-		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		form.Errors.Add("username", "Invalid username/password")
+		form.Errors.Add("password", "Invalid username/password")
+		render.Template(w, r, "login.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
 		return
 	}
 	if err := m.DB.UpdateLastLogin(id); err != nil {
