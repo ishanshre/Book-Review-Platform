@@ -62,7 +62,6 @@ func (m *Repository) Login(w http.ResponseWriter, r *http.Request) {
 
 // PostLogin handles the post method of login
 func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
-
 	// Check if user is authenticated or not.
 	// If authenticated then redirects to home page
 	if helpers.IsAuthenticated(r) {
@@ -123,7 +122,7 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// Register handles the get method of the register
+// Register handles the get method of the register.
 func (m *Repository) Register(w http.ResponseWriter, r *http.Request) {
 	var emptyRegister models.User
 	var data = make(map[string]interface{})
@@ -159,6 +158,36 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 		CitizenshipNumber: r.Form.Get("citizenship_number"),
 	}
 
+	// form.Required() for form  field validation
+	form.Required(
+		"first_name",
+		"last_name",
+		"email",
+		"username",
+		"password",
+		"gender",
+		"citizenship_number",
+	)
+	form.MinLength("username", 8)
+	form.MinLength("password", 8)
+	form.HasUpperCase("password")
+	form.HasLowerCase("password")
+	form.HasNumber("password", "username")
+	form.HasSpecialCharacter("password")
+	userStatus, _ := m.DB.UsernameExists(register.Username)
+	if userStatus {
+		form.Errors.Add("username", "This username already exists")
+	}
+	if !form.Valid() {
+		data := make(map[string]interface{})
+		data["register"] = register
+		render.Template(w, r, "register.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+
 	// Upload front part of citizenship document
 	citizenship_front, err := helpers.UserRegitserFileUpload(r, "citizenship_front", register.Username)
 	if err != nil {
@@ -177,16 +206,6 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 	log.Println(register.CitizenshipBack)
 	log.Println(register.CitizenshipFront)
 
-	// form.Required() for form  field validation
-	form.Required(
-		"first_name",
-		"last_name",
-		"email",
-		"username",
-		"password",
-		"gender",
-		"citizenship_number",
-	)
 	if !form.Valid() {
 		data := make(map[string]interface{})
 		data["register"] = register

@@ -305,3 +305,21 @@ func (m *postgresDBRepo) GetProfilePersonal(id int) (*models.User, error) {
 	}
 	return u, nil
 }
+
+// UsernameExists checks if username already exists in database.
+// It returns true if username exists else return false
+func (m *postgresDBRepo) UsernameExists(username string) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT id FROM users
+		WHERE username=$1
+	`
+	var id int
+	row := m.DB.QueryRowContext(ctx, query, username)
+	if err := row.Scan(&id); err != nil {
+		return false, err
+
+	}
+	return true, nil
+}

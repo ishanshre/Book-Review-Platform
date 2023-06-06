@@ -2,7 +2,9 @@ package forms
 
 import (
 	"fmt"
+	"log"
 	"net/url"
+	"regexp"
 	"strings"
 )
 
@@ -48,6 +50,65 @@ func (f *Form) Has(field string) bool {
 		return false
 	}
 	return true
+}
+
+// HasUpperCase checks if the value of field consist of one upper case
+func (f *Form) HasUpperCase(fields ...string) {
+	for _, field := range fields {
+		x := f.Get(field)
+		exp, err := regexp.Compile("([A-Z])")
+		if err != nil {
+			log.Println(err)
+		}
+		u := exp.FindAllString(x, 1)
+		if len(u) == 0 {
+			f.Errors.Add(field, "This field must have at least one upper case character")
+		}
+	}
+}
+
+// HasLowerCase checks if the value of the field has at least one lower case character
+func (f *Form) HasLowerCase(fields ...string) {
+	for _, field := range fields {
+		x := f.Get(field)
+		exp, err := regexp.Compile("([a-z])")
+		if err != nil {
+			log.Println(err)
+		}
+		u := exp.FindAllString(x, 1)
+		if len(u) == 0 {
+			f.Errors.Add(field, "This field must have at least one lower case character")
+		}
+	}
+}
+
+// HasNumber checks if the value of the field has at least one number
+func (f *Form) HasNumber(fields ...string) {
+	for _, field := range fields {
+		x := f.Get(field)
+		exp, err := regexp.Compile("([0-9])")
+		if err != nil {
+			log.Println(err)
+		}
+		u := exp.FindAllString(x, 1)
+		if len(u) == 0 {
+			f.Errors.Add(field, "This field must have at least one number")
+		}
+	}
+}
+
+func (f *Form) HasSpecialCharacter(fields ...string) {
+	for _, field := range fields {
+		x := f.Get(field)
+		exp, err := regexp.Compile("([!@#$%^&*.?-])+")
+		if err != nil {
+			log.Println(err)
+		}
+		u := exp.FindAllString(x, 1)
+		if len(u) == 0 {
+			f.Errors.Add(field, "This field must have at least special characters")
+		}
+	}
 }
 
 // Valid reutrns true if there are no errors else returns false

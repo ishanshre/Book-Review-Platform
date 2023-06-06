@@ -18,4 +18,6 @@ type DatabaseRepo interface {
 	InsertUser(*models.User) error
 
 	GetProfilePersonal(id int) (*models.User, error)
+
+	UsernameExists(username string) (bool, error)
 }
