@@ -211,8 +211,8 @@ func (m *postgresDBRepo) InsertUser(u *models.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	stmt := `
-		INSERT INTO users (first_name, last_name, email, username, password, gender, citizenship_number, citizenship_front, citizenship_back, created_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		INSERT INTO users (first_name, last_name, email, username, password,address, gender, phone, profile_pic, citizenship_number, citizenship_front, citizenship_back, created_at, updated_at, last_login)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
 	`
 	res, err := m.DB.ExecContext(
 		ctx,
@@ -222,11 +222,16 @@ func (m *postgresDBRepo) InsertUser(u *models.User) error {
 		u.Email,
 		u.Username,
 		u.Password,
+		"",
 		u.Gender,
+		"",
+		"",
 		u.CitizenshipNumber,
 		u.CitizenshipFront,
 		u.CitizenshipBack,
 		time.Now(),
+		time.Time{},
+		time.Time{},
 	)
 	if err != nil {
 		return fmt.Errorf("could not create new user: %s", err)
@@ -277,19 +282,22 @@ func (m *postgresDBRepo) Authenticate(username, testPassword string) (int, strin
 	return id, "auth", nil
 }
 
+// Get information for personal profile page
 func (m *postgresDBRepo) GetProfilePersonal(id int) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	query := `
-		SELECT first_name, last_name, username, email, gender, address, phone, profile_pic, citizenship_number, citizenship_front, citizenship_back, created_at, updated_at, last_login
+		SELECT first_name, last_name, email, username, gender, address, phone, profile_pic, citizenship_number, citizenship_front, citizenship_back, created_at, updated_at, last_login
+		FROM users
+		WHERE id = $1
 	`
-	row := m.DB.QueryRowContext(ctx, query)
-	var u *models.User
+	row := m.DB.QueryRowContext(ctx, query, id)
+	u := &models.User{}
 	if err := row.Scan(
 		&u.FirstName,
 		&u.LastName,
-		&u.Username,
 		&u.Email,
+		&u.Username,
 		&u.Gender,
 		&u.Address,
 		&u.Phone,
@@ -301,7 +309,7 @@ func (m *postgresDBRepo) GetProfilePersonal(id int) (*models.User, error) {
 		&u.UpdatedAt,
 		&u.LastLogin,
 	); err != nil {
-		return nil, fmt.Errorf("could not fetch data: %s", err)
+		return nil, err
 	}
 	return u, nil
 }

@@ -28,6 +28,8 @@ func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !helpers.IsAuthenticated(r) {
 			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+			return
 		}
+		next.ServeHTTP(w, r)
 	})
 }

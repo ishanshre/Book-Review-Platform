@@ -119,6 +119,7 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	m.App.Session.Put(r.Context(), "user_id", id)
+	m.App.Session.Put(r.Context(), "username", user.Username)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -133,6 +134,7 @@ func (m *Repository) Register(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// PostRegister handles the post method for registering new user.
 func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 
 	// create a new token
@@ -246,5 +248,15 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 // PersonalProfile returns profile to authenticated user.
 // Authenticated user can only view this personal profile
 func (m *Repository) PersonalProfile(w http.ResponseWriter, r *http.Request) {
-
+	id := m.App.Session.Get(r.Context(), "user_id")
+	user, err := m.DB.GetProfilePersonal(id.(int))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["user_profile"] = user
+	render.Template(w, r, "profile.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
 }

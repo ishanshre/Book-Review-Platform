@@ -23,6 +23,7 @@
             <li><a href="/user/register" class="action_btn">Register</a></li>
             {{else}}
             <li><a href="/user/logout" class="action_btn">Logout</a></li>
+            <li><a href="/personal/profile" class="action_btn">@{{.Username}}</a></li>
             {{end}}
           </ul>
   
@@ -38,6 +39,7 @@
             <li><a href="/user/register" class="action_btn">Register</a></li>
             {{else}}
             <li><a href="/user/logout" class="action_btn">Logout</a></li>
+            <li><a href="/personal/profile" class="action_btn">{{.Username}}</a></li>
             {{end}}
         </div>
       </header>

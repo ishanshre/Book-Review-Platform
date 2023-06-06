@@ -1,0 +1,27 @@
+{{template "base" .}}
+
+{{define "title"}}Profile{{end}}
+
+{{define "content"}}
+    <div>
+        {{$res := index .Data "user_profile"}}
+        <div>
+            <h1>User Profile: {{$res.FirstName}} {{$res.LastName}}</h1>
+        </div>
+        <div>
+            <p><strong>Username: </strong>{{$res.Username}}</p>
+            <p><strong>Email: </strong>{{$res.Email}}</p>
+            <p><strong>Gender: </strong>{{$res.Gender}}</p>
+            <p><strong>Address: </strong>{{$res.Address}}</p>
+            <p><strong>Phone: </strong>{{$res.Phone}}</p>
+            <p><strong>Citizenship Number: </strong>{{$res.CitizenshipNumber}}</p>
+            <p><strong>Citizenship Front: </strong>{{$res.CitizenshipFront}}</p>
+            <p><strong>Citizenship Back: </strong>{{$res.CitizenshipBack}}</p>
+            <p><strong>Joined At: </strong>{{TimeSince $res.CreatedAt}}</p>
+            <p><strong>Updated At: </strong>{{TimeSince $res.UpdatedAt}}</p>
+            <p><strong>Last Login: </strong>{{TimeSince $res.LastLogin}}</p>
+            <p><strong></strong></p>
+        </div>
+    </div>
+{{end}}
+
