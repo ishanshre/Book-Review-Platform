@@ -5,6 +5,7 @@ import (
 	"text/template"
 
 	"github.com/alexedwards/scs/v2"
+	"github.com/ishanshre/Book-Review-Platform/internals/models"
 )
 
 // Global configurations for the application.
@@ -16,4 +17,5 @@ type AppConfig struct {
 	InfoLog       *log.Logger
 	ErrorLog      *log.Logger
 	Session       *scs.SessionManager
+	MailChan      chan models.MailData
 }

@@ -52,6 +52,13 @@ func main() {
 
 	defer db.SQL.Close()
 
+	// close the channel at last
+	defer close(app.MailChan)
+
+	log.Println("Starting the mail listener")
+	// starting the mail listener
+	listenForMail()
+
 	port = fmt.Sprintf(":%v", p)
 	// create a http server with address and the handlers
 	srv := http.Server{
@@ -69,6 +76,10 @@ func main() {
 func Run() (*driver.DB, error) {
 	// store the values in the session
 	gob.Register(models.User{})
+
+	// create a mail channel and assign it to app.MailChan
+	mailChan := make(chan models.MailData)
+	app.MailChan = mailChan
 
 	// change to true in production
 	app.InProduction = false

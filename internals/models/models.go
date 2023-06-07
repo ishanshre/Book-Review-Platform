@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 // User is a type struct which holds users table data
 type User struct {
@@ -22,4 +24,12 @@ type User struct {
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
 	LastLogin         time.Time `json:"last_login"`
+}
+
+// MailData holds the email message
+type MailData struct {
+	To      string
+	From    string
+	Subject string
+	Content string
 }
