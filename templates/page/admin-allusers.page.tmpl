@@ -1,0 +1,60 @@
+{{template "admin" .}}
+
+{{define "css"}}
+<link rel="stylesheet" href="/static/css/admin-users.css">
+{{end}}
+
+{{define "title"}}Admin: All Users{{end}}
+
+
+{{define "content"}}
+    <div>
+        <div>
+            <h1>All Users</h1>
+        </div>
+        <div>
+            {{$users := index .Data "users"}}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Frist Name</th>
+                        <th>Last Name</th>
+                        <th>Username</th>
+                        <th>Access Level</th>
+                        <th>Validated</th>
+                        <th>CreatedAt</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range $users}}
+                    <tr>
+                        <td>{{.ID}}</td>
+                        <td>{{.FirstName}}</td>
+                        <td>{{.LastName}}</td>
+                        <td>{{.Username}}</td>
+                        <td>{{.AccessLevel}}</td>
+                        <td>{{.IsValidated}}</td>
+                        <td>{{TimeSince .CreatedAt}}</td>
+                        <td>
+                            <button><a href="/admin/users/{{.ID}}">Detail</a></button>
+                            <button id="delete-{{.ID}}" onclick="showDeleteForm(this, '{{.ID}}')" type="button">Delete</button>
+                            <form action="/admin/users/{{.ID}}/delete" method="post" class="deleteForm" id="{{.ID}}">
+                                <input type="hidden" name="csrf_token" id="csrf_token" value="{{$.CSRFToken}}">
+                                <p>Do you want to delete @{{.Username}}?</p>
+                                <input type="submit" value="Delete Record">
+                                <button type="button" onclick="removeForm('{{.ID}}')">No</button>
+                            </form> 
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{{end}}
+
+{{define "js"}}
+<script src="/static/js/admin-users.js"></script>
+{{end}}

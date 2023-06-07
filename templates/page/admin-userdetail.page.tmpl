@@ -1,0 +1,34 @@
+{{template "admin" .}}
+
+{{define "title"}}User Detail{{end}}
+
+{{define "content"}}
+{{$res := index .Data "user"}}
+    <div>
+        <div>
+            <h1>User: {{$res.FirstName}} {{$res.LastName}}</h1>
+            <p><strong>Username: </strong>@{{$res.Username}}</p>
+            <p><strong>Email: </strong>{{$res.Email}}</p>
+            <p><strong>Password: </strong>{{$res.Password}}</p>
+            <p><strong>Gender: </strong>{{$res.Gender}}</p>
+            <p><strong>Address: </strong>{{$res.Address}}</p>
+            <p><strong>Phone: </strong>{{$res.Phone}}</p>
+            <p><strong>ProfilePic: </strong>{{$res.ProfilePic}}</p>
+            <p><strong>Citizen number: </strong>{{$res.CitizenshipNumber}}</p>
+            <p><strong>Cit front: </strong>{{$res.CitizenshipFront}}</p>
+            <p><strong>cit back: </strong>{{$res.CitizenshipBack}}</p>
+            <p><strong>Access Level: </strong>{{$res.AccessLevel}}</p>
+            <p><strong>Validated: </strong>{{$res.IsValidated}}</p>
+            <p><strong>Joined At: </strong>{{TimeSince $res.CreatedAt}}</p>
+            <p><strong>Updated At: </strong>{{TimeSince $res.UpdatedAt}}</p>
+            <p><strong>Last Login: </strong>{{TimeSince $res.LastLogin}}</p>
+        </div>
+        <div>
+            <form action="/admin/users/{{$res.ID}}/delete" method="post">
+                <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
+                <input type="submit" value="Delete">
+            </form>
+        </div>
+    </div>
+
+{{end}}

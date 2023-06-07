@@ -2,11 +2,12 @@ package handler
 
 import (
 	"encoding/base64"
-	"io"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
+	"github.com/go-chi/chi"
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/driver"
 	"github.com/ishanshre/Book-Review-Platform/internals/forms"
@@ -307,6 +308,59 @@ func (m *Repository) PersonalProfile(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// AdminDashboard renders admin page for admin user only
 func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "This is admin dashboard")
+	render.Template(w, r, "admin-dashboard.page.tmpl", &models.TemplateData{})
+}
+
+// AdminAllUser redners users page. It is available for admin user only
+func (m *Repository) AdminAllUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := m.DB.AllUsers(10, 0)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["users"] = users
+	render.Template(w, r, "admin-allusers.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
+}
+
+// AdminGetUserDetailByID renders user detail page and for admin user only
+func (m *Repository) AdminGetUserDetailByID(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user, err := m.DB.GetUserByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	user.ID = id
+	data := make(map[string]interface{})
+	data["user"] = user
+	render.Template(w, r, "admin-userdetail.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
+}
+
+// PostAdminUserDeleteByID renders a confim page to delete users
+func (m *Repository) PostAdminUserDeleteByID(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	if id == user_id {
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	if err := m.DB.DeleteUser(id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }

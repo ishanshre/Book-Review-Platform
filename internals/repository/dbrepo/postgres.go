@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// AllUsers returns all the users with all access level
+// AllUsers returns list of all the users with all access level
 func (m *postgresDBRepo) AllUsers(limit, offset int) ([]*models.User, error) {
 	// creating database transcation atomic with context
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -17,9 +17,9 @@ func (m *postgresDBRepo) AllUsers(limit, offset int) ([]*models.User, error) {
 
 	// query stores the sql query statement
 	query := `
-		SELECT id, first_name, last_name, username, email, access_level, is_validated, created_at
+		SELECT id, first_name, last_name, username, access_level, is_validated, created_at
 		FROM users
-		LIMIT=$1 OFFSET=$2
+		LIMIT $1 OFFSET $2
 	`
 	// QueryContext is used to execute query with database with context included
 	rows, err := m.DB.QueryContext(
@@ -39,7 +39,6 @@ func (m *postgresDBRepo) AllUsers(limit, offset int) ([]*models.User, error) {
 			&user.FirstName,
 			&user.LastName,
 			&user.Username,
-			&user.Email,
 			&user.AccessLevel,
 			&user.IsValidated,
 			&user.CreatedAt,
@@ -89,15 +88,13 @@ func (m *postgresDBRepo) AllReaders(limit, offset int) ([]*models.User, error) {
 func (m *postgresDBRepo) GetUserByID(id int) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
+	u := &models.User{}
 	query := `
-		SELECT * 
-		FROM users
-		WHERE id = $1
+		SELECT * FROM users WHERE id=$1
 	`
 	row := m.DB.QueryRowContext(ctx, query, id)
-	var u *models.User
 	if err := row.Scan(
-		&u.ID,
+		&u.Username,
 		&u.FirstName,
 		&u.LastName,
 		&u.Username,
@@ -116,7 +113,7 @@ func (m *postgresDBRepo) GetUserByID(id int) (*models.User, error) {
 		&u.UpdatedAt,
 		&u.LastLogin,
 	); err != nil {
-		return nil, fmt.Errorf("cound not fetch id %d from database: %s", id, err)
+		return nil, err
 	}
 	return u, nil
 }

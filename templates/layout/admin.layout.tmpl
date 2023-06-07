@@ -1,0 +1,30 @@
+{{define "admin"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    {{block "meta" .}}
+    
+    {{end}}
+    <title>{{block "title" .}}{{end}}</title>
+    {{block "css" .}}
+
+    {{end}}
+</head>
+<body>
+    <a href="/">Public Site</a>
+    <a href="/user/logout">Logout</a>
+    <hr>
+    <a href="/admin/users">Users</a>
+
+    {{block "content" .}}
+
+    {{end}}
+
+    {{block "js" .}}
+
+    {{end}}    
+</body>
+</html>
+{{end}}
