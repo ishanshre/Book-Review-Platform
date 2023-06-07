@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/base64"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -105,7 +106,7 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	id, _, err := m.DB.Authenticate(user.Username, user.Password)
+	id, access_level, err := m.DB.Authenticate(user.Username, user.Password)
 	if err != nil {
 		form.Errors.Add("username", "Invalid username/password")
 		form.Errors.Add("password", "Invalid username/password")
@@ -122,6 +123,7 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	m.App.Session.Put(r.Context(), "user_id", id)
 	m.App.Session.Put(r.Context(), "username", user.Username)
+	m.App.Session.Put(r.Context(), "access_level", access_level)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -303,4 +305,8 @@ func (m *Repository) PersonalProfile(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "profile.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
+}
+
+func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "This is admin dashboard")
 }

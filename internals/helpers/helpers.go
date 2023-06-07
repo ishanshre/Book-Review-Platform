@@ -33,3 +33,8 @@ func IsAuthenticated(r *http.Request) bool {
 	exists := app.Session.Exists(r.Context(), "user_id")
 	return exists
 }
+
+func IsAdmin(r *http.Request) bool {
+	access_level := app.Session.GetInt(r.Context(), "access_level")
+	return access_level == 0
+}

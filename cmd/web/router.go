@@ -36,5 +36,11 @@ func router(app *config.AppConfig) http.Handler {
 		mux.Use(Auth)
 		mux.Get("/", handler.Repo.PersonalProfile)
 	})
+
+	mux.Route("/admin", func(mux chi.Router) {
+		mux.Use(Auth)
+		mux.Use(Admin)
+		mux.Get("/", handler.Repo.AdminDashboard)
+	})
 	return mux
 }

@@ -33,3 +33,13 @@ func Auth(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func Admin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !helpers.IsAdmin(r) {
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
