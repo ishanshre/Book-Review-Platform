@@ -1,5 +1,15 @@
 {{template "base" .}}
 
+
+
+{{define "meta"}}
+    {{$pic := index .Data "citizenship_front"}}
+    {{$pic1 := index .Data "citizenship_back"}}
+    <meta name="citizen_front" content="{{$pic}}">
+    <meta name="citizen_back" content="{{$pic1}}">
+{{end}}
+
+
 {{define "title"}}Profile{{end}}
 
 {{define "content"}}
@@ -21,7 +31,15 @@
             <p><strong>Updated At: </strong>{{TimeSince $res.UpdatedAt}}</p>
             <p><strong>Last Login: </strong>{{TimeSince $res.LastLogin}}</p>
             <p><strong></strong></p>
+            <img id="citizenship_front" src="">
+            <img id="citizenship_back" src="">
         </div>
     </div>
 {{end}}
 
+
+
+
+{{define "js"}}
+    <script src="/static/js/profile.js"></script>
+{{end}}

@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"encoding/base64"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/driver"
@@ -254,7 +256,49 @@ func (m *Repository) PersonalProfile(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	cit_front, err := os.Open(user.CitizenshipFront)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	defer cit_front.Close()
+	cit_back, err := os.Open(user.CitizenshipBack)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	defer cit_back.Close()
+	frontStat, err := cit_front.Stat()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	frontSize := frontStat.Size()
+	frontData := make([]byte, frontSize)
+	_, err = cit_front.Read(frontData)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	backStat, err := cit_back.Stat()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	backSize := backStat.Size()
+	backData := make([]byte, backSize)
+	_, err = cit_back.Read(backData)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	imgBase64Front := base64.StdEncoding.EncodeToString(frontData)
+	imgBase64Back := base64.StdEncoding.EncodeToString(backData)
 	data := make(map[string]interface{})
+	data["citizenship_front"] = imgBase64Front
+	data["citizenship_back"] = imgBase64Back
 	data["user_profile"] = user
 	render.Template(w, r, "profile.page.tmpl", &models.TemplateData{
 		Data: data,

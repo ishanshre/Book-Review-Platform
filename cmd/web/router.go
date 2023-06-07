@@ -32,9 +32,9 @@ func router(app *config.AppConfig) http.Handler {
 	// handler for the file server with system file implementation path
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
-	mux.Route("/personal", func(mux chi.Router) {
+	mux.Route("/profile", func(mux chi.Router) {
 		mux.Use(Auth)
-		mux.Get("/profile", handler.Repo.PersonalProfile)
+		mux.Get("/", handler.Repo.PersonalProfile)
 	})
 	return mux
 }
