@@ -13,6 +13,9 @@
             <h1>All Users</h1>
         </div>
         <div>
+            <button><a href="/admin/users/create">Add</a></button>
+        </div>
+        <div>
             {{$users := index .Data "users"}}
             <table>
                 <thead>
@@ -38,9 +41,9 @@
                         <td>{{.IsValidated}}</td>
                         <td>{{TimeSince .CreatedAt}}</td>
                         <td>
-                            <button><a href="/admin/users/{{.ID}}">Detail</a></button>
+                            <button><a href="/admin/users/detail/{{.ID}}">Detail</a></button>
                             <button id="delete-{{.ID}}" onclick="showDeleteForm(this, '{{.ID}}')" type="button">Delete</button>
-                            <form action="/admin/users/{{.ID}}/delete" method="post" class="deleteForm" id="{{.ID}}">
+                            <form action="/admin/users/detail/{{.ID}}/delete" method="post" class="deleteForm" id="{{.ID}}">
                                 <input type="hidden" name="csrf_token" id="csrf_token" value="{{$.CSRFToken}}">
                                 <p>Do you want to delete @{{.Username}}?</p>
                                 <input type="submit" value="Delete Record">

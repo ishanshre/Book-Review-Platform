@@ -315,7 +315,25 @@ func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
 
 // AdminAllUser redners users page. It is available for admin user only
 func (m *Repository) AdminAllUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := m.DB.AllUsers(10, 0)
+	limit := 10
+	offset := 0
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	p := true
+	if err != nil {
+		p = false
+	}
+	if p {
+		offset = (page - 1) * limit
+	}
+	filter, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	p = true
+	if err != nil {
+		p = false
+	}
+	if p {
+		limit = filter
+	}
+	users, err := m.DB.AllUsers(limit, offset)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -359,6 +377,54 @@ func (m *Repository) PostAdminUserDeleteByID(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	if err := m.DB.DeleteUser(id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+}
+
+// AdminUserAdd renders page for adding user by admin
+func (m *Repository) AdminUserAdd(w http.ResponseWriter, r *http.Request) {
+	var emptyUser models.User
+	data := make(map[string]interface{})
+	data["register"] = emptyUser
+	render.Template(w, r, "admin-usercreate.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// PostAdminUserAdd handles post method for creating user by admin
+func (m *Repository) PostAdminUserAdd(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	form.Required("username", "email", "password")
+	form.MinLength("username", 5)
+	form.MinLength("password", 8)
+	form.HasLowerCase("password")
+	form.HasUpperCase("password")
+	form.HasNumber("password")
+	form.HasSpecialCharacter("password")
+
+	register_user := models.User{
+		Username: r.Form.Get("username"),
+		Email:    r.Form.Get("email"),
+		Password: r.Form.Get("password"),
+	}
+
+	data := make(map[string]interface{})
+	data["register"] = register_user
+
+	if !form.Valid() {
+		render.Template(w, r, "admin-usercreate.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+	}
+	if err := m.DB.AdminInsertUser(&register_user); err != nil {
 		helpers.ServerError(w, err)
 		return
 	}

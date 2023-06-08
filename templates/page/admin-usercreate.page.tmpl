@@ -1,0 +1,30 @@
+{{template "admin" .}}
+
+{{define "title"}}New User{{end}}
+
+{{define "content"}}
+    <div>
+        <div>
+            <h1>Create New User</h1>
+        </div>
+    </div>
+    <div>
+        <form method="post" action="/admin/users/create">
+            <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
+            <div>
+                <label for="username">Username: </label>
+                <input type="text" name="username" id="username">
+            </div>
+            <div>
+                <label for="email">Email: </label>
+                <input type="text" name="email" id="email">
+            </div>
+            <div>
+                <label for="password">Password: </label>
+                <input type="password" name="password" id="password">
+            </div>
+            <input type="submit" value="Add">
+            <button type="button"><a href="/admin/users">Cancel</a></button>
+        </form>
+    </div>
+{{end}}

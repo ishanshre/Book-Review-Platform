@@ -24,7 +24,7 @@
             <p><strong>Last Login: </strong>{{TimeSince $res.LastLogin}}</p>
         </div>
         <div>
-            <form action="/admin/users/{{$res.ID}}/delete" method="post">
+            <form action="/admin/users/detail/{{$res.ID}}/delete" method="post">
                 <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
                 <input type="submit" value="Delete">
             </form>

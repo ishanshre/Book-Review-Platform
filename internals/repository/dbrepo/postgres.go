@@ -240,6 +240,43 @@ func (m *postgresDBRepo) InsertUser(u *models.User) error {
 	return nil
 }
 
+// AdminInsertsUser insert user to db by admin
+func (m *postgresDBRepo) AdminInsertUser(u *models.User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `
+		INSERT INTO users (first_name, last_name, email, username, password,address, gender, phone, profile_pic, citizenship_number, citizenship_front, citizenship_back, created_at, updated_at, last_login)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+	`
+	res, err := m.DB.ExecContext(
+		ctx,
+		stmt,
+		"",
+		"",
+		u.Email,
+		u.Username,
+		u.Password,
+		"",
+		"Male",
+		"",
+		"",
+		"",
+		"",
+		"",
+		time.Now(),
+		time.Now(),
+		time.Time{},
+	)
+	if err != nil {
+		return fmt.Errorf("could not create new user: %s", err)
+	}
+	rows_affected, _ := res.RowsAffected()
+	if rows_affected == 0 {
+		return fmt.Errorf("no rows affected")
+	}
+	return nil
+}
+
 // UpdateLastLogin updates the last login date of the user
 func (m *postgresDBRepo) UpdateLastLogin(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

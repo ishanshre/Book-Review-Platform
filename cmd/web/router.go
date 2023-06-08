@@ -42,9 +42,12 @@ func router(app *config.AppConfig) http.Handler {
 		mux.Use(Admin)
 		mux.Get("/", handler.Repo.AdminDashboard)
 		mux.Get("/users", handler.Repo.AdminAllUsers)
-		mux.Get("/users/{id}", handler.Repo.AdminGetUserDetailByID)
+		mux.Get("/users/detail/{id}", handler.Repo.AdminGetUserDetailByID)
 
-		mux.Post("/users/{id}/delete", handler.Repo.PostAdminUserDeleteByID)
+		mux.Get("/users/create", handler.Repo.AdminUserAdd)
+		mux.Post("/users/create", handler.Repo.PostAdminUserAdd)
+
+		mux.Post("/users/detail/{id}/delete", handler.Repo.PostAdminUserDeleteByID)
 	})
 	return mux
 }
