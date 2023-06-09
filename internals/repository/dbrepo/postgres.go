@@ -366,3 +366,39 @@ func (m *postgresDBRepo) UsernameExists(username string) (bool, error) {
 	}
 	return true, nil
 }
+
+// EmailExists return true if email exists else return false
+func (m *postgresDBRepo) EmailExists(email string) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT id FROM users
+		WHERE email=$1
+	`
+	var id int
+	row := m.DB.QueryRowContext(ctx, query, email)
+	if err := row.Scan(&id); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// ChangePassword chnage the password using email
+func (m *postgresDBRepo) ChangePassword(password, email string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `
+		UPDATE users
+		SET password = $2, updated_at = $3
+		WHERE email = $1
+	`
+	res, err := m.DB.ExecContext(ctx, stmt, email, password, time.Now())
+	if err != nil {
+		return err
+	}
+	rows_affected, _ := res.RowsAffected()
+	if rows_affected == 0 {
+		return fmt.Errorf("error in changing the password")
+	}
+	return nil
+}

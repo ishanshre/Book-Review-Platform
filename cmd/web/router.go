@@ -22,6 +22,11 @@ func router(app *config.AppConfig) http.Handler {
 	mux.Post("/user/login", handler.Repo.PostLogin)
 	mux.Get("/user/logout", handler.Repo.Logout)
 
+	mux.Get("/user/reset-password", handler.Repo.ResetPassword)
+	mux.Post("/user/reset-password", handler.Repo.PostResetPassword)
+	mux.Get("/user/reset", handler.Repo.ResetPasswordChange)
+	mux.Post("/user/reset", handler.Repo.PostResetPasswordChange)
+
 	// Register routes
 	mux.Get("/user/register", handler.Repo.Register)
 	mux.Post("/user/register", handler.Repo.PostRegister)

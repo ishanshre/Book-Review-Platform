@@ -10,8 +10,9 @@ import (
 
 func listenForMail() {
 	go func() {
-		msg := <-app.MailChan
-		sendMsg(&msg)
+		for msg := range app.MailChan {
+			sendMsg(&msg)
+		}
 	}()
 }
 

@@ -33,3 +33,10 @@ type MailData struct {
 	Subject string
 	Content string
 }
+
+// ResetPassword stores the new and confirm password
+type ResetPassword struct {
+	Token              string
+	NewPassword        string
+	NewPasswordConfirm string
+}

@@ -2,10 +2,12 @@ package handler
 
 import (
 	"encoding/base64"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
@@ -16,7 +18,6 @@ import (
 	"github.com/ishanshre/Book-Review-Platform/internals/render"
 	"github.com/ishanshre/Book-Review-Platform/internals/repository"
 	"github.com/ishanshre/Book-Review-Platform/internals/repository/dbrepo"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // Repository used to get global app config and database access
@@ -222,12 +223,12 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	hashed_password, err := bcrypt.GenerateFromPassword([]byte(register.Password), 14)
+	hashed_password, err := helpers.EncryptPassword(register.Password)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
-	register.Password = string(hashed_password)
+	register.Password = hashed_password
 	if err := m.DB.InsertUser(&register); err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -424,9 +425,164 @@ func (m *Repository) PostAdminUserAdd(w http.ResponseWriter, r *http.Request) {
 			Data: data,
 		})
 	}
+	hashed_password, err := helpers.EncryptPassword(register_user.Password)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	register_user.Password = hashed_password
 	if err := m.DB.AdminInsertUser(&register_user); err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+}
+
+// ResetPassword render the password reset page
+func (m *Repository) ResetPassword(w http.ResponseWriter, r *http.Request) {
+	var emptyUser models.User
+	data := make(map[string]interface{})
+	data["reset_user"] = emptyUser
+	render.Template(w, r, "reset-password.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// userStore the token and user data in cache
+var userStore = &models.UserTokenStore{
+	Users:             make(map[string]models.User),
+	PasswordResetRepo: make(map[string]models.PasswordResetToken),
+}
+
+// PostResetPassword handles the post method that takes in the email address
+func (m *Repository) PostResetPassword(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+	}
+	form := forms.New(r.PostForm)
+	form.Required("email")
+	reset_user := models.User{
+		Email: r.Form.Get("email"),
+	}
+	data := make(map[string]interface{})
+	data["reset_user"] = reset_user
+	_, err := m.DB.EmailExists(reset_user.Email)
+	if err != nil {
+		form.Errors.Add("email", "This email does not exist")
+	}
+	if !form.Valid() {
+		render.Template(w, r, "reset-password.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	_ = userStore.Users[reset_user.Email]
+
+	token, err := helpers.GenerateRandomToken(32)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	resetToken := models.PasswordResetToken{
+		Token:     token,
+		Email:     reset_user.Email,
+		ExpiresAt: time.Now().Add(time.Minute * 15),
+	}
+	userStore.PasswordResetRepo[token] = resetToken
+	body := fmt.Sprintf(`
+		<h1>Reset Password</h1>
+			<strong>The token for password change = </strong> %s<br><hr>
+			<button><a href="%s/user/reset">Reset</a></button><br><hr>
+			<strong>Ignore it, if you did not apply for reset password</strong>
+	`, token, r.Header["Origin"][0])
+	msg := models.MailData{
+		To:      reset_user.Email,
+		From:    "admin@bookworm.com",
+		Subject: "Change Password",
+		Content: body,
+	}
+	m.App.MailChan <- msg
+	http.Redirect(w, r, "/user/reset", http.StatusSeeOther)
+}
+
+// ResetPasswordChange renders password change form with new and confirm password
+func (m *Repository) ResetPasswordChange(w http.ResponseWriter, r *http.Request) {
+	var emptyPass models.ResetPassword
+	data := make(map[string]interface{})
+	data["reset_password"] = emptyPass
+	render.Template(w, r, "reset-password-change.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// PostResetPasswordChange handles post method and changes the password
+func (m *Repository) PostResetPasswordChange(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	passReset := models.ResetPassword{
+		Token:              r.Form.Get("reset_token"),
+		NewPassword:        r.Form.Get("new_password"),
+		NewPasswordConfirm: r.Form.Get("confirm_new_password"),
+	}
+	form.Required("reset_token", "new_password", "confirm_new_password")
+	data := make(map[string]interface{})
+	data["reset_password"] = passReset
+	if passReset.NewPassword != passReset.NewPasswordConfirm {
+		form.Errors.Add("new_password", "password mismatch")
+		form.Errors.Add("confirm_new_password", "password mismatch")
+		render.Template(w, r, "reset-password-change.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	form.MinLength("new_password", 8)
+	form.HasUpperCase("new_password")
+	form.HasLowerCase("new_password")
+	form.HasSpecialCharacter("new_password")
+	form.HasNumber("new_password")
+
+	resetToken := userStore.PasswordResetRepo[passReset.Token]
+	if time.Now().After(resetToken.ExpiresAt) {
+		form.Errors.Add("reset_token", "Token is invalid or expired")
+	}
+
+	if !form.Valid() {
+		render.Template(w, r, "reset-password-change.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	hashed_password, err := helpers.EncryptPassword(passReset.NewPassword)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	user := userStore.Users[resetToken.Email]
+	user.Password = hashed_password
+	userStore.Users[resetToken.Email] = user
+	if err := m.DB.ChangePassword(hashed_password, resetToken.Email); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	delete(userStore.PasswordResetRepo, resetToken.Token)
+	// To do add notification for successfull password change
+	body := fmt.Sprintf(`
+		<h1>Password Reset Successfull<h1>
+			<p>You can login from here<p><br>
+			<button><a href="%s/user/login">Login</a></button>
+	`, r.Header["Origin"][0])
+	msg := models.MailData{
+		To:      resetToken.Email,
+		From:    "admin@bookworm.com",
+		Subject: "Password Reset Successfull",
+		Content: body,
+	}
+	m.App.MailChan <- msg
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }

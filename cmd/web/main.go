@@ -78,7 +78,7 @@ func Run() (*driver.DB, error) {
 	gob.Register(models.User{})
 
 	// create a mail channel and assign it to app.MailChan
-	mailChan := make(chan models.MailData)
+	mailChan := make(chan models.MailData, 10)
 	app.MailChan = mailChan
 
 	// change to true in production

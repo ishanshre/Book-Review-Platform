@@ -21,4 +21,7 @@ type DatabaseRepo interface {
 	GetProfilePersonal(id int) (*models.User, error)
 
 	UsernameExists(username string) (bool, error)
+	EmailExists(email string) (bool, error)
+
+	ChangePassword(password, email string) error
 }
