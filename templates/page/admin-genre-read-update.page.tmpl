@@ -1,0 +1,24 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: Detail Genre{{end}}
+
+{{define "content"}}
+    <div>
+        <h1>Detail</h1>
+    </div>
+    <div>
+    {{$res := index .Data "genre"}}
+        <form action="/admin/genres/detail/{{$res.ID}}" method="post">
+            <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
+            <input type="text" name="title" id="title" value="{{$res.Title}}">
+            {{with .Form.Errors.Get "title"}}
+            <label>{{.}}</label>
+            {{end}}
+            <input type="submit" value="update">
+        </form>
+        <form action="" method="post">
+            <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
+            <input type="submit" value="Delete">
+        </form>
+    </div>
+{{end}}

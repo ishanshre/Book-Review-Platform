@@ -53,6 +53,15 @@ func router(app *config.AppConfig) http.Handler {
 		mux.Post("/users/create", handler.Repo.PostAdminUserAdd)
 
 		mux.Post("/users/detail/{id}/delete", handler.Repo.PostAdminUserDeleteByID)
+
+		mux.Get("/genres", handler.Repo.AdminAllGenres)
+		mux.Post("/genres", handler.Repo.PostAdminAddGenre)
+
+		mux.Get("/genres/detail/{id}", handler.Repo.AdminGetGenreByID)
+		mux.Post("/genres/detail/{id}", handler.Repo.PostAdminGetGenreByID)
+
+		mux.Post("/genres/detail/{id}/delete", handler.Repo.AdminDeleteGenre)
+
 	})
 	return mux
 }

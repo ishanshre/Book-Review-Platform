@@ -586,3 +586,126 @@ func (m *Repository) PostResetPasswordChange(w http.ResponseWriter, r *http.Requ
 	m.App.MailChan <- msg
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
+
+// AdminAllGenres renders the admin gender page
+func (m *Repository) AdminAllGenres(w http.ResponseWriter, r *http.Request) {
+	genres, err := m.DB.AllGenre()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["genres"] = genres
+	render.Template(w, r, "admin-allgenres.page.tmpl", &models.TemplateData{
+		Data: data,
+		Form: forms.New(nil),
+	})
+}
+
+// PostAdminAddGenre is a handler that handles admin add genre
+func (m *Repository) PostAdminAddGenre(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	genres, err := m.DB.AllGenre()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	form.Required("title")
+	add_genre := models.Genre{
+		Title: r.Form.Get("title"),
+	}
+	data := make(map[string]interface{})
+	data["genres"] = genres
+	data["add_genre"] = add_genre
+	if !form.Valid() {
+		render.Template(w, r, "admin-allgenres.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.InsertGenre(&add_genre); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/genres", http.StatusSeeOther)
+}
+
+// AdminGetGenreByID renders the genre detail and update page
+func (m *Repository) AdminGetGenreByID(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	genre, err := m.DB.GetGenreByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["genre"] = genre
+	render.Template(w, r, "admin-genre-read-update.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// PostAdminGetGenreByID updates the existing genre
+func (m *Repository) PostAdminGetGenreByID(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	update_genre := models.Genre{
+		ID:    id,
+		Title: r.Form.Get("title"),
+	}
+	form.Required("title")
+	genre, err := m.DB.GetGenreByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	res, err := m.DB.GenreExists(update_genre.Title)
+	if err != nil && !res {
+		form.Errors.Add("title", "Genre already exists")
+	}
+	data["genre"] = genre
+	if !form.Valid() {
+		render.Template(w, r, "admin-genre-read-update.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.UpdateGenre(&update_genre); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/admin/genres/detail/%d", id), http.StatusSeeOther)
+}
+
+// AdminDeleteGenre delete the genre
+func (m *Repository) AdminDeleteGenre(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := m.DB.DeleteGenre(id); err != nil {
+		helpers.ServerError(w, err)
+	}
+	http.Redirect(w, r, "/admin/genres", http.StatusSeeOther)
+}

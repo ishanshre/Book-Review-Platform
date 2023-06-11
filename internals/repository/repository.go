@@ -4,6 +4,7 @@ import "github.com/ishanshre/Book-Review-Platform/internals/models"
 
 // DatabaseRepo consist of all the method available to us to use for database operations
 type DatabaseRepo interface {
+	// User/admin interfaces
 	AllUsers(limit, offset int) ([]*models.User, error)
 	AllReaders(limit, offset int) ([]*models.User, error)
 
@@ -24,4 +25,12 @@ type DatabaseRepo interface {
 	EmailExists(email string) (bool, error)
 
 	ChangePassword(password, email string) error
+
+	// Genre interface
+	AllGenre() ([]*models.Genre, error)
+	InsertGenre(u *models.Genre) error
+	UpdateGenre(u *models.Genre) error
+	DeleteGenre(id int) error
+	GetGenreByID(id int) (*models.Genre, error)
+	GenreExists(title string) (bool, error)
 }

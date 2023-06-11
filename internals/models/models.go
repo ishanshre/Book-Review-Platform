@@ -40,3 +40,8 @@ type ResetPassword struct {
 	NewPassword        string
 	NewPasswordConfirm string
 }
+
+type Genre struct {
+	ID    int
+	Title string
+}

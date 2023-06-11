@@ -1,0 +1,66 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: All Genres{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/admin-genre.css">
+{{end}}
+
+{{define "content"}}
+    <div>
+        <div>
+            <h1>All Genres</h1><hr>
+        </div>
+        <div>
+            <h2>Add New Genre</h2>
+            {{$res := index .Data "add_genre"}}
+            <form action="/admin/genres" method="post">
+                <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
+                <label for="title">Genre Title: </label>
+                <input type="text" name="title" id="title">
+                {{with .Form.Errors.Get "title"}}
+                    <label>{{.}}</label>
+                {{end}}
+                <input type="submit" value="Add New Genre" value="{{$res.Title}}">
+            </form>
+        </div>
+        <div>
+            <hr>
+            {{$genre := index .Data "genres"}}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range $genre}}
+                    <tr>
+                        <td>{{.ID}}</td>
+                        <td>{{.Title}}</td>
+                        <td>
+                            <button type="button"><a href="/admin/genres/detail/{{.ID}}">Detail</a></button>
+                            <button type="button" id="delete-{{.ID}}"
+                            onclick="showDeleteForm(this, '{{.ID}}')"
+                            >Delete</button>
+
+                            <form action="/admin/genres/detail/{{.ID}}/delete" method="post" class="no-display" id="{{.ID}}">
+                                <p>Do you want to delete @{{.Title}}?</p>
+                                <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                <input type="submit" value="Delete">
+                                <button type="button" onclick="removeForm('{{.ID}}')">No</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/admin-genre.js"></script>
+{{end}}
