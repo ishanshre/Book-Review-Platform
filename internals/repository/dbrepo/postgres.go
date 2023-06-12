@@ -172,32 +172,34 @@ func (m *postgresDBRepo) UpdateUser(u *models.User) error {
 	defer cancel()
 	stmt := `
 		UPDATE users
-		SET first_name = $2, last_name = $3, email = $4, gender = $5, address = $6, phone = $7, profile_pic = $8, updated_at = $9
+		SET first_name = $2, last_name = $3, gender = $4, address = $5, phone = $6, updated_at = $7
 		WHERE id = $1
 	`
-	res, err := m.DB.ExecContext(
+	_, err := m.DB.ExecContext(
 		ctx,
 		stmt,
 		u.ID,
 		u.FirstName,
 		u.LastName,
-		u.Email,
-		u.Username,
 		u.Gender,
 		u.Address,
 		u.Phone,
-		u.ProfilePic,
 		time.Now(),
 	)
 	if err != nil {
 		return fmt.Errorf("cannot update the user with id %d : %s", u.ID, err)
 	}
-	rows_affected, err := res.RowsAffected()
+	return nil
+}
+
+// UpdateProfilePic updates user profile pic
+func (m *postgresDBRepo) UpdateProfilePic(path string, id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `UPDATE users SET profile_pic=$2 WHERE id=$1`
+	_, err := m.DB.ExecContext(ctx, stmt, id, path)
 	if err != nil {
 		return err
-	}
-	if rows_affected == 0 {
-		return fmt.Errorf("could not update user: %s", err)
 	}
 	return nil
 }

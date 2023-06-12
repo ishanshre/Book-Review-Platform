@@ -13,6 +13,7 @@ type DatabaseRepo interface {
 
 	DeleteUser(id int) error
 	UpdateUser(u *models.User) error
+	UpdateProfilePic(path string, id int) error
 
 	UpdateLastLogin(id int) error
 	Authenticate(username, testPassword string) (int, int, error)

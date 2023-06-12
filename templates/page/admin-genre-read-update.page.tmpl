@@ -2,6 +2,10 @@
 
 {{define "title"}}Admin: Detail Genre{{end}}
 
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/admin-genre.css">
+{{end}}
+
 {{define "content"}}
     <div>
         <h1>Detail</h1>
@@ -16,9 +20,16 @@
             {{end}}
             <input type="submit" value="update">
         </form>
-        <form action="" method="post">
+        <button type="button" onclick="showDeleteForm(this, '{{$res.ID}}')" id="delete-{{$res.ID}}">Delete</button>
+        <form action="/admin/genres/detail/{{$res.ID}}/delete" method="post" class="no-display" id="{{$res.ID}}">
+            <h1>Do you want to delete @{{$res.Title}}?</h1>
             <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
             <input type="submit" value="Delete">
+            <button type="button" onclick="removeForm('{{$res.ID}}')">No</button>
         </form>
     </div>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/admin-genre.js"></script>
 {{end}}

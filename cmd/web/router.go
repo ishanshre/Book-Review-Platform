@@ -48,6 +48,8 @@ func router(app *config.AppConfig) http.Handler {
 		mux.Get("/", handler.Repo.AdminDashboard)
 		mux.Get("/users", handler.Repo.AdminAllUsers)
 		mux.Get("/users/detail/{id}", handler.Repo.AdminGetUserDetailByID)
+		mux.Post("/users/detail/{id}", handler.Repo.AdminUpdateUser)
+		mux.Post("/users/detail/{id}/profile", handler.Repo.PostAdminUserProfileUpdate)
 
 		mux.Get("/users/create", handler.Repo.AdminUserAdd)
 		mux.Post("/users/create", handler.Repo.PostAdminUserAdd)

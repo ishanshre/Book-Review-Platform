@@ -362,7 +362,62 @@ func (m *Repository) AdminGetUserDetailByID(w http.ResponseWriter, r *http.Reque
 	data["user"] = user
 	render.Template(w, r, "admin-userdetail.page.tmpl", &models.TemplateData{
 		Data: data,
+		Form: forms.New(nil),
 	})
+}
+
+// AdminUpdateUser updates user detail
+func (m *Repository) AdminUpdateUser(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	user := &models.User{
+		FirstName: r.Form.Get("first_name"),
+		LastName:  r.Form.Get("last_name"),
+		Gender:    r.Form.Get("gender"),
+		Phone:     r.Form.Get("phone"),
+		Address:   r.Form.Get("address"),
+	}
+	user.ID = id
+	data := make(map[string]interface{})
+	data["user"] = user
+	if !form.Valid() {
+		render.Template(w, r, "admin-userdetail.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.UpdateUser(user); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
+}
+
+func (m *Repository) PostAdminUserProfileUpdate(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	username := m.App.Session.Get(r.Context(), "username")
+	path, err := helpers.UserRegitserFileUpload(r, "profile_pic", username.(string))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := m.DB.UpdateProfilePic(path, id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
 }
 
 // PostAdminUserDeleteByID renders a confim page to delete users

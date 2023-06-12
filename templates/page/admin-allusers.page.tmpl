@@ -43,7 +43,7 @@
                         <td>
                             <button><a href="/admin/users/detail/{{.ID}}">Detail</a></button>
                             <button id="delete-{{.ID}}" onclick="showDeleteForm(this, '{{.ID}}')" type="button">Delete</button>
-                            <form action="/admin/users/detail/{{.ID}}/delete" method="post" class="deleteForm" id="{{.ID}}">
+                            <form action="/admin/users/detail/{{.ID}}/delete" method="post" class="no-display" id="{{.ID}}">
                                 <input type="hidden" name="csrf_token" id="csrf_token" value="{{$.CSRFToken}}">
                                 <p>Do you want to delete @{{.Username}}?</p>
                                 <input type="submit" value="Delete Record">
