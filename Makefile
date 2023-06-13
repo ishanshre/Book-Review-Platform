@@ -13,12 +13,14 @@ createDBContainer:
 createDBPGadmin4Container:
 	docker run --name pgadmin -p 5050:80 -e 'PGADMIN_DEFAULT_EMAIL=admin@admin.com' -e 'PGADMIN_DEFAULT_PASSWORD=admin' -d dpage/pgadmin4
 
-
 migrateUp: 
 	migrate -path migrations -database "${DB_URL}" -verbose up
 
 migrateDown: 
 	migrate -path migrations -database "${DB_URL}" -verbose down
+
+migrateForce: 
+	migrate -path migrations -database "${DB_URL}" force $(version)
 
 migrateCreate:
 	migrate create -ext sql -dir migrations -seq $(fileName)

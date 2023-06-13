@@ -34,4 +34,10 @@ type DatabaseRepo interface {
 	DeleteGenre(id int) error
 	GetGenreByID(id int) (*models.Genre, error)
 	GenreExists(title string) (bool, error)
+
+	// Publisher interface
+	AllPublishers() ([]*models.Publisher, error)
+	InsertPublisher(u *models.Publisher) error
+	UpdatePublisher(u *models.Publisher) error
+	DeletePublisher(id int) error
 }

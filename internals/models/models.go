@@ -41,7 +41,23 @@ type ResetPassword struct {
 	NewPasswordConfirm string
 }
 
+// Genre holds the genres table model
 type Genre struct {
 	ID    int
 	Title string
+}
+
+// Publisher holds the publishers table model
+type Publisher struct {
+	ID              int
+	Name            string
+	Description     string
+	Pic             string
+	Address         string
+	Phone           string
+	Email           string
+	Website         string
+	EstablishedDate time.Time
+	Latitude        string
+	Longtitude      string
 }
