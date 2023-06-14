@@ -529,7 +529,7 @@ func (m *postgresDBRepo) AllPublishers() ([]*models.Publisher, error) {
 			&publisher.Website,
 			&publisher.EstablishedDate,
 			&publisher.Latitude,
-			&publisher.Longtitude,
+			&publisher.Longitude,
 		); err != nil {
 			return nil, err
 		}
@@ -544,7 +544,7 @@ func (m *postgresDBRepo) InsertPublisher(u *models.Publisher) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	stmt := `
-		INSERT INTO publisher (name, description, pic, address, phone, email, website, established_date, latitude, longtitude)
+		INSERT INTO publishers (name, description, pic, address, phone, email, website, established_date, latitude, longitude)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 	`
 	_, err := m.DB.ExecContext(
@@ -559,7 +559,7 @@ func (m *postgresDBRepo) InsertPublisher(u *models.Publisher) error {
 		u.Website,
 		u.EstablishedDate,
 		u.Latitude,
-		u.Longtitude,
+		u.Longitude,
 	)
 	if err != nil {
 		return err
@@ -573,8 +573,8 @@ func (m *postgresDBRepo) UpdatePublisher(u *models.Publisher) error {
 	defer cancel()
 	stmt := `
 		UPDATE publishers
-		SET name = $2, description = $3, pic = $4, address = $5, phone = $6, email = $7, website = $8, established_date = $9, latitude = $10, longtitude = $11, 
-		where id= $1
+		SET name = $2, description = $3, pic = $4, address = $5, phone = $6, email = $7, website = $8, established_date = $9, latitude = $10, longitude = $11
+		WHERE id = $1
 	`
 	_, err := m.DB.ExecContext(
 		ctx,
@@ -582,13 +582,14 @@ func (m *postgresDBRepo) UpdatePublisher(u *models.Publisher) error {
 		u.ID,
 		u.Name,
 		u.Description,
+		u.Pic,
 		u.Address,
 		u.Phone,
 		u.Email,
 		u.Website,
 		u.EstablishedDate,
 		u.Latitude,
-		u.Longtitude,
+		u.Longitude,
 	)
 	if err != nil {
 		return err
@@ -629,7 +630,7 @@ func (m *postgresDBRepo) GetPublisherByID(id int) (*models.Publisher, error) {
 		&u.Website,
 		&u.EstablishedDate,
 		&u.Latitude,
-		&u.Longtitude,
+		&u.Longitude,
 	); err != nil {
 		return nil, err
 	}

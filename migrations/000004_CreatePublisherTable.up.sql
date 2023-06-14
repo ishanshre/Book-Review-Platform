@@ -7,7 +7,7 @@ CREATE TABLE "publishers" (
     phone VARCHAR(10),
     email VARCHAR(255),
     website VARCHAR(255),
-    established_date TIMESTAMPTZ,
+    established_date INTEGER,
     latitude VARCHAR(20),
     longitude VARCHAR(20)
 )

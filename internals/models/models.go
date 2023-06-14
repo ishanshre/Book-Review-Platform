@@ -57,7 +57,7 @@ type Publisher struct {
 	Phone           string
 	Email           string
 	Website         string
-	EstablishedDate time.Time
+	EstablishedDate int
 	Latitude        string
-	Longtitude      string
+	Longitude       string
 }

@@ -1,0 +1,52 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: All Publishers{{end}}
+
+{{define "css"}}
+<link rel="stylesheet" href="/static/css/admin.css">
+{{end}}
+
+{{define "content"}}
+<div>
+    <div>
+        <h1>All Publishers</h1>
+        <button><a href="/admin/publishers/create">Add Publisher</a></button><br>
+    </div><hr>
+    <div>
+        {{$publishers := index .Data "publishers"}}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Established Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $publishers}}
+                <tr>
+                    <td>{{.ID}}</td>
+                    <td>{{.Name}}</td>
+                    <td>{{.EstablishedDate}}</td>
+                    <td>
+                        <button><a href="/admin/publishers/detail/{{.ID}}">Detail</a></button>
+                        <button type="button" id="delete-{{.ID}}" onclick="showDeleteForm(this, '{{.ID}}')">Delete</button>
+                        <form action="/admin/publishers/detail/{{.ID}}/delete" method="post" class="no-display" id="{{.ID}}">
+                            <h2>Delete this publisher @{{.Name}}?</h2>
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <input type="submit" value="Delete">
+                            <button type="button" onclick="removeForm('{{.ID}}')">No</button>
+                        </form>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{end}}
+
+{{define "js"}}
+<script src="/static/js/admin.js"></script>
+{{end}}

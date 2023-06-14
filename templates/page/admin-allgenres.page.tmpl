@@ -3,7 +3,7 @@
 {{define "title"}}Admin: All Genres{{end}}
 
 {{define "css"}}
-    <link rel="stylesheet" href="/static/css/admin-genre.css">
+    <link rel="stylesheet" href="/static/css/admin.css">
 {{end}}
 
 {{define "content"}}
@@ -17,11 +17,11 @@
             <form action="/admin/genres" method="post">
                 <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
                 <label for="title">Genre Title: </label>
-                <input type="text" name="title" id="title">
+                <input type="text" name="title" id="title"  value="{{$res.Title}}">
                 {{with .Form.Errors.Get "title"}}
                     <label>{{.}}</label>
                 {{end}}
-                <input type="submit" value="Add New Genre" value="{{$res.Title}}">
+                <input type="submit" value="Add New Genre">
             </form>
         </div>
         <div>
@@ -62,5 +62,5 @@
 {{end}}
 
 {{define "js"}}
-    <script src="/static/js/admin-genre.js"></script>
+    <script src="/static/js/admin.js"></script>
 {{end}}

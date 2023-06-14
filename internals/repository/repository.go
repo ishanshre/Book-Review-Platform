@@ -40,4 +40,6 @@ type DatabaseRepo interface {
 	InsertPublisher(u *models.Publisher) error
 	UpdatePublisher(u *models.Publisher) error
 	DeletePublisher(id int) error
+	GetPublisherByID(id int) (*models.Publisher, error)
+	PublisherExists(name string) (bool, error)
 }

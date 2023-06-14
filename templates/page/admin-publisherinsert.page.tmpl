@@ -1,0 +1,88 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: Add Publisher{{end}}
+
+{{define "content"}}
+    <div>
+        <div>
+            <h1>Add Publisher</h1>
+        </div><hr>
+        <div>
+            {{$res := index .Data "publisher"}}
+            <form action="/admin/publishers/create" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                <div>
+                    <label for="name">Name: </label>
+                    {{with .Form.Errors.Get "name"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="name" id="name" value="{{$res.Name}}">
+                </div>
+                <div>
+                    <label for="description">Description: </label>
+                    {{with .Form.Errors.Get "description"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="description" id="description" value="{{$res.Description}}">
+                </div>
+                <div>
+                    <label for="pic">Publisher Pic: </label>
+                    {{with .Form.Errors.Get "pic"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="file" name="pic" id="pic" accept="image/jped, image/png">
+                </div>
+                <div>
+                    <label for="address">Address</label>
+                    {{with .Form.Errors.Get "address"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="address" id="address" value="{{$res.Address}}">
+                </div>
+                <div>
+                    <label for="phone">Phone</label>
+                    {{with .Form.Errors.Get "phone"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="phone" id="phone" value="{{$res.Phone}}">
+                </div>
+                <div>
+                    <label for="email">Email</label>
+                    {{with .Form.Errors.Get "email"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="email" id="email" value="{{$res.Email}}">
+                </div>
+                <div>
+                    <label for="website">Website</label>
+                    {{with .Form.Errors.Get "website"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="website" id="website" value="{{$res.Website}}">
+                </div>
+                <div>
+                    <label for="established_date">Established Date: </label>
+                    {{with .Form.Errors.Get "established_date"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="established_date" id="established_date" value="{{$res.EstablishedDate}}">
+                </div>
+                <div>
+                    <label for="latitude">Latitude</label>
+                    {{with .Form.Errors.Get "latitude"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="latitude" id="latitude" value="{{$res.Latitude}}">
+                </div>
+                <div>
+                    <label for="longitude">Longitude</label>
+                    {{with .Form.Errors.Get "longitude"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="longitude" id="longitude" value="{{$res.Longitude}}">
+                </div>
+                <input type="submit" value="Create">
+            </form>
+        </div>
+    </div>
+{{end}}

@@ -56,14 +56,20 @@ func router(app *config.AppConfig) http.Handler {
 
 		mux.Post("/users/detail/{id}/delete", handler.Repo.PostAdminUserDeleteByID)
 
+		// admin genre router
 		mux.Get("/genres", handler.Repo.AdminAllGenres)
 		mux.Post("/genres", handler.Repo.PostAdminAddGenre)
-
 		mux.Get("/genres/detail/{id}", handler.Repo.AdminGetGenreByID)
 		mux.Post("/genres/detail/{id}", handler.Repo.PostAdminGetGenreByID)
-
 		mux.Post("/genres/detail/{id}/delete", handler.Repo.AdminDeleteGenre)
 
+		// admin publisher router
+		mux.Get("/publishers", handler.Repo.AdminAllPublusher)
+		mux.Get("/publishers/detail/{id}", handler.Repo.AdminGetPublisherDetailByID)
+		mux.Post("/publishers/detail/{id}/update", handler.Repo.PostAdminUpdatePublisher)
+		mux.Post("/publishers/detail/{id}/delete", handler.Repo.PostAdminDeletePublisher)
+		mux.Get("/publishers/create", handler.Repo.AdminInsertPublisher)
+		mux.Post("/publishers/create", handler.Repo.PostAdminInsertPublisher)
 	})
 	return mux
 }

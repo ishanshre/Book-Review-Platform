@@ -761,6 +761,153 @@ func (m *Repository) AdminDeleteGenre(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := m.DB.DeleteGenre(id); err != nil {
 		helpers.ServerError(w, err)
+		return
 	}
 	http.Redirect(w, r, "/admin/genres", http.StatusSeeOther)
+}
+
+// AdminAllPublisher renders admin all publisher page
+func (m *Repository) AdminAllPublusher(w http.ResponseWriter, r *http.Request) {
+	publishers, err := m.DB.AllPublishers()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["publishers"] = publishers
+	render.Template(w, r, "admin-allpublishers.page.tmpl", &models.TemplateData{
+		Data: data,
+		Form: forms.New(nil),
+	})
+}
+
+// AdminDeletePublisher handles the delete logic
+func (m *Repository) PostAdminDeletePublisher(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := m.DB.DeletePublisher(id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/publishers", http.StatusSeeOther)
+}
+
+// AdminGetPublisherDetailByID handles the logic of displaying publisher detail by ID
+func (m *Repository) AdminGetPublisherDetailByID(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	publisher, err := m.DB.GetPublisherByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["publisher"] = publisher
+	render.Template(w, r, "admin-publisherdetail.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// PostAdminUpdatePublisher handles the update login for publisher
+func (m *Repository) PostAdminUpdatePublisher(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	establishedDate, _ := strconv.Atoi(r.Form.Get("established_date"))
+	publisher := models.Publisher{
+		Name:            r.Form.Get("name"),
+		Description:     r.Form.Get("description"),
+		Pic:             r.Form.Get("pic"),
+		Address:         r.Form.Get("address"),
+		Phone:           r.Form.Get("phone"),
+		Email:           r.Form.Get("email"),
+		Website:         r.Form.Get("website"),
+		EstablishedDate: establishedDate,
+		Latitude:        r.Form.Get("name"),
+		Longitude:       r.Form.Get("name"),
+	}
+	publisher.ID = id
+	form.Required("name")
+	data := make(map[string]interface{})
+	data["publisher"] = publisher
+	if !form.Valid() {
+		render.Template(w, r, "admin-publisherdetail.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.UpdatePublisher(&publisher); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/admin/publishers/detail/%d", id), http.StatusSeeOther)
+}
+
+// AdminInsertPublisher renders the insert publisher page
+func (m *Repository) AdminInsertPublisher(w http.ResponseWriter, r *http.Request) {
+	var emptyPublisher models.Publisher
+	data := make(map[string]interface{})
+	data["publisher"] = emptyPublisher
+	render.Template(w, r, "admin-publisherinsert.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// PostAdminInsertPublisher handles the post method logic for publisher
+func (m *Repository) PostAdminInsertPublisher(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	pic_path, err := helpers.AdminPublicUploadImage(r, "pic", "publisher")
+	if err != nil {
+		form.Errors.Add("pic", "No picture was choosen")
+	}
+	establishedDate, err := strconv.Atoi(r.Form.Get("established_date"))
+	if err != nil {
+		form.Errors.Add("established_date", "Invalid established date")
+	}
+	publisher := &models.Publisher{
+		Name:            r.Form.Get("name"),
+		Description:     r.Form.Get("description"),
+		Pic:             pic_path,
+		Address:         r.Form.Get("address"),
+		Phone:           r.Form.Get("phone"),
+		Email:           r.Form.Get("email"),
+		Website:         r.Form.Get("website"),
+		EstablishedDate: establishedDate,
+		Latitude:        r.Form.Get("latitude"),
+		Longitude:       r.Form.Get("longitude"),
+	}
+	data := make(map[string]interface{})
+	data["publisher"] = publisher
+	if !form.Valid() {
+		render.Template(w, r, "admin-publisherinsert.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.InsertPublisher(publisher); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/publishers", http.StatusSeeOther)
 }
