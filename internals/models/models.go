@@ -73,3 +73,9 @@ type Author struct {
 	CountryOfOrigin string
 	Avatar          string
 }
+
+// Language struct holds the language table model
+type Language struct {
+	ID       int
+	Language string
+}

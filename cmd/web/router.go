@@ -81,6 +81,12 @@ func router(app *config.AppConfig) http.Handler {
 		mux.Post("/authors/detail/{id}/update", handler.Repo.PostAdminUpdateAuthor)
 		mux.Get("/authors/create", handler.Repo.AdminInsertAuthor)
 		mux.Post("/authors/create", handler.Repo.PostAdminInsertAuthor)
+
+		// admin language router
+		mux.Get("/languages", handler.Repo.AdminAllLanguage)
+		mux.Post("/languages/detail/{id}/delete", handler.Repo.PostAdminDeleteLanguage)
+		mux.Post("/languages/detail/{id}/update", handler.Repo.PostAdminUpdateLanguage)
+		mux.Post("/languages/create", handler.Repo.PostAdminInsertLanguage)
 	})
 	return mux
 }

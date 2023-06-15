@@ -1,0 +1,70 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: All Languages{{end}}
+
+{{define "css"}}
+<link rel="stylesheet" href="/static/css/admin.css">
+{{end}}
+
+
+{{define "content"}}
+{{$language := index .Data "add_language"}}
+    <div>
+        <div>
+            <h1>Add Language</h1>
+            <form action="/admin/languages/create" method="post">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                <label for="languages">Language: </label>
+                <input type="text" name="language" id="language" {{if $language.Language}} value="{{$language.Language}}" {{end}}>
+                {{with .Form.Errors.Get "language"}}
+                    <label>{{.}}</label>
+                {{end}}
+                <input type="submit" value="Add">
+            </form>
+        </div>
+        <hr>
+        <div>
+            <div>
+                <h1>All Languages</h1>
+            </div>
+            <div>
+                {{$res := index .Data "languages"}}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Language</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range $res}}
+                            <tr>
+                                <td>{{.ID}}</td>
+                                <td>
+                                    <form action="/admin/languages/detail/{{.ID}}/update" method="post">
+                                        <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                        <input type="hidden" name="id" value="{{.ID}}">
+                                        <input type="text" name="language" id="language" value="{{.Language}}">                                    
+                                        <input type="submit" value="Update">
+                                    </form>
+                                    <button id="delete-{{.ID}}" onclick="showDeleteForm(this, '{{.ID}}')">Delete</button>
+                                    <form action="/admin/languages/detail/{{.ID}}/delete" method="post" id="{{.ID}}" class="no-display">
+                                        <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                        <p>Do you want to delete this language @{{.Language}}</p>
+                                        <input type="submit" value="Delete">
+                                        <button onclick="removeForm('{{.ID}}')" type="button">No</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{{end}}
+
+
+{{define "js"}}
+<script src="/static/js/admin.js"></script>
+{{end}}

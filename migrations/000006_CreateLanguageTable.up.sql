@@ -1,0 +1,4 @@
+CREATE TABLE "languages" (
+    id SERIAL PRIMARY KEY,
+    language VARCHAR(100) UNIQUE NOT NULL
+);

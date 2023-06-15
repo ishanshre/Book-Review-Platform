@@ -1060,3 +1060,116 @@ func (m *Repository) PostAdminInsertAuthor(w http.ResponseWriter, r *http.Reques
 	}
 	http.Redirect(w, r, "/admin/authors", http.StatusSeeOther)
 }
+
+// AdminAllLanguage renders admin all Language page
+func (m *Repository) AdminAllLanguage(w http.ResponseWriter, r *http.Request) {
+	languages, err := m.DB.AllLanguage()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["languages"] = languages
+	var emptyLanguage models.Language
+	data["language"] = emptyLanguage
+	render.Template(w, r, "admin-alllanguages.page.tmpl", &models.TemplateData{
+		Data: data,
+		Form: forms.New(nil),
+	})
+}
+
+// PostAdminDeleteLanguage handles the delete logic
+func (m *Repository) PostAdminDeleteLanguage(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := m.DB.DeleteLanguage(id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/languages", http.StatusSeeOther)
+}
+
+// PostAdminUpdateLanguage handles the update language logic
+func (m *Repository) PostAdminUpdateLanguage(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	data := make(map[string]interface{})
+	languages, err := m.DB.AllLanguage()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data["languages"] = languages
+	id, err := strconv.Atoi(r.Form.Get("id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	language := models.Language{
+		ID:       id,
+		Language: r.Form.Get("language"),
+	}
+	form.Required("language")
+	data["language"] = language
+	// stat, _ := m.DB.LanguageExists(language.Language)
+	// if stat {
+	// 	form.Errors.Add("language", "This language already exists")
+	// }
+	if !form.Valid() {
+		render.Template(w, r, "admin-alllanguages.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.UpdateLanguage(&language); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/languages", http.StatusSeeOther)
+}
+
+// PostAdminInsertLanguage handles the insert language logic
+func (m *Repository) PostAdminInsertLanguage(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	language := models.Language{
+		Language: r.Form.Get("language"),
+	}
+	form.Required("language")
+	data := make(map[string]interface{})
+	data["add_language"] = language
+	languages, err := m.DB.AllLanguage()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data["languages"] = &languages
+	stat, _ := m.DB.LanguageExists(language.Language)
+	if stat {
+		form.Errors.Add("language", "This language already exists")
+	}
+	if !form.Valid() {
+		render.Template(w, r, "admin-alllanguages.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.InsertLanguage(&language); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/languages", http.StatusSeeOther)
+
+}

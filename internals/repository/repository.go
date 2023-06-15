@@ -49,4 +49,12 @@ type DatabaseRepo interface {
 	UpdateAuthor(u *models.Author) error
 	DeleteAuthor(id int) error
 	GetAuthorByID(id int) (*models.Author, error)
+
+	// Language interface
+	AllLanguage() ([]*models.Language, error)
+	InsertLanguage(u *models.Language) error
+	UpdateLanguage(u *models.Language) error
+	DeleteLanguage(id int) error
+	GetLanguageByID(id int) (*models.Language, error)
+	LanguageExists(language string) (bool, error)
 }
