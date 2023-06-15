@@ -61,3 +61,15 @@ type Publisher struct {
 	Latitude        string
 	Longitude       string
 }
+
+// Author struct holds the authors table data
+type Author struct {
+	ID              int
+	FirstName       string
+	LastName        string
+	Bio             string
+	DateOfBirth     int
+	Email           string
+	CountryOfOrigin string
+	Avatar          string
+}

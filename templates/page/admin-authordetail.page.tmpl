@@ -1,0 +1,62 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: Author Detail{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/admin.css">
+{{end}}
+
+{{define "content"}}
+{{$res := index .Data "author"}}
+<br><hr>
+<div>
+    <div>
+        <form action="/admin/authors/detail/{{$res.ID}}/update" method="post">
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+            <div>
+                <label for="first_name">First Name: </label>
+                <input type="text" name="first_name" id="first_name" value="{{$res.FirstName}}">
+            </div>
+            <div>
+                <label for="last_name">Last Name: </label>
+                <input type="text" name="last_name" id="last_name" value="{{$res.LastName}}">
+            </div>
+            <div>
+                <label for="bio">Bio: </label>
+                <input type="text" name="bio" id="bio" value="{{$res.Bio}}">
+            </div>
+            <div>
+                <label for="date_of_birth">Date of Birth: </label>
+                <input type="text" name="date_of_birth" id="date_of_birth" value="{{$res.DateOfBirth}}">
+            </div>
+            <div>
+                <label for="email">Email: </label>
+                <input type="text" name="email" id="email" value="{{$res.Email}}">
+            </div>
+            <div>
+                <label for="country_of_origin">Country of Origin: </label>
+                <input type="text" name="country_of_origin" id="country_of_origin" value="{{$res.CountryOfOrigin}}">
+            </div>
+            <div>
+                <label for="avatar">Avatar: </label>
+                <input type="text" name="avatar" id="avatar" value="{{$res.Avatar}}">
+            </div>
+            <input type="submit" value="update">
+        </form>
+    <div>
+        <button id="delete-{{$res.ID}}" onclick="showDeleteForm(this, '{{$res.ID}}')">Delete</button>
+    </div>
+    <div>
+        <form action="/admin/authors/detail/{{$res.ID}}/delete" method="post" class="no-display" id="{{$res.ID}}">
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+            <p>Do you want to delete author @{{$res.FirstName}}?</p>
+            <input type="submit" value="Delete">
+            <button type="button" onclick="removeForm('{{$res.ID}}')">No</button>
+        </form>
+    </div>
+</div>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/admin.js"></script>
+{{end}}

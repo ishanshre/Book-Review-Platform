@@ -37,6 +37,9 @@ func router(app *config.AppConfig) http.Handler {
 	// handler for the file server with system file implementation path
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
+	fileServerPublic := http.FileServer(http.Dir("./public/"))
+	mux.Handle("/public/*", http.StripPrefix("/public", fileServerPublic))
+
 	mux.Route("/profile", func(mux chi.Router) {
 		mux.Use(Auth)
 		mux.Get("/", handler.Repo.PersonalProfile)
@@ -70,6 +73,14 @@ func router(app *config.AppConfig) http.Handler {
 		mux.Post("/publishers/detail/{id}/delete", handler.Repo.PostAdminDeletePublisher)
 		mux.Get("/publishers/create", handler.Repo.AdminInsertPublisher)
 		mux.Post("/publishers/create", handler.Repo.PostAdminInsertPublisher)
+
+		// admin author router
+		mux.Get("/authors", handler.Repo.AdminAllAuthor)
+		mux.Post("/authors/detail/{id}/delete", handler.Repo.PostAdminDeleteAuthor)
+		mux.Get("/authors/detail/{id}", handler.Repo.AdminGetAuthorDetailByID)
+		mux.Post("/authors/detail/{id}/update", handler.Repo.PostAdminUpdateAuthor)
+		mux.Get("/authors/create", handler.Repo.AdminInsertAuthor)
+		mux.Post("/authors/create", handler.Repo.PostAdminInsertAuthor)
 	})
 	return mux
 }

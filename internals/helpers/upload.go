@@ -43,7 +43,7 @@ func UserRegitserFileUpload(r *http.Request, field, username string) (string, er
 }
 
 // AdminPublicUploadImage uploads single file
-func AdminPublicUploadImage(r *http.Request, field, table string) (string, error) {
+func AdminPublicUploadImage(r *http.Request, field, table string, id int) (string, error) {
 	file, handler, err := r.FormFile(field)
 	if err != nil {
 		return "", fmt.Errorf("error in getting file: %s", err)
@@ -55,12 +55,12 @@ func AdminPublicUploadImage(r *http.Request, field, table string) (string, error
 	}
 	ext := filepath.Ext(fileName)
 
-	path := filepath.Join("./static/public", table)
+	path := filepath.Join("./public", table)
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		return "", fmt.Errorf("error in creating directory: %s", err)
 	}
 
-	newFileName := fmt.Sprintf("%s-%s%s", field, table, ext)
+	newFileName := fmt.Sprintf("%s-%s-%d%s", field, table, id, ext)
 	relativePath := filepath.Join(path, newFileName)
 
 	new, err := os.Create(relativePath)

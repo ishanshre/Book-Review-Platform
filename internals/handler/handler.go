@@ -876,13 +876,14 @@ func (m *Repository) PostAdminInsertPublisher(w http.ResponseWriter, r *http.Req
 		return
 	}
 	form := forms.New(r.PostForm)
-	pic_path, err := helpers.AdminPublicUploadImage(r, "pic", "publisher")
-	if err != nil {
-		form.Errors.Add("pic", "No picture was choosen")
-	}
+
 	establishedDate, err := strconv.Atoi(r.Form.Get("established_date"))
 	if err != nil {
 		form.Errors.Add("established_date", "Invalid established date")
+	}
+	pic_path, err := helpers.AdminPublicUploadImage(r, "pic", "publisher", establishedDate)
+	if err != nil {
+		form.Errors.Add("pic", "No picture was choosen")
 	}
 	publisher := &models.Publisher{
 		Name:            r.Form.Get("name"),
@@ -910,4 +911,152 @@ func (m *Repository) PostAdminInsertPublisher(w http.ResponseWriter, r *http.Req
 		return
 	}
 	http.Redirect(w, r, "/admin/publishers", http.StatusSeeOther)
+}
+
+// Author handlers
+
+// AdminAllAuthor handles logic for all authors in admin page
+func (m *Repository) AdminAllAuthor(w http.ResponseWriter, r *http.Request) {
+	authors, err := m.DB.AllAuthor()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["authors"] = authors
+	render.Template(w, r, "admin-allauthors.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
+
+}
+
+// PostAdminDeleteAuthor handles author delete logic
+func (m *Repository) PostAdminDeleteAuthor(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := m.DB.DeleteAuthor(id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/authors", http.StatusSeeOther)
+}
+
+// AdminGetAuthorDetailByID handles the logic of displaying Author detail by ID
+func (m *Repository) AdminGetAuthorDetailByID(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	author, err := m.DB.GetAuthorByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["author"] = author
+	render.Template(w, r, "admin-authordetail.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// PostAdminUpdateAuthor handles update logic of author
+func (m *Repository) PostAdminUpdateAuthor(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	dob, err := strconv.Atoi(r.Form.Get("date_of_birth"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	author := models.Author{
+		ID:              id,
+		FirstName:       r.Form.Get("first_name"),
+		LastName:        r.Form.Get("last_name"),
+		Bio:             r.Form.Get("bio"),
+		DateOfBirth:     dob,
+		Email:           r.Form.Get("email"),
+		CountryOfOrigin: r.Form.Get("country_of_origin"),
+		Avatar:          r.Form.Get("avatar"),
+	}
+	data := make(map[string]interface{})
+	data["author"] = author
+	if !form.Valid() {
+		render.Template(w, r, "admin-authordetail.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.UpdateAuthor(&author); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/admin/authors/detail/%d", id), http.StatusSeeOther)
+
+}
+
+// AdminInsertAuthor renders the insert Author page
+func (m *Repository) AdminInsertAuthor(w http.ResponseWriter, r *http.Request) {
+	var emptyAuthor models.Author
+	data := make(map[string]interface{})
+	data["author"] = emptyAuthor
+	render.Template(w, r, "admin-authorinsert.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// PostAdminInsertAuthor handles the post method logic for publisher
+func (m *Repository) PostAdminInsertAuthor(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+
+	dob, err := strconv.Atoi(r.Form.Get("date_of_birth"))
+	if err != nil {
+		form.Errors.Add("date_of_birth", "Invalid date of birth")
+	}
+	avatar, err := helpers.AdminPublicUploadImage(r, "avatar", "author", dob)
+	if err != nil {
+		form.Errors.Add("avatar", "No picture was choosen")
+	}
+	author := &models.Author{
+		FirstName:       r.Form.Get("first_name"),
+		LastName:        r.Form.Get("last_name"),
+		Bio:             r.Form.Get("bio"),
+		DateOfBirth:     dob,
+		Email:           r.Form.Get("email"),
+		CountryOfOrigin: r.Form.Get("country_of_origin"),
+		Avatar:          avatar,
+	}
+	form.Required("date_of_birth")
+	data := make(map[string]interface{})
+	data["author"] = author
+	if !form.Valid() {
+		render.Template(w, r, "admin-authorinsert.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.InsertAuthor(author); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/authors", http.StatusSeeOther)
 }
