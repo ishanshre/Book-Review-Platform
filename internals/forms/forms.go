@@ -42,6 +42,16 @@ func (f *Form) MinLength(field string, length int) bool {
 	return true
 }
 
+// MaxLength checks the maximum length of characters in the field
+func (f *Form) MaxLength(field string, length int) bool {
+	x := f.Get(field)
+	if len(x) > length {
+		f.Errors.Add(field, fmt.Sprintf("This field must be at least %d characters long.", length))
+		return false
+	}
+	return true
+}
+
 // Has checks if the form field is empty or not
 func (f *Form) Has(field string) bool {
 	x := f.Get(field)

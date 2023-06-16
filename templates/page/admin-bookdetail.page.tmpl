@@ -1,0 +1,76 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: Detail Book{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/admin.css">
+{{end}}
+
+{{define "content"}}
+    <div>
+        <h1>Detail</h1>
+    </div>
+    <div>
+        {{$book := index .Data "book"}}
+        <div>
+            Cover: <img src="/{{$book.Cover}}" alt="{{$book.Title}}" width="200px" height="200px">
+        </div>
+        <div>
+            <p><strong>Added At: {{$book.AddedAt}}</strong></p>  
+        </div>
+        <div>
+            <p><strong>Updated At: {{$book.UpdatedAt}}</strong></p>  
+        </div>
+        <form action="/admin/books/detail/{{$book.ID}}/update" method="post">
+            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+            <p><strong>ID: </strong>{{$book.ID}}</p>
+            <div>
+                <label for="title">Title: </label>
+                <input type="text" name="title" id="title" value="{{$book.Title}}">
+            </div>
+            <div>
+                <label for="description">Description: </label>
+                <input type="text" name="description" id="description" value="{{$book.Description}}">
+            </div>
+            <div>
+                <label for="isbn">ISBN number: </label>
+                <input type="text" name="isbn" id="isbn" value="{{$book.Isbn}}">
+            </div>
+            <div>
+                <label for="published_date">Published Date: </label>
+                <input type="datetime" name="published_date" id="published_date" value="{{DateOnly $book.PublishedDate}}">
+            </div>
+            <div>
+                <label for="paperback">Paperback: </label>
+                <input type="text" name="paperback" id="paperback" value="{{$book.Paperback}}">
+            </div>
+            <div>
+                <label for="is_active">Is Active: </label>
+                <input type="text" name="is_active" id="is_active" value="{{$book.IsActive}}">
+            </div>
+            <div>
+                {{$publishers := index .Data "publishers"}}
+                {{$publisher := index .Data "publisher"}}
+                <label for="publisher_id">Published By: </label>
+                <select name="publisher_id" id="publisher_id">
+                    <option value="{{$publisher.ID}}" selected>{{$publisher.Name}}</option>
+                    {{range $publishers}}
+                    <option value="{{.ID}}">{{.Name}}</option>
+                    {{end}}
+                </select>
+            </div>
+            <input type="submit" value="Update">
+            <button type="button" id="delete-{{$book.ID}}" onclick="showDeleteForm(this, '{{$book.ID}}')">Delete</button>
+        </form>
+        <form action="/admin/books/detail/{{$book.ID}}/delete" method="post" id="{{$book.ID}}" class="no-display">
+            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+            <p>Do you want to delete @{{$book.Title}}</p>
+            <input type="submit" value="delete">      
+            <button type="button" onclick="removeForm('{{$book.ID}}')">No</button>
+        </form>
+    </div>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/admin.js"></script>
+{{end}}

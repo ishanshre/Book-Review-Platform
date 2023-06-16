@@ -57,4 +57,12 @@ type DatabaseRepo interface {
 	DeleteLanguage(id int) error
 	GetLanguageByID(id int) (*models.Language, error)
 	LanguageExists(language string) (bool, error)
+
+	// book interface
+	AllBook() ([]*models.Book, error)
+	DeleteBook(id int) error
+	InsertBook(u *models.Book) error
+	GetBookByID(id int) (*models.Book, error)
+	BookIsbnExists(isbn int64) (bool, error)
+	UpdateBook(u *models.Book) error
 }

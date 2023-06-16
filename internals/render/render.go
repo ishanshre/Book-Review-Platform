@@ -83,6 +83,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 	// Defineing a custom function map for function to run in go templates
 	funcMap := template.FuncMap{
 		"TimeSince": TimeSince,
+		"DateOnly":  DateOnly,
 	}
 
 	// path pattern to layout and pages template.
@@ -161,5 +162,8 @@ func TimeSince(t time.Time) string {
 		result = fmt.Sprintf("%d seconds ago", seconds)
 	}
 	return result
+}
 
+func DateOnly(t time.Time) string {
+	return t.Format(time.DateOnly)
 }

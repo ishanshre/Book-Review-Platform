@@ -79,3 +79,18 @@ type Language struct {
 	ID       int
 	Language string
 }
+
+// Book struct holds the books table data
+type Book struct {
+	ID            int
+	Title         string
+	Description   string
+	Cover         string
+	Isbn          int64
+	PublishedDate time.Time
+	Paperback     int
+	IsActive      bool
+	AddedAt       time.Time
+	UpdatedAt     time.Time
+	PublisherID   int
+}

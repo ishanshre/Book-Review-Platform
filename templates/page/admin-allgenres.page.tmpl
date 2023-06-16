@@ -17,7 +17,7 @@
             <form action="/admin/genres" method="post">
                 <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
                 <label for="title">Genre Title: </label>
-                <input type="text" name="title" id="title"  value="{{$res.Title}}">
+                <input type="text" name="title" id="title"  {{if $res.Title}} value="{{$res.Title}}" {{end}}>
                 {{with .Form.Errors.Get "title"}}
                     <label>{{.}}</label>
                 {{end}}

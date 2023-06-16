@@ -87,6 +87,14 @@ func router(app *config.AppConfig) http.Handler {
 		mux.Post("/languages/detail/{id}/delete", handler.Repo.PostAdminDeleteLanguage)
 		mux.Post("/languages/detail/{id}/update", handler.Repo.PostAdminUpdateLanguage)
 		mux.Post("/languages/create", handler.Repo.PostAdminInsertLanguage)
+
+		// admin book router
+		mux.Get("/books", handler.Repo.AdminAllBook)
+		mux.Post("/books/detail/{id}/delete", handler.Repo.PostAdminDeleteBook)
+		mux.Get("/books/detail/{id}", handler.Repo.AdminGetBookDetailByID)
+		mux.Get("/books/create", handler.Repo.AdminInsertBook)
+		mux.Post("/books/create", handler.Repo.PostAdminInsertBook)
+		mux.Post("/books/detail/{id}/update", handler.Repo.PostAdminUpdateBook)
 	})
 	return mux
 }

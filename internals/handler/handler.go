@@ -927,7 +927,6 @@ func (m *Repository) AdminAllAuthor(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "admin-allauthors.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
-
 }
 
 // PostAdminDeleteAuthor handles author delete logic
@@ -1171,5 +1170,239 @@ func (m *Repository) PostAdminInsertLanguage(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	http.Redirect(w, r, "/admin/languages", http.StatusSeeOther)
+
+}
+
+// AdminAllBook handles logic for all Books in admin page
+func (m *Repository) AdminAllBook(w http.ResponseWriter, r *http.Request) {
+	books, err := m.DB.AllBook()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["books"] = books
+	render.Template(w, r, "admin-allbooks.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
+}
+
+// PostAdminDeleteBook handles the delete logic
+func (m *Repository) PostAdminDeleteBook(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := m.DB.DeleteBook(id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/books", http.StatusSeeOther)
+}
+
+// AdminGetBookDetailByID handles the logic of displaying Book detail by ID
+func (m *Repository) AdminGetBookDetailByID(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	book, err := m.DB.GetBookByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	publishers, err := m.DB.AllPublishers()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	publisher, err := m.DB.GetPublisherByID(book.PublisherID)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["book"] = book
+	data["publishers"] = publishers
+	data["publisher"] = publisher
+	render.Template(w, r, "admin-bookdetail.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// AdminInsertBook handles the get method
+func (m *Repository) AdminInsertBook(w http.ResponseWriter, r *http.Request) {
+	var book models.Book
+	publishers, err := m.DB.AllPublishers()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["book"] = book
+	data["publishers"] = publishers
+	render.Template(w, r, "admin-bookinsert.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// PostAdminInsertBook handles insert book logic
+func (m *Repository) PostAdminInsertBook(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	data := make(map[string]interface{})
+	publishedDate, err := time.Parse(time.DateOnly, r.Form.Get("published_date"))
+	if err != nil {
+		form.Errors.Add("published_date", "Enter the valid date")
+	}
+	paperback, err := strconv.Atoi(r.Form.Get("paperback"))
+	if err != nil {
+		form.Errors.Add("paperback", "Paperback must be an integer")
+	}
+	publisherID, err := strconv.Atoi(r.Form.Get("publisher_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	isbn, err := strconv.ParseInt(r.Form.Get("isbn"), 10, 64)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	isActive, err := strconv.ParseBool(r.Form.Get("is_active"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	book := models.Book{
+		Title:         r.Form.Get("title"),
+		Description:   r.Form.Get("description"),
+		Isbn:          isbn,
+		PublishedDate: publishedDate,
+		Paperback:     paperback,
+		IsActive:      isActive,
+		AddedAt:       time.Now(),
+		UpdatedAt:     time.Now(),
+		PublisherID:   publisherID,
+	}
+	cover, err := helpers.AdminPublicUploadImage2(r, "cover", "book", book.Isbn)
+	if err != nil {
+		form.Errors.Add("cover", "No image uploaded")
+	}
+	book.Cover = cover
+	form.Required("isbn", "title")
+	form.MinLength("isbn", 13)
+	form.MaxLength("isbn", 13)
+	data["book"] = book
+	publishers, err := m.DB.AllPublishers()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data["publishers"] = publishers
+	if !form.Valid() {
+		render.Template(w, r, "admin-bookinsert.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	log.Println(book)
+	if err := m.DB.InsertBook(&book); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/books", http.StatusSeeOther)
+}
+
+// PostAdminUpdateBook handles Update book logic
+func (m *Repository) PostAdminUpdateBook(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	data := make(map[string]interface{})
+	book, err := m.DB.GetBookByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	publisher, err := m.DB.GetPublisherByID(book.PublisherID)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	publishers, err := m.DB.AllPublishers()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data["book"] = book
+	data["publisher"] = publisher
+	data["publishers"] = publishers
+	isbn, err := strconv.ParseInt(r.Form.Get("isbn"), 10, 64)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	publishedDate, err := time.Parse(time.DateOnly, r.Form.Get("published_date"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	paperback, err := strconv.Atoi(r.Form.Get("paperback"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	isActive, err := strconv.ParseBool(r.Form.Get("is_active"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	publishedBy, err := strconv.Atoi(r.Form.Get("publisher_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	updated_book := models.Book{
+		ID:            book.ID,
+		Title:         r.Form.Get("title"),
+		Description:   r.Form.Get("description"),
+		Isbn:          isbn,
+		PublishedDate: publishedDate,
+		Paperback:     paperback,
+		IsActive:      isActive,
+		PublisherID:   publishedBy,
+		UpdatedAt:     time.Now(),
+	}
+	form.Required("title", "isbn")
+	form.MinLength("isbn", 13)
+	form.MaxLength("isbn", 13)
+	if !form.Valid() {
+		render.Template(w, r, "admin-bookdetail.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.UpdateBook(&updated_book); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/admin/books/detail/%d", book.ID), http.StatusSeeOther)
 
 }
