@@ -357,16 +357,14 @@ func (m *postgresDBRepo) UsernameExists(username string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	query := `
-		SELECT id FROM users
+		SELECT COUNT(*) FROM users
 		WHERE username=$1
 	`
-	var id int
-	row := m.DB.QueryRowContext(ctx, query, username)
-	if err := row.Scan(&id); err != nil {
-		return false, err
-
+	var count int
+	if err := m.DB.QueryRowContext(ctx, query, username).Scan(&count); err != nil {
+		return false, fmt.Errorf("failed to execute query: %w", err)
 	}
-	return true, nil
+	return count > 0, nil
 }
 
 // EmailExists return true if email exists else return false
@@ -374,15 +372,15 @@ func (m *postgresDBRepo) EmailExists(email string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	query := `
-		SELECT id FROM users
+		SELECT COUNT(*) FROM users
 		WHERE email=$1
 	`
-	var id int
+	var count int
 	row := m.DB.QueryRowContext(ctx, query, email)
-	if err := row.Scan(&id); err != nil {
-		return false, err
+	if err := row.Scan(&count); err != nil {
+		return false, fmt.Errorf("failed to execute query: %w", err)
 	}
-	return true, nil
+	return count > 0, nil
 }
 
 // ChangePassword chnage the password using email
@@ -495,15 +493,15 @@ func (m *postgresDBRepo) GenreExists(title string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	query := `
-		SELECT id FROM genres
+		SELECT COUNT(*) FROM genres
 		WHERE title=$1
 	`
-	var id int
+	var count int
 	row := m.DB.QueryRowContext(ctx, query, title)
-	if err := row.Scan(&id); err != nil {
-		return false, err
+	if err := row.Scan(&count); err != nil {
+		return false, fmt.Errorf("failed to execute query: %w", err)
 	}
-	return true, nil
+	return count > 0, nil
 }
 
 // AllPublishers returns slice of all publishers
@@ -642,15 +640,15 @@ func (m *postgresDBRepo) PublisherExists(name string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	query := `
-		SELECT id FROM publishers
+		SELECT COUNT(*) FROM publishers
 		WHERE name=$1
 	`
-	var id int
+	var count int
 	row := m.DB.QueryRowContext(ctx, query, name)
-	if err := row.Scan(&id); err != nil {
-		return false, err
+	if err := row.Scan(&count); err != nil {
+		return false, fmt.Errorf("failed to execute the query: %w", err)
 	}
-	return true, nil
+	return count > 0, nil
 }
 
 // Author interface implementation
@@ -765,6 +763,19 @@ func (m *postgresDBRepo) GetAuthorByID(id int) (*models.Author, error) {
 	return author, nil
 }
 
+// GetAuthorFullNameByID return full name of the author
+func (m *postgresDBRepo) GetAuthorFullNameByID(id int) (*models.Author, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT first_name, last_name FROM authors WHERE id=$1`
+	author := &models.Author{}
+	row := m.DB.QueryRowContext(ctx, query, id)
+	if err := row.Scan(&author.FirstName, &author.LastName); err != nil {
+		return nil, err
+	}
+	return author, nil
+}
+
 // Language interface implementation
 
 // AllLanguage fetches all languages from database
@@ -860,15 +871,15 @@ func (m *postgresDBRepo) LanguageExists(language string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	query := `
-		SELECT id FROM languages
+		SELECT COUNT(*) FROM languages
 		WHERE language=$1
 	`
-	var id int
+	var count int
 	row := m.DB.QueryRowContext(ctx, query, language)
-	if err := row.Scan(&id); err != nil {
-		return false, err
+	if err := row.Scan(&count); err != nil {
+		return false, fmt.Errorf("failed to execute the query :%w", err)
 	}
-	return true, nil
+	return count > 0, nil
 }
 
 // Book interface implementation
@@ -968,15 +979,15 @@ func (m *postgresDBRepo) BookIsbnExists(isbn int64) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	query := `
-		SELECT id FROM books
+		SELECT COUNT(*) FROM books
 		WHERE isbn=$1
 	`
-	var id int
+	var count int
 	row := m.DB.QueryRowContext(ctx, query, isbn)
-	if err := row.Scan(&id); err != nil {
-		return false, err
+	if err := row.Scan(&count); err != nil {
+		return false, fmt.Errorf("failed to execute the query : %w", err)
 	}
-	return true, nil
+	return count > 0, nil
 }
 
 // UpdateBook updates the existing Book in db
@@ -1002,4 +1013,119 @@ func (m *postgresDBRepo) UpdateBook(u *models.Book) error {
 		u.UpdatedAt,
 	)
 	return err
+}
+
+// GetBookTitleByID return title and id of the book
+func (m *postgresDBRepo) GetBookTitleByID(id int) (*models.Book, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT title FROM books WHERE id=$1`
+	book := &models.Book{}
+	row := m.DB.QueryRowContext(ctx, query, id)
+	if err := row.Scan(&book.Title); err != nil {
+		return nil, err
+	}
+	return book, nil
+}
+
+// AllBookAuthor fetches all Books from database
+func (m *postgresDBRepo) AllBookAuthor() ([]*models.BookAuthor, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT * FROM book_authors`
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	bookAuthors := []*models.BookAuthor{}
+	for rows.Next() {
+		bookAuthor := new(models.BookAuthor)
+		if err := rows.Scan(
+			&bookAuthor.BookID,
+			&bookAuthor.AuthorID,
+		); err != nil {
+			return nil, err
+		}
+		bookAuthors = append(bookAuthors, bookAuthor)
+	}
+	return bookAuthors, nil
+}
+
+// DeleteBookAuthor deletes the Book from the db
+func (m *postgresDBRepo) DeleteBookAuthor(book_id, author_id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `DELETE FROM book_authors WHERE (book_id=$1 AND author_id=$2)`
+	_, err := m.DB.ExecContext(ctx, stmt, book_id, author_id)
+	return err
+}
+
+// GetBookAuthorByID returns the book from database using id
+func (m *postgresDBRepo) GetBookAuthorByID(book_id, author_id int) (*models.BookAuthor, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT * FROM book_authors
+		WHERE (book_id=$1 AND author_id=$2)
+	`
+	row := m.DB.QueryRowContext(ctx, query, book_id, author_id)
+	bookAuthor := &models.BookAuthor{}
+	if err := row.Scan(
+		&bookAuthor.BookID,
+		&bookAuthor.AuthorID,
+	); err != nil {
+		return nil, err
+	}
+	return bookAuthor, nil
+}
+
+// BookAuthorExists return true if email exists else return false
+func (m *postgresDBRepo) BookAuthorExists(book_id, author_id int) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT COUNT(*) FROM book_authors
+		WHERE (book_id=$1 AND author_id=$2)
+	`
+	var count int
+	if err := m.DB.QueryRowContext(ctx, query, book_id, author_id).Scan(&count); err != nil {
+		return false, fmt.Errorf("Failed to execute query: %w", err)
+	}
+	return count > 0, nil
+}
+
+// UpdateBookAuthor updates the last login date of the user
+func (m *postgresDBRepo) UpdateBookAuthor(u *models.BookAuthor, book_id, author_id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `
+		UPDATE book_authors
+		SET book_id = $3, author_id = $4
+		WHERE (book_id = $1 AND author_id = $2)
+	`
+	_, err := m.DB.ExecContext(ctx, stmt, book_id, author_id, u.BookID, u.AuthorID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// InsertBookAuthor add new author to db
+func (m *postgresDBRepo) InsertBookAuthor(u *models.BookAuthor) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `
+		INSERT INTO book_authors (book_id, author_id)
+		VALUES ($1, $2);
+	`
+	_, err := m.DB.ExecContext(
+		ctx,
+		stmt,
+		u.BookID,
+		u.AuthorID,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
 }

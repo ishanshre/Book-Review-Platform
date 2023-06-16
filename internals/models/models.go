@@ -94,3 +94,9 @@ type Book struct {
 	UpdatedAt     time.Time
 	PublisherID   int
 }
+
+// BookAuthor struct holds the immediate table between book and author
+type BookAuthor struct {
+	BookID   int
+	AuthorID int
+}

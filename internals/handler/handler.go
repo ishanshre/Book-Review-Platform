@@ -182,8 +182,12 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 	form.HasLowerCase("password")
 	form.HasNumber("password", "username")
 	form.HasSpecialCharacter("password")
-	userStatus, _ := m.DB.UsernameExists(register.Username)
-	if userStatus {
+	exists, err := m.DB.UsernameExists(register.Username)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
 		form.Errors.Add("username", "This username already exists")
 	}
 	if !form.Valid() {
@@ -522,8 +526,12 @@ func (m *Repository) PostResetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 	data := make(map[string]interface{})
 	data["reset_user"] = reset_user
-	_, err := m.DB.EmailExists(reset_user.Email)
+	exists, err := m.DB.EmailExists(reset_user.Email)
 	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
 		form.Errors.Add("email", "This email does not exist")
 	}
 	if !form.Valid() {
@@ -668,11 +676,22 @@ func (m *Repository) PostAdminAddGenre(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+
 	form := forms.New(r.PostForm)
 	form.Required("title")
 	add_genre := models.Genre{
 		Title: r.Form.Get("title"),
 	}
+
+	exists, err := m.DB.GenreExists(add_genre.Title)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		form.Errors.Add("title", "Genre already exists")
+	}
+
 	data := make(map[string]interface{})
 	data["genres"] = genres
 	data["add_genre"] = add_genre
@@ -726,6 +745,14 @@ func (m *Repository) PostAdminGetGenreByID(w http.ResponseWriter, r *http.Reques
 		ID:    id,
 		Title: r.Form.Get("title"),
 	}
+	exists, err := m.DB.GenreExists(update_genre.Title)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		form.Errors.Add("title", "Genre already exists")
+	}
 	form.Required("title")
 	genre, err := m.DB.GetGenreByID(id)
 	if err != nil {
@@ -733,10 +760,7 @@ func (m *Repository) PostAdminGetGenreByID(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	data := make(map[string]interface{})
-	res, err := m.DB.GenreExists(update_genre.Title)
-	if err != nil && !res {
-		form.Errors.Add("title", "Genre already exists")
-	}
+
 	data["genre"] = genre
 	if !form.Valid() {
 		render.Template(w, r, "admin-genre-read-update.page.tmpl", &models.TemplateData{
@@ -1117,10 +1141,14 @@ func (m *Repository) PostAdminUpdateLanguage(w http.ResponseWriter, r *http.Requ
 	}
 	form.Required("language")
 	data["language"] = language
-	// stat, _ := m.DB.LanguageExists(language.Language)
-	// if stat {
-	// 	form.Errors.Add("language", "This language already exists")
-	// }
+	exists, err := m.DB.LanguageExists(language.Language)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		form.Errors.Add("language", "This language already exists")
+	}
 	if !form.Valid() {
 		render.Template(w, r, "admin-alllanguages.page.tmpl", &models.TemplateData{
 			Form: form,
@@ -1314,7 +1342,6 @@ func (m *Repository) PostAdminInsertBook(w http.ResponseWriter, r *http.Request)
 		})
 		return
 	}
-	log.Println(book)
 	if err := m.DB.InsertBook(&book); err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -1405,4 +1432,262 @@ func (m *Repository) PostAdminUpdateBook(w http.ResponseWriter, r *http.Request)
 	}
 	http.Redirect(w, r, fmt.Sprintf("/admin/books/detail/%d", book.ID), http.StatusSeeOther)
 
+}
+
+// AdminAllBookAuthor handles logic for all BookAuthors in admin page
+func (m *Repository) AdminAllBookAuthor(w http.ResponseWriter, r *http.Request) {
+	bookAuthors, err := m.DB.AllBookAuthor()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	var bookAuthor models.BookAuthor
+	allBooks, err := m.DB.AllBook()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	allAuthors, err := m.DB.AllAuthor()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["bookAuthors"] = bookAuthors
+	data["bookAuthor"] = bookAuthor
+	data["allAuthors"] = allAuthors
+	data["allBooks"] = allBooks
+	render.Template(w, r, "admin-allbookauthors.page.tmpl", &models.TemplateData{
+		Data: data,
+		Form: forms.New(nil),
+	})
+}
+
+// PostAdminDeleteBookAuthor handles the delete logic
+func (m *Repository) PostAdminDeleteBookAuthor(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	author_id, err := strconv.Atoi(chi.URLParam(r, "author_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := m.DB.DeleteBookAuthor(book_id, author_id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/bookAuthors", http.StatusSeeOther)
+}
+
+// AdminGetBookAuthorByID handes the detail logic
+func (m *Repository) AdminGetBookAuthorByID(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	author_id, err := strconv.Atoi(chi.URLParam(r, "author_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	bookAuthor, err := m.DB.GetBookAuthorByID(book_id, author_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	book, err := m.DB.GetBookTitleByID(book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	book.ID = book_id
+	author, err := m.DB.GetAuthorFullNameByID(author_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	author.ID = author_id
+	allBooks, err := m.DB.AllBook()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	allAuthors, err := m.DB.AllAuthor()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["book"] = book
+	data["allBooks"] = allBooks
+	data["author"] = author
+	data["allAuthors"] = allAuthors
+	data["bookAuthor"] = bookAuthor
+	render.Template(w, r, "admin-bookauthordetial.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// PostAdminUpdateBookAuthor handles the update logic for book author
+func (m *Repository) PostAdminUpdateBookAuthor(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	author_id, err := strconv.Atoi(chi.URLParam(r, "author_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	updated_book_id, err := strconv.Atoi(r.Form.Get("book_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	updated_author_id, err := strconv.Atoi(r.Form.Get("author_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	bookAuthor := models.BookAuthor{
+		BookID:   updated_book_id,
+		AuthorID: updated_author_id,
+	}
+	exists, err := m.DB.BookAuthorExists(bookAuthor.BookID, bookAuthor.AuthorID)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		form.Errors.Add("book_id", "book-author relationship already exists")
+		form.Errors.Add("author_id", "book-author relationship already exists")
+	}
+	book, err := m.DB.GetBookTitleByID(book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	book.ID = book_id
+	author, err := m.DB.GetAuthorFullNameByID(author_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	author.ID = author_id
+	allBooks, err := m.DB.AllBook()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	allAuthors, err := m.DB.AllAuthor()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["book"] = book
+	data["allBooks"] = allBooks
+	data["author"] = author
+	data["allAuthors"] = allAuthors
+	data["bookAuthor"] = bookAuthor
+	form.Required("book_id", "author_id")
+	if !form.Valid() {
+		render.Template(w, r, "admin-bookauthordetial.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.UpdateBookAuthor(&bookAuthor, book_id, author_id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/admin/bookAuthors/detail/%d/%d", bookAuthor.BookID, bookAuthor.AuthorID), http.StatusSeeOther)
+}
+
+// PostAdminInsertBookAuthor handles insert book logic
+func (m *Repository) PostAdminInsertBookAuthor(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	form := forms.New(r.PostForm)
+	data := make(map[string]interface{})
+
+	book_id, err := strconv.Atoi(r.Form.Get("book_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	author_id, err := strconv.Atoi(r.Form.Get("author_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	bookAuthor := models.BookAuthor{
+		BookID:   book_id,
+		AuthorID: author_id,
+	}
+
+	bookAuthors, err := m.DB.AllBookAuthor()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	allBooks, err := m.DB.AllBook()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	allAuthors, err := m.DB.AllAuthor()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data["allBooks"] = allBooks
+	data["allAuthors"] = allAuthors
+	data["bookAuthor"] = bookAuthor
+	data["bookAuthors"] = bookAuthors
+	form.Required("book_id", "author_id")
+
+	exists, err := m.DB.BookAuthorExists(bookAuthor.BookID, bookAuthor.AuthorID)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		form.Errors.Add("book_id", "book-author relationship already exists")
+		form.Errors.Add("author_id", "book-author relationship already exists")
+	}
+	if !form.Valid() {
+		render.Template(w, r, "admin-allbookauthors.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+
+	if err := m.DB.InsertBookAuthor(&bookAuthor); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	http.Redirect(w, r, "/admin/bookAuthors", http.StatusSeeOther)
 }

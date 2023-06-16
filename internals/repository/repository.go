@@ -49,6 +49,7 @@ type DatabaseRepo interface {
 	UpdateAuthor(u *models.Author) error
 	DeleteAuthor(id int) error
 	GetAuthorByID(id int) (*models.Author, error)
+	GetAuthorFullNameByID(id int) (*models.Author, error)
 
 	// Language interface
 	AllLanguage() ([]*models.Language, error)
@@ -65,4 +66,13 @@ type DatabaseRepo interface {
 	GetBookByID(id int) (*models.Book, error)
 	BookIsbnExists(isbn int64) (bool, error)
 	UpdateBook(u *models.Book) error
+	GetBookTitleByID(id int) (*models.Book, error)
+
+	// book author interface
+	AllBookAuthor() ([]*models.BookAuthor, error)
+	DeleteBookAuthor(book_id, author_id int) error
+	GetBookAuthorByID(book_id, author_id int) (*models.BookAuthor, error)
+	BookAuthorExists(book_id, author_id int) (bool, error)
+	UpdateBookAuthor(u *models.BookAuthor, book_id, author_id int) error
+	InsertBookAuthor(u *models.BookAuthor) error
 }

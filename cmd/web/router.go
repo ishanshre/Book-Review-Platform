@@ -95,6 +95,13 @@ func router(app *config.AppConfig) http.Handler {
 		mux.Get("/books/create", handler.Repo.AdminInsertBook)
 		mux.Post("/books/create", handler.Repo.PostAdminInsertBook)
 		mux.Post("/books/detail/{id}/update", handler.Repo.PostAdminUpdateBook)
+
+		// book-admin router
+		mux.Get("/bookAuthors", handler.Repo.AdminAllBookAuthor)
+		mux.Post("/bookAuthors/create", handler.Repo.PostAdminInsertBookAuthor)
+		mux.Get("/bookAuthors/detail/{book_id}/{author_id}", handler.Repo.AdminGetBookAuthorByID)
+		mux.Post("/bookAuthors/detail/{book_id}/{author_id}/delete", handler.Repo.PostAdminDeleteBookAuthor)
+		mux.Post("/bookAuthors/detail/{book_id}/{author_id}/update", handler.Repo.PostAdminUpdateBookAuthor)
 	})
 	return mux
 }
