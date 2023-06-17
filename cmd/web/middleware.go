@@ -24,6 +24,9 @@ func NoSurf(next http.Handler) http.Handler {
 	return csrfHandler
 }
 
+// Auth is a middleware function that checks if the user is authenticated.
+// If the user is not authenticated, it redirects to the login page.
+// It takes a next http.Handler as an argument and returns an http.Handler.
 func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !helpers.IsAuthenticated(r) {
@@ -34,6 +37,9 @@ func Auth(next http.Handler) http.Handler {
 	})
 }
 
+// Admin is a middleware function that checks if the user is an admin.
+// If the user is not an admin, it redirects to the home page.
+// It takes a next http.Handler as an argument and returns an http.Handler.
 func Admin(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !helpers.IsAdmin(r) {

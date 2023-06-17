@@ -3,6 +3,7 @@
 {{define "title"}}New User{{end}}
 
 {{define "content"}}
+{{$res := index .Data "register"}}
     <div>
         <div>
             <h1>Create New User</h1>
@@ -13,15 +14,24 @@
             <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
             <div>
                 <label for="username">Username: </label>
-                <input type="text" name="username" id="username">
+                <input type="text" name="username" id="username" value="{{$res.Username}}">
+                {{with .Form.Errors.Get "username"}}
+                <label>{{.}}</label>
+                {{end}}
             </div>
             <div>
                 <label for="email">Email: </label>
-                <input type="text" name="email" id="email">
+                <input type="text" name="email" id="email" value="{{$res.Email}}">
+                {{with .Form.Errors.Get "email"}}
+                <label>{{.}}</label>
+                {{end}}
             </div>
             <div>
                 <label for="password">Password: </label>
-                <input type="password" name="password" id="password">
+                <input type="password" name="password" id="password" value="{{$res.Password}}">
+                {{with .Form.Errors.Get "password"}}
+                <label>{{.}}</label>
+                {{end}}
             </div>
             <input type="submit" value="Add">
             <button type="button"><a href="/admin/users">Cancel</a></button>

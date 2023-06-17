@@ -7,16 +7,19 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// DB represents a database connection.
 type DB struct {
 	SQL *sql.DB
 }
 
+// dbConn is the global database connection instance.
 var dbConn = &DB{}
 
 const maxOpenDBConn = 10
 const maxIdleDBConn = 5
 const maxLifeDBTime = 5 * time.Minute
 
+// ConnectSQL connects to the SQL database and returns a DB instance.
 func ConnectSQL(database string, dsn string) (*DB, error) {
 	d, err := NewDatabase(database, dsn)
 	if err != nil {

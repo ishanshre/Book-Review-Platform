@@ -100,3 +100,9 @@ type BookAuthor struct {
 	BookID   int
 	AuthorID int
 }
+
+// BookGenre holds the itermediate table between book and genre
+type BookGenre struct {
+	BookID  int
+	GenreID int
+}

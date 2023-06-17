@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 )
 
+// Generate a token with random number if string
 func GenerateRandomToken(length int) (string, error) {
 	token := make([]byte, length)
 	_, err := rand.Read(token)

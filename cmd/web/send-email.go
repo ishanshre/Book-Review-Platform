@@ -8,6 +8,8 @@ import (
 	mail "github.com/xhit/go-simple-mail/v2"
 )
 
+// listenForMail is a goroutine that listens for mail messages from the app.MailChan channel
+// and sends them using the sendMsg function.
 func listenForMail() {
 	go func() {
 		for msg := range app.MailChan {
@@ -16,7 +18,10 @@ func listenForMail() {
 	}()
 }
 
+// sendMsg sends an email using the provided mail data.
+// It connects to the SMTP server and sends the email using the go-simple-mail library.
 func sendMsg(m *models.MailData) {
+	// Create a new SMTP client
 	server := mail.NewSMTPClient()
 	server.Host = "localhost"
 	server.Port = 1025
@@ -28,13 +33,18 @@ func sendMsg(m *models.MailData) {
 	// server.Password
 	// server.Encryption
 
+	// Connect to the SMTP server
 	client, err := server.Connect()
 	if err != nil {
 		errorLog.Println(err)
 	}
+
+	// Create a new email message
 	email := mail.NewMSG()
 	email.SetFrom(m.From).AddTo(m.To).SetSubject(m.Subject)
 	email.SetBody(mail.TextHTML, m.Content)
+
+	// Send the email
 	if err := email.Send(client); err != nil {
 		log.Println(err)
 	} else {

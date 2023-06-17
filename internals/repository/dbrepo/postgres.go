@@ -1028,7 +1028,7 @@ func (m *postgresDBRepo) GetBookTitleByID(id int) (*models.Book, error) {
 	return book, nil
 }
 
-// AllBookAuthor fetches all Books from database
+// AllBookAuthor fetches all Book author relation from database
 func (m *postgresDBRepo) AllBookAuthor() ([]*models.BookAuthor, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -1051,7 +1051,7 @@ func (m *postgresDBRepo) AllBookAuthor() ([]*models.BookAuthor, error) {
 	return bookAuthors, nil
 }
 
-// DeleteBookAuthor deletes the Book from the db
+// DeleteBookAuthor deletes the Book author relation from the db
 func (m *postgresDBRepo) DeleteBookAuthor(book_id, author_id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -1060,7 +1060,7 @@ func (m *postgresDBRepo) DeleteBookAuthor(book_id, author_id int) error {
 	return err
 }
 
-// GetBookAuthorByID returns the book from database using id
+// GetBookAuthorByID returns the book-author relation from database using id
 func (m *postgresDBRepo) GetBookAuthorByID(book_id, author_id int) (*models.BookAuthor, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -1079,7 +1079,7 @@ func (m *postgresDBRepo) GetBookAuthorByID(book_id, author_id int) (*models.Book
 	return bookAuthor, nil
 }
 
-// BookAuthorExists return true if email exists else return false
+// BookAuthorExists return true if book author relation exists else return false
 func (m *postgresDBRepo) BookAuthorExists(book_id, author_id int) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -1089,12 +1089,12 @@ func (m *postgresDBRepo) BookAuthorExists(book_id, author_id int) (bool, error) 
 	`
 	var count int
 	if err := m.DB.QueryRowContext(ctx, query, book_id, author_id).Scan(&count); err != nil {
-		return false, fmt.Errorf("Failed to execute query: %w", err)
+		return false, fmt.Errorf("failed to execute query: %w", err)
 	}
 	return count > 0, nil
 }
 
-// UpdateBookAuthor updates the last login date of the user
+// UpdateBookAuthor updates the book author relation
 func (m *postgresDBRepo) UpdateBookAuthor(u *models.BookAuthor, book_id, author_id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -1110,7 +1110,7 @@ func (m *postgresDBRepo) UpdateBookAuthor(u *models.BookAuthor, book_id, author_
 	return nil
 }
 
-// InsertBookAuthor add new author to db
+// InsertBookAuthor add new book-author relation to db
 func (m *postgresDBRepo) InsertBookAuthor(u *models.BookAuthor) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -1123,6 +1123,113 @@ func (m *postgresDBRepo) InsertBookAuthor(u *models.BookAuthor) error {
 		stmt,
 		u.BookID,
 		u.AuthorID,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Book Genre db method implementation
+
+// AllBookGenre fetches all record of Book Genre table from database
+func (m *postgresDBRepo) AllBookGenre() ([]*models.BookGenre, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT * FROM book_genres`
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	bookGenres := []*models.BookGenre{}
+	for rows.Next() {
+		bookGenre := new(models.BookGenre)
+		if err := rows.Scan(
+			&bookGenre.BookID,
+			&bookGenre.GenreID,
+		); err != nil {
+			return nil, err
+		}
+		bookGenres = append(bookGenres, bookGenre)
+	}
+	return bookGenres, nil
+}
+
+// DeleteBookGenre deletes the record of Book genre table from the db
+func (m *postgresDBRepo) DeleteBookGenre(book_id, genre_id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `DELETE FROM book_genres WHERE (book_id=$1 AND genre_id=$2)`
+	_, err := m.DB.ExecContext(ctx, stmt, book_id, genre_id)
+	return err
+}
+
+// GetBookGenreByID returns the book from database using id
+func (m *postgresDBRepo) GetBookGenreByID(book_id, genre_id int) (*models.BookGenre, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT * FROM book_genres
+		WHERE (book_id=$1 AND genre_id=$2)
+	`
+	row := m.DB.QueryRowContext(ctx, query, book_id, genre_id)
+	bookGenre := &models.BookGenre{}
+	if err := row.Scan(
+		&bookGenre.BookID,
+		&bookGenre.GenreID,
+	); err != nil {
+		return nil, err
+	}
+	return bookGenre, nil
+}
+
+// BookGenreExists return true if book genre relation exists else return false
+func (m *postgresDBRepo) BookGenreExists(book_id, genre_id int) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT COUNT(*) FROM book_genres
+		WHERE (book_id=$1 AND genre_id=$2)
+	`
+	var count int
+	if err := m.DB.QueryRowContext(ctx, query, book_id, genre_id).Scan(&count); err != nil {
+		return false, fmt.Errorf("failed to execute query: %w", err)
+	}
+	return count > 0, nil
+}
+
+// UpdateBookGenre updates the book genre
+// Takes update value BookGenre model and previous book_id , genre_id
+func (m *postgresDBRepo) UpdateBookGenre(u *models.BookGenre, book_id, genre_id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `
+		UPDATE book_genres
+		SET book_id = $3, genre_id = $4
+		WHERE (book_id = $1 AND genre_id = $2)
+	`
+	_, err := m.DB.ExecContext(ctx, stmt, book_id, genre_id, u.BookID, u.GenreID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// InsertBookGenre add new book genre to db
+// Takes BookGenre model as a parameter
+// Returns an error if something goes wrong
+func (m *postgresDBRepo) InsertBookGenre(u *models.BookGenre) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `
+		INSERT INTO book_genres (book_id, genre_id)
+		VALUES ($1, $2);
+	`
+	_, err := m.DB.ExecContext(
+		ctx,
+		stmt,
+		u.BookID,
+		u.GenreID,
 	)
 	if err != nil {
 		return err

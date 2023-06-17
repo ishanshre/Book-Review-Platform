@@ -8,6 +8,12 @@ import (
 	"github.com/ishanshre/Book-Review-Platform/internals/handler"
 )
 
+// router creates and configures the application router.
+// It defines the application routes using the Chi router package and sets up middleware.
+//
+// The app argument is the application configuration.
+//
+// Returns an http.Handler interface that represents the application router.
 func router(app *config.AppConfig) http.Handler {
 	mux := chi.NewRouter()
 
@@ -102,6 +108,13 @@ func router(app *config.AppConfig) http.Handler {
 		mux.Get("/bookAuthors/detail/{book_id}/{author_id}", handler.Repo.AdminGetBookAuthorByID)
 		mux.Post("/bookAuthors/detail/{book_id}/{author_id}/delete", handler.Repo.PostAdminDeleteBookAuthor)
 		mux.Post("/bookAuthors/detail/{book_id}/{author_id}/update", handler.Repo.PostAdminUpdateBookAuthor)
+
+		// book-admin router
+		mux.Get("/bookGenres", handler.Repo.AdminAllBookGenre)
+		mux.Get("/bookGenres/detail/{book_id}/{genre_id}", handler.Repo.AdminGetBookGenreByID)
+		mux.Post("/bookGenres/detail/{book_id}/{genre_id}/update", handler.Repo.PostAdminUpdateBookGenre)
+		mux.Post("/bookGenres/detail/{book_id}/{genre_id}/delete", handler.Repo.PostAdminDeleteBookGenre)
+		mux.Post("/bookGenres/create", handler.Repo.PostAdminInsertBookGenre)
 	})
 	return mux
 }
