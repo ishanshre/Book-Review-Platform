@@ -47,7 +47,7 @@
                 {{end}}
             </div>
             <div>
-                <label for="country_of_origin">First Name: </label>
+                <label for="country_of_origin">Country of Origin: </label>
                 <input type="text" name="country_of_origin" id="country_of_origin" value="{{$res.CountryOfOrigin}}">
                 {{with .Form.Errors.Get "country_of_origin"}}
                     <label>{{.}}</label>

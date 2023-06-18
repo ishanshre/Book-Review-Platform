@@ -83,4 +83,12 @@ type DatabaseRepo interface {
 	BookGenreExists(book_id, genre_id int) (bool, error)
 	UpdateBookGenre(u *models.BookGenre, book_id, genre_id int) error
 	InsertBookGenre(u *models.BookGenre) error
+
+	// Book Language interface
+	AllBookLanguage() ([]*models.BookLanguage, error)
+	DeleteBookLanguage(book_id, language_id int) error
+	GetBookLanguageByID(book_id, language_id int) (*models.BookLanguage, error)
+	BookLanguageExists(book_id, language_id int) (bool, error)
+	UpdateBookLanguage(u *models.BookLanguage, book_id, language_id int) error
+	InsertBookLanguage(u *models.BookLanguage) error
 }

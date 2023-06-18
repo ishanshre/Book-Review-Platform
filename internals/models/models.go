@@ -106,3 +106,9 @@ type BookGenre struct {
 	BookID  int
 	GenreID int
 }
+
+// BookLanguage holds the book id and language id
+type BookLanguage struct {
+	BookID     int
+	LanguageID int
+}
