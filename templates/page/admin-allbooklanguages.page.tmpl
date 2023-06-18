@@ -1,0 +1,81 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: All Book Languages{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/admin.css">
+{{end}}
+
+{{define "content"}}
+{{$bookLanguages := index .Data "bookLanguages"}}
+{{$allBooks := index .Data "allBooks"}}
+{{$allLanguages := index .Data "allLanguages"}}
+<div>
+    <div>
+        <h1>Add Book Language</h1>
+        <form action="/admin/bookLanguages/create" method="post" id="createForm">
+            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+            <div>
+                <label for="book_id">Book: </label>
+                <select name="book_id" id="book_id">
+                    {{range $allBooks}}
+                    <option value="{{.ID}}">{{.Title}}</option>
+                    {{end}}
+                </select>
+                {{with .Form.Errors.Get "book_id"}}
+                    <label>{{.}}</label>
+                {{end}}
+            </div>
+            <div>
+                <label for="language_id">Language: </label>
+                <select name="language_id" id="language_id">
+                    {{range $allLanguages}}
+                    <option value="{{.ID}}">{{.Language}}</option>
+                    {{end}}
+                </select>
+                {{with .Form.Errors.Get "language_id"}}
+                    <label>{{.}}</label>
+                {{end}}
+            </div>
+            <input type="submit" value="Add">
+        </form>
+    </div><hr>
+    <div>
+        <h1>All Book Languages</h1>
+    </div>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Book ID</th>
+                    <th>Language ID</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $bookLanguages}}
+                <tr>
+                    
+                    <td>{{.BookID}}</td>
+                    <td>{{.LanguageID}}</td>
+                    <td>
+                        <button><a href="/admin/bookLanguages/detail/{{.BookID}}/{{.LanguageID}}">Detail</a></button>
+                        <button id="delete-{{.BookID}}-{{.LanguageID}}" onclick="showDeleteForm(this, '{{.BookID}}-{{.LanguageID}}')">Delete</button>
+                        <form action="/admin/bookLanguages/detail/{{.BookID}}/{{.LanguageID}}/delete" method="post" class="no-display" id="{{.BookID}}-{{.LanguageID}}">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <p>Do you want to delete this relation ship?</p>
+                            <input type="submit" value="Delete">
+                            <button onclick="removeForm('{{.BookID}}-{{.LanguageID}}')">No</button>
+                        </form>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/admin.js"></script>
+{{end}}
