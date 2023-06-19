@@ -119,3 +119,10 @@ type ReadList struct {
 	BookID    int
 	CreatedAt time.Time
 }
+
+// BuyList holds the the book id, user id and created at of BuyLists table
+type BuyList struct {
+	UserID    int
+	BookID    int
+	CreatedAt time.Time
+}

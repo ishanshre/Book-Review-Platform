@@ -99,4 +99,12 @@ type DatabaseRepo interface {
 	GetReadListByID(user_id, book_id int) (*models.ReadList, error)
 	DeleteReadList(user_id, book_id int) error
 	UpdateReadList(u *models.ReadList, book_id, user_id int) error
+
+	// BuyList interface
+	AllBuyList() ([]*models.BuyList, error)
+	BuyListExists(user_id, book_id int) (bool, error)
+	InsertBuyList(u *models.BuyList) error
+	GetBuyListByID(user_id, book_id int) (*models.BuyList, error)
+	DeleteBuyList(user_id, book_id int) error
+	UpdateBuyList(u *models.BuyList, book_id, user_id int) error
 }
