@@ -112,3 +112,10 @@ type BookLanguage struct {
 	BookID     int
 	LanguageID int
 }
+
+// ReadList holds the the book id, user id and created at of readLists table
+type ReadList struct {
+	UserID    int
+	BookID    int
+	CreatedAt time.Time
+}

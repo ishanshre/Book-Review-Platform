@@ -91,4 +91,12 @@ type DatabaseRepo interface {
 	BookLanguageExists(book_id, language_id int) (bool, error)
 	UpdateBookLanguage(u *models.BookLanguage, book_id, language_id int) error
 	InsertBookLanguage(u *models.BookLanguage) error
+
+	// ReadList interface
+	AllReadList() ([]*models.ReadList, error)
+	ReadListExists(user_id, book_id int) (bool, error)
+	InsertReadList(u *models.ReadList) error
+	GetReadListByID(user_id, book_id int) (*models.ReadList, error)
+	DeleteReadList(user_id, book_id int) error
+	UpdateReadList(u *models.ReadList, book_id, user_id int) error
 }

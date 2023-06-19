@@ -122,6 +122,13 @@ func router(app *config.AppConfig) http.Handler {
 		mux.Post("/bookLanguages/detail/{book_id}/{language_id}/delete", handler.Repo.PostAdminDeleteBookLanguage)
 		mux.Post("/bookLanguages/detail/{book_id}/{language_id}/update", handler.Repo.PostAdminUpdateBookLanguage)
 		mux.Post("/bookLanguages/create", handler.Repo.PostAdminInsertBookLanguage)
+
+		// ReadList router
+		mux.Get("/readLists", handler.Repo.AdminAllReadList)
+		mux.Get("/readLists/detail/{book_id}/{user_id}", handler.Repo.AdminGetReadListByID)
+		mux.Post("/readLists/detail/{book_id}/{user_id}/update", handler.Repo.PostAdminUpdateReadList)
+		mux.Post("/readLists/detail/{book_id}/{user_id}/delete", handler.Repo.PostAdminDeleteReadList)
+		mux.Post("/readLists/create", handler.Repo.PostAdminInsertReadList)
 	})
 	return mux
 }

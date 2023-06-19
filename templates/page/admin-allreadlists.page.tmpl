@@ -1,19 +1,19 @@
 {{template "admin" .}}
 
-{{define "title"}}Admin: All Book Genres{{end}}
+{{define "title"}}Admin: All ReadList{{end}}
 
 {{define "css"}}
     <link rel="stylesheet" href="/static/css/admin.css">
 {{end}}
 
 {{define "content"}}
-{{$bookGenres := index .Data "bookGenres"}}
+{{$readLists := index .Data "readLists"}}
 {{$allBooks := index .Data "allBooks"}}
-{{$allGenres := index .Data "allGenres"}}
+{{$allUsers := index .Data "allUsers"}}
 <div>
     <div>
-        <h1>Add Book Genre</h1>
-        <form action="/admin/bookGenres/create" method="post" id="createForm">
+        <h1>Add Book to User ReadList</h1>
+        <form action="/admin/readLists/create" method="post" id="createForm">
             <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
             <div>
                 <label for="book_id">Book: </label>
@@ -27,13 +27,13 @@
                 {{end}}
             </div>
             <div>
-                <label for="genre_id">Genre: </label>
-                <select name="genre_id" id="genre_id">
-                    {{range $allGenres}}
-                    <option value="{{.ID}}">{{.Title}}</option>
+                <label for="user_id">User: </label>
+                <select name="user_id" id="user_id">
+                    {{range $allUsers}}
+                    <option value="{{.ID}}">{{.Username}}</option>
                     {{end}}
                 </select>
-                {{with .Form.Errors.Get "genre_id"}}
+                {{with .Form.Errors.Get "user_id"}}
                     <label>{{.}}</label>
                 {{end}}
             </div>
@@ -41,31 +41,33 @@
         </form>
     </div><hr>
     <div>
-        <h1>All Book Genres</h1>
+        <h1>Read List</h1>
     </div>
     <div>
         <table>
             <thead>
                 <tr>
                     <th>Book ID</th>
-                    <th>Genre ID</th>
+                    <th>User ID</th>
+                    <th>Created At</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                {{range $bookGenres}}
+                {{range $readLists}}
                 <tr>
                     
                     <td>{{.BookID}}</td>
-                    <td>{{.GenreID}}</td>
+                    <td>{{.UserID}}</td>
+                    <td>{{TimeSince .CreatedAt}}</td>
                     <td>
-                        <button><a href="/admin/bookGenres/detail/{{.BookID}}/{{.GenreID}}">Detail</a></button>
-                        <button id="delete-{{.BookID}}-{{.GenreID}}" onclick="showDeleteForm(this, '{{.BookID}}-{{.GenreID}}')">Delete</button>
-                        <form action="/admin/bookGenres/detail/{{.BookID}}/{{.GenreID}}/delete" method="post" class="no-display" id="{{.BookID}}-{{.GenreID}}">
+                        <button><a href="/admin/readLists/detail/{{.BookID}}/{{.UserID}}">Detail</a></button>
+                        <button id="delete-{{.BookID}}-{{.UserID}}" onclick="showDeleteForm(this, '{{.BookID}}-{{.UserID}}')">Delete</button>
+                        <form action="/admin/readLists/detail/{{.BookID}}/{{.UserID}}/delete" method="post" class="no-display" id="{{.BookID}}-{{.UserID}}">
                             <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
                             <p>Do you want to delete this relation ship?</p>
                             <input type="submit" value="Delete">
-                            <button onclick="removeForm('{{.BookID}}-{{.GenreID}}')" type="button">No</button>
+                            <button onclick="removeForm('{{.BookID}}-{{.UserID}}')" type="button">No</button>
                         </form>
                     </td>
                 </tr>

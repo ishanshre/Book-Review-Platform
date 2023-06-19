@@ -1,0 +1,67 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: Detail ReadList{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/admin.css">
+{{end}}
+
+{{define "content"}}
+{{$allBooks := index .Data "allBooks"}}
+{{$allUsers := index .Data "allUsers"}}
+{{$book := index .Data "book"}}
+{{$user := index .Data "user"}}
+{{$readList := index .Data "readList"}}
+<div>
+    <div>
+        <h1>Read List Detail</h1>
+    </div>
+    <div>
+        <form action="/admin/readLists/detail/{{$book.ID}}/{{$user.ID}}/update" method="post">
+            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+            <div>
+                <label for="book_id">Book: </label>
+                <select name="book_id" id="book_id">
+                    <option value="{{$book.ID}}">{{$book.Title}}</option>
+                    {{range $allBooks}}
+                    {{if ne .ID $book.ID}}
+                    <option value="{{.ID}}">{{.Title}}</option>
+                    {{end}}
+                    {{end}}
+
+                </select>
+                {{with .Form.Errors.Get "book_id"}}
+                    <label>{{.}}</label>
+                {{end}}
+            </div>
+            <div>
+                <label for="user_id">Language: </label>
+                <select name="user_id" id="user_id">
+                    <option value="{{$user.ID}}">{{$user.Username}}</option>
+                    {{range $allUsers}}
+                    {{if ne .ID $user.ID}}
+                    <option value="{{.ID}}">{{.Username}}</option>
+                    {{end}}
+                    {{end}}
+                </select>
+                {{with .Form.Errors.Get "user_id"}}
+                    <label>{{.}}</label>
+                {{end}}
+            </div>
+            <p><strong>Added At: </strong>{{TimeSince $readList.CreatedAt}}</p>
+            <input type="submit" value="Update">
+            <button type="button" id="delete-{{$book.ID}}-{{$user.ID}}" onclick="showDeleteForm(this,'{{$book.ID}}-{{$user.ID}}')">Delete</button>
+        </form>
+        <form action="/admin/readLists/detail/{{$book.ID}}/{{$user.ID}}/delete" method="post" id="{{$book.ID}}-{{$user.ID}}" class="no-display"> 
+            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+            <p>Do you want to delete this relationship?</p>
+            <input type="submit" value="Delete">
+            <button type="button" onclick="removeForm('{{$book.ID}}-{{$user.ID}}')">No</button>
+        </form>
+    </div>
+</div>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/admin.js"></script>
+{{end}}

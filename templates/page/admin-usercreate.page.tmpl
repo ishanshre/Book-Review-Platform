@@ -33,6 +33,13 @@
                 <label>{{.}}</label>
                 {{end}}
             </div>
+            <div>
+                <label for="citizenship_number">Citizenship Number: </label>
+                <input type="citizenship_number" name="citizenship_number" id="citizenship_number" value="{{$res.CitizenshipNumber}}">
+                {{with .Form.Errors.Get "citizenship_number"}}
+                <label>{{.}}</label>
+                {{end}}
+            </div>
             <input type="submit" value="Add">
             <button type="button"><a href="/admin/users">Cancel</a></button>
         </form>
