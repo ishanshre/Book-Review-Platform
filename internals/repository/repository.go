@@ -115,4 +115,14 @@ type DatabaseRepo interface {
 	GetFollowerByID(user_id, author_id int) (*models.Follower, error)
 	DeleteFollower(user_id, author_id int) error
 	UpdateFollower(u *models.Follower, user_id, author_id int) error
+
+	// Review interface
+	AllReviews() ([]*models.Review, error)
+	ReviewExists(u *models.Review) (bool, error)
+	InsertReview(u *models.Review) error
+	GetReviewByID(id int) (*models.Review, error)
+	GetReviewByBookID(id int) (*models.Review, error)
+	GetReviewByUserID(id int) (*models.Review, error)
+	DeleteReview(id int) error
+	UpdateReview(u *models.Review, id int) error
 }
