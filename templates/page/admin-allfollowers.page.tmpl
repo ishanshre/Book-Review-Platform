@@ -1,0 +1,83 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: All Followers{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/admin.css">
+{{end}}
+
+{{define "content"}}
+{{$followers := index .Data "followers"}}
+{{$allAuthors := index .Data "allAuthors"}}
+{{$allUsers := index .Data "allUsers"}}
+<div>
+    <div>
+        <h1>User to follow author</h1>
+        <form action="/admin/followers/create" method="post" id="createForm">
+            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+            <div>
+                <label for="author_id">Author: </label>
+                <select name="author_id" id="author_id">
+                    {{range $allAuthors}}
+                    <option value="{{.ID}}">{{.FirstName}} {{.LastName}}</option>
+                    {{end}}
+                </select>
+                {{with .Form.Errors.Get "author_id"}}
+                    <label>{{.}}</label>
+                {{end}}
+            </div>
+            <div>
+                <label for="user_id">User: </label>
+                <select name="user_id" id="user_id">
+                    {{range $allUsers}}
+                    <option value="{{.ID}}">{{.Username}}</option>
+                    {{end}}
+                </select>
+                {{with .Form.Errors.Get "user_id"}}
+                    <label>{{.}}</label>
+                {{end}}
+            </div>
+            <input type="submit" value="Add">
+        </form>
+    </div><hr>
+    <div>
+        <h1>Follower List</h1>
+    </div>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Author ID</th>
+                    <th>User ID</th>
+                    <th>Followed At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $followers}}
+                <tr>
+                    
+                    <td>{{.AuthorID}}</td>
+                    <td>{{.UserID}}</td>
+                    <td>{{TimeSince .FollowedAt}}</td>
+                    <td>
+                        <button><a href="/admin/followers/detail/{{.AuthorID}}/{{.UserID}}">Detail</a></button>
+                        <button id="delete-{{.AuthorID}}-{{.UserID}}" onclick="showDeleteForm(this, '{{.AuthorID}}-{{.UserID}}')">Delete</button>
+                        <form action="/admin/followers/detail/{{.AuthorID}}/{{.UserID}}/delete" method="post" class="no-display" id="{{.AuthorID}}-{{.UserID}}">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <p>Do you want to delete this relation ship?</p>
+                            <input type="submit" value="Delete">
+                            <button onclick="removeForm('{{.AuthorID}}-{{.UserID}}')" type="button">No</button>
+                        </form>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/admin.js"></script>
+{{end}}

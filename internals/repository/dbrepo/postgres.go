@@ -1816,7 +1816,7 @@ func (m *postgresDBRepo) InsertFollower(u *models.Follower) error {
 
 	// Prepare a insert query statement
 	stmt := `
-		INSERT INTO followers (user_id, auhtor_id, followed_at)
+		INSERT INTO followers (user_id, author_id, followed_at)
 		VALUES ($1, $2, $3);
 	`
 
