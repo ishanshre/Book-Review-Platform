@@ -126,3 +126,10 @@ type BuyList struct {
 	BookID    int
 	CreatedAt time.Time
 }
+
+// Follower hold the book and author id for follower relationship
+type Follower struct {
+	UserID     int
+	AuthorID   int
+	FollowedAt time.Time
+}

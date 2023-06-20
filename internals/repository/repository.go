@@ -107,4 +107,12 @@ type DatabaseRepo interface {
 	GetBuyListByID(user_id, book_id int) (*models.BuyList, error)
 	DeleteBuyList(user_id, book_id int) error
 	UpdateBuyList(u *models.BuyList, book_id, user_id int) error
+
+	// Follower Interface
+	AllFollowers() ([]*models.Follower, error)
+	FollowerExists(u *models.Follower) (bool, error)
+	InsertFollower(u *models.Follower) error
+	GetFollowerByID(user_id, author_id int) (*models.Follower, error)
+	DeleteFollower(user_id, author_id int) error
+	UpdateFollower(u *models.Follower, user_id, author_id int) error
 }
