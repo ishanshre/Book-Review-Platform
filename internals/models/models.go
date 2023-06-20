@@ -133,3 +133,15 @@ type Follower struct {
 	AuthorID   int
 	FollowedAt time.Time
 }
+
+// Review holds the review table data
+type Review struct {
+	ID        int
+	Rating    float64
+	Body      string
+	BookID    int
+	UserID    int
+	IsActive  bool
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
