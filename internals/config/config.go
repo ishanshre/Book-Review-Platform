@@ -12,6 +12,7 @@ import (
 // It must not import any internal packages to avoid import cycle
 type AppConfig struct {
 	InProduction  bool
+	UseRedis      bool
 	UseCache      bool
 	TemplateCache map[string]*template.Template
 	InfoLog       *log.Logger

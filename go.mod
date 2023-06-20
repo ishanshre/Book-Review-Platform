@@ -12,6 +12,8 @@ require (
 require github.com/justinas/nosurf v1.1.1
 
 require (
+	github.com/alexedwards/scs/redisstore v0.0.0-20230327161757-10d4299e3b24
+	github.com/gomodule/redigo v1.8.9
 	github.com/xhit/go-simple-mail/v2 v2.13.0
 	golang.org/x/crypto v0.9.0
 )

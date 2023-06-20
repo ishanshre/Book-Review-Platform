@@ -9,7 +9,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/alexedwards/scs/redisstore"
 	"github.com/alexedwards/scs/v2"
+	"github.com/gomodule/redigo/redis"
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/driver"
 	"github.com/ishanshre/Book-Review-Platform/internals/handler"
@@ -22,7 +24,7 @@ import (
 var port string
 var app config.AppConfig // global config
 var session *scs.SessionManager
-
+var host string = "127.0.0.1:6379"
 var database string = "postgres"
 var connString string
 
@@ -83,6 +85,7 @@ func Run() (*driver.DB, error) {
 
 	// change to true in production
 	app.InProduction = false
+	app.UseRedis = true
 
 	// create a logger with log.New()
 	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
@@ -94,6 +97,17 @@ func Run() (*driver.DB, error) {
 
 	// Initiate a session and configure it
 	session = scs.New()
+
+	// Establish a pool to Redis if UseRedis config is true
+	if app.UseRedis {
+		pool := &redis.Pool{
+			MaxIdle: 10,
+			Dial: func() (redis.Conn, error) {
+				return redis.Dial("tcp", host)
+			},
+		}
+		session.Store = redisstore.New(pool)
+	}
 	session.Lifetime = 24 * time.Hour // set time of the session
 	session.Cookie.Persist = true     // true means session retains in browser even if browser is closed
 	session.Cookie.SameSite = http.SameSiteLaxMode
