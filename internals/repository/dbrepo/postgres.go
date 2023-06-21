@@ -1992,15 +1992,14 @@ func (m *postgresDBRepo) InsertReview(u *models.Review) error {
 
 	// Prepare a insert query statement
 	stmt := `
-		INSERT INTO reviews (id, rating, body, book_id, user_id, is_active, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+		INSERT INTO reviews (rating, body, book_id, user_id, is_active, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7);
 	`
 
 	// Executing the query
 	_, err := m.DB.ExecContext(
 		ctx,
 		stmt,
-		u.ID,
 		u.Rating,
 		u.Body,
 		u.BookID,
@@ -2152,7 +2151,7 @@ func (m *postgresDBRepo) DeleteReview(id int) error {
 
 // UpdateReview updates the Review
 // Takes update value Review model and id of review to be updated as paramaters
-func (m *postgresDBRepo) UpdateReview(u *models.Review, id int) error {
+func (m *postgresDBRepo) UpdateReview(u *models.Review) error {
 
 	// create a timeout of 3 second with context
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

@@ -124,5 +124,5 @@ type DatabaseRepo interface {
 	GetReviewByBookID(id int) (*models.Review, error)
 	GetReviewByUserID(id int) (*models.Review, error)
 	DeleteReview(id int) error
-	UpdateReview(u *models.Review, id int) error
+	UpdateReview(u *models.Review) error
 }

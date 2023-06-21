@@ -1,0 +1,88 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: Review Detail{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/admin.css">
+{{end}}
+
+{{define "content"}}
+    {{$review := index .Data "review"}}
+    {{$book := index .Data "book"}}
+    {{$user := index .Data "user"}}
+    {{$allBooks := index .Data "allBooks"}}
+    {{$allUsers := index .Data "allUsers"}}
+    <div>
+        <h1>Review Detail</h1>
+    </div><hr>
+    <div>
+        <form action="/admin/reviews/detail/{{$review.ID}}/update" method="post">
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+            ID := {{$review.ID}}
+            <div>
+                <label for="rating">Rating: </label>
+                {{with .Form.Errors.Get "rating"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                <input type="text" name="rating" id="rating" value="{{$review.Rating}}">
+            </div>
+            <div>
+                <label for="body">Review Body: </label>
+                {{with .Form.Errors.Get "body"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                <input type="text" name="body" id="body" value="{{$review.Body}}">
+            </div>
+            <div>
+                <label for="book_id">Book: </label>
+                {{with .Form.Errors.Get "book_id"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                <select name="book_id" id="book_id">
+                    <option value="{{$book.ID}}">{{$book.Title}}</option>
+                    {{range $allBooks}}
+                    {{if ne .ID $book.ID}}
+                    <option value="{{.ID}}">{{.Title}}</option>
+                    {{end}}
+                    {{end}}
+                </select>
+            </div>
+            <div>
+                <label for="user_id">User: </label>
+                {{with .Form.Errors.Get "user_id"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                <select name="user_id" id="user_id">
+                    <option value="{{$user.ID}}">@{{$user.Username}}</option>
+                    {{range $allUsers}}
+                    {{if ne .ID $user.ID}}
+                    <option value="{{.ID}}">@{{.Username}}</option>
+                    {{end}}
+                    {{end}}
+                </select>
+            </div>
+            <div>
+                <label for="is_active">IsActive: </label>
+                {{with .Form.Errors.Get "is_active"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                {{if eq $review.IsActive false}}
+                <input type="radio" name="is_active" value="false" checked> False
+                <input type="radio" name="is_active" value="true"> True
+                {{else}}
+                <input type="radio" name="is_active" value="false"> False
+                <input type="radio" name="is_active" value="true" checked> True
+                {{end}}
+            </div>
+            <div>
+                <p><strong>Created At: </strong>{{TimeSince $review.CreatedAt}}</p>
+                <p><strong>Updated At: </strong>{{TimeSince $review.UpdatedAt}}</p>
+            </div>
+            <input type="submit" value="Update">
+        </form>
+    </div>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/admin.js"></script>
+{{end}}

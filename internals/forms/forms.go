@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -47,6 +48,34 @@ func (f *Form) MaxLength(field string, length int) bool {
 	x := f.Get(field)
 	if len(x) > length {
 		f.Errors.Add(field, fmt.Sprintf("This field must be at least %d characters long.", length))
+		return false
+	}
+	return true
+}
+
+// MinFloatValue checks the minimum value of characters in the field
+func (f *Form) MinFloatValue(field string, value float64) bool {
+	actualValue, err := strconv.ParseFloat(f.Get(field), 64)
+	if err != nil {
+		f.Errors.Add("This field %s must be floating point number", field)
+		return false
+	}
+	if actualValue < value {
+		f.Errors.Add(field, fmt.Sprintf("This field must be greater and equal to %f", value))
+		return false
+	}
+	return true
+}
+
+// MaxFloatValue checks the maximum floating value of characters in the field
+func (f *Form) MaxFloatValue(field string, value float64) bool {
+	actualValue, err := strconv.ParseFloat(f.Get(field), 64)
+	if err != nil {
+		f.Errors.Add("This field %s must be floating point number", field)
+		return false
+	}
+	if actualValue > value {
+		f.Errors.Add(field, fmt.Sprintf("This field must be less and equal to %f", value))
 		return false
 	}
 	return true

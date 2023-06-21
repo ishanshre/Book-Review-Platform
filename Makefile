@@ -18,6 +18,9 @@ createRedisContainer:
 
 startContainer:
 	docker start bookReviewPlatform bookPgadmin bookReviewRedis
+
+stopContainer:
+	docker stop bookReviewPlatform bookPgadmin bookReviewRedis
 	
 migrateUp: 
 	migrate -path migrations -database "${DB_URL}" -verbose up

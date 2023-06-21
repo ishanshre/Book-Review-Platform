@@ -1,0 +1,64 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: Add Review{{end}}
+
+{{define "content"}}
+    <div>
+        <div>
+            <h1>Add Review</h1>
+        </div><hr>
+        <div>
+            {{$res := index .Data "review"}}
+            {{$allBooks := index .Data "allBooks"}}
+            {{$allUsers := index .Data "allUsers"}}
+            <form action="/admin/reviews/create" method="post">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                <div>
+                    <label for="rating">Rating: </label>
+                    {{with .Form.Errors.Get "rating"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="rating" id="rating" value="{{$res.Rating}}">
+                </div>
+                <div>
+                    <label for="body">Body: </label>
+                    {{with .Form.Errors.Get "body"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="body" id="body" value="{{$res.Body}}">
+                </div>
+                <div>
+                    <label for="book_id">Book</label>
+                    {{with .Form.Errors.Get "book_id"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <select name="book_id">
+                        {{range $allBooks}}
+                        <option value="{{.ID}}">{{.Title}}</option>
+                        {{end}}
+                    </select>
+                </div>
+                <div>
+                    <label for="user_id">User</label>
+                    {{with .Form.Errors.Get "user_id"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <select name="user_id">
+                        {{range $allUsers}}
+                        <option value="{{.ID}}">{{.Username}}</option>
+                        {{end}}
+                    </select>
+                </div>
+                <div>
+                    <label for="is_active">Active Status</label>
+                    {{with .Form.Errors.Get "is_active"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="radio" name="is_active" value="False" checked> False
+                    <input type="radio" name="is_active" value="True"> True
+                </div>
+                <input type="submit" value="Create">
+            </form>
+        </div>
+    </div>
+{{end}}

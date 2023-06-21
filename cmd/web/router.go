@@ -143,6 +143,14 @@ func router(app *config.AppConfig) http.Handler {
 		mux.Post("/followers/detail/{author_id}/{user_id}/update", handler.Repo.PostAdminUpdateFollower)
 		mux.Post("/followers/detail/{author_id}/{user_id}/delete", handler.Repo.PostAdminDeleteFollow)
 		mux.Post("/followers/create", handler.Repo.PostAdminInsertFollower)
+
+		// Review router
+		mux.Get("/reviews", handler.Repo.AdminAllReviews)
+		mux.Get("/reviews/create", handler.Repo.AdminInsertReview)
+		mux.Post("/reviews/create", handler.Repo.PostAdminInsertReview)
+		mux.Get("/reviews/detail/{review_id}", handler.Repo.AdminGetReviewByID)
+		mux.Post("/reviews/detail/{review_id}/delete", handler.Repo.PostAdminDeleteReview)
+		mux.Post("/reviews/detail/{review_id}/update", handler.Repo.PostAdminUpdateReview)
 	})
 	return mux
 }
