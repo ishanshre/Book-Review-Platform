@@ -125,4 +125,10 @@ type DatabaseRepo interface {
 	GetReviewByUserID(id int) (*models.Review, error)
 	DeleteReview(id int) error
 	UpdateReview(u *models.Review) error
+
+	// Contact interface
+	AllContacts() ([]*models.Contact, error)
+	GetContactByID(id int) (*models.Contact, error)
+	DeleteContact(id int) error
+	InsertContact(*models.Contact) error
 }

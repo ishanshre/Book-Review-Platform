@@ -145,3 +145,17 @@ type Review struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type Contact struct {
+	ID            int
+	FirstName     string
+	LastName      string
+	Email         string
+	Phone         string
+	Subject       string
+	Message       string
+	SubmittedAt   time.Time
+	IpAddress     string
+	BrowserInfo   string
+	ReferringPage string
+}
