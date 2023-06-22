@@ -91,6 +91,20 @@ func (f *Form) Has(field string) bool {
 	return true
 }
 
+// ValidatePhone validate phone number using regex
+func (f *Form) ValidatePhone(field string) bool {
+	// defining the pattern for validating phone
+	pattern := `^\+?[1-9]\d{1,14}$`
+
+	// create a regex object
+	regex := regexp.MustCompile(pattern)
+	if !regex.MatchString(f.Get(field)) {
+		f.Errors.Add(field, "Enter a valid phone number")
+		return false
+	}
+	return true
+}
+
 // HasUpperCase checks if the value of field consist of one upper case
 func (f *Form) HasUpperCase(fields ...string) {
 	for _, field := range fields {

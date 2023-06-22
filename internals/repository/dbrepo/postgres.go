@@ -2301,7 +2301,7 @@ func (m *postgresDBRepo) InsertContact(u *models.Contact) error {
 
 	// Prepare a insert query statement
 	stmt := `
-		INSERT INTO reviews (first_name, last_name, email, phone, subject, message, submitted_at, ip_address, browser_info, referring_page)
+		INSERT INTO contacts (first_name, last_name, email, phone, subject, message, submitted_at, ip_address, browser_info, referring_page)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 	`
 

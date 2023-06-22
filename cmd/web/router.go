@@ -46,6 +46,10 @@ func router(app *config.AppConfig) http.Handler {
 	fileServerPublic := http.FileServer(http.Dir("./public/"))
 	mux.Handle("/public/*", http.StripPrefix("/public", fileServerPublic))
 
+	// Contact Us router
+	mux.Get("/contact-us", handler.Repo.ContactUs)
+	mux.Post("/contact-us", handler.Repo.PostContactUs)
+
 	mux.Route("/profile", func(mux chi.Router) {
 		mux.Use(Auth)
 		mux.Get("/", handler.Repo.PersonalProfile)
