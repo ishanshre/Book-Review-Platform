@@ -47,6 +47,13 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "home.page.tmpl", &models.TemplateData{})
 }
 
+// ClearSessionMessage clears the session message like flash, error and warning after being displayed
+func (m *Repository) ClearSessionMessage(w http.ResponseWriter, r *http.Request) {
+	msgType := chi.URLParam(r, "type")
+	m.App.Session.Pop(r.Context(), msgType)
+	w.WriteHeader(http.StatusOK)
+}
+
 // Login Handles the get method of the login
 func (m *Repository) Login(w http.ResponseWriter, r *http.Request) {
 	// Check if user is authenticated or not.
@@ -129,6 +136,7 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 	m.App.Session.Put(r.Context(), "user_id", id)
 	m.App.Session.Put(r.Context(), "username", user.Username)
 	m.App.Session.Put(r.Context(), "access_level", access_level)
+	m.App.Session.Put(r.Context(), "flash", "Login Successfull")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -244,6 +252,7 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	m.App.Session.Put(r.Context(), "flash", "User Registration Successfull")
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 
 }
@@ -260,8 +269,10 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 		return
 	}
+
 	_ = m.App.Session.Destroy(r.Context())
 	_ = m.App.Session.RenewToken(r.Context())
+	m.App.Session.Put(r.Context(), "flash", "Logout Successfull")
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
@@ -426,6 +437,7 @@ func (m *Repository) AdminUpdateUser(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	m.App.Session.Put(r.Context(), "flash", "User Updated")
 	http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
 }
 
@@ -447,6 +459,7 @@ func (m *Repository) PostAdminUserProfileUpdate(w http.ResponseWriter, r *http.R
 		helpers.ServerError(w, err)
 		return
 	}
+	m.App.Session.Put(r.Context(), "flash", "Profile Picture Updated")
 	http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
 }
 
@@ -477,6 +490,7 @@ func (m *Repository) PostAdminUserDeleteByID(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	m.App.Session.Put(r.Context(), "flash", "User Deleted")
 	// Redirect the admin to all users page
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }
@@ -571,6 +585,9 @@ func (m *Repository) PostAdminUserAdd(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "User Added")
 
 	// Redirect the admin to all users page.
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
@@ -679,6 +696,9 @@ func (m *Repository) PostResetPassword(w http.ResponseWriter, r *http.Request) {
 		Content: body,
 	}
 	m.App.MailChan <- msg
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Reset token is sent to email")
 
 	// Redirect user to password reset page.
 	http.Redirect(w, r, "/user/reset", http.StatusSeeOther)
@@ -799,6 +819,9 @@ func (m *Repository) PostResetPasswordChange(w http.ResponseWriter, r *http.Requ
 	// send the msg to email channel
 	m.App.MailChan <- msg
 
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Password Reset Successfull")
+
 	// Redirect user to login page if password reset is successfull
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
@@ -891,6 +914,8 @@ func (m *Repository) PostAdminAddGenre(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+
+	m.App.Session.Put(r.Context(), "flash", "Genre Added")
 
 	// Finally, admin is redirected to the all genres pages
 	http.Redirect(w, r, "/admin/genres", http.StatusSeeOther)
@@ -996,6 +1021,7 @@ func (m *Repository) PostAdminGetGenreByID(w http.ResponseWriter, r *http.Reques
 		helpers.ServerError(w, err)
 		return
 	}
+	m.App.Session.Put(r.Context(), "flash", "Genre Updated")
 
 	// If successull, then admin is redirected to genre detail page.
 	http.Redirect(w, r, fmt.Sprintf("/admin/genres/detail/%d", id), http.StatusSeeOther)
@@ -1020,6 +1046,7 @@ func (m *Repository) AdminDeleteGenre(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	m.App.Session.Put(r.Context(), "flash", "Genre Deleted")
 	// If successfull, admin is redirected to all genres page.
 	http.Redirect(w, r, "/admin/genres", http.StatusSeeOther)
 }
@@ -1062,6 +1089,8 @@ func (m *Repository) PostAdminDeletePublisher(w http.ResponseWriter, r *http.Req
 		helpers.ServerError(w, err)
 		return
 	}
+
+	m.App.Session.Put(r.Context(), "flash", "Publisher Deleted")
 	http.Redirect(w, r, "/admin/publishers", http.StatusSeeOther)
 }
 
@@ -1141,6 +1170,7 @@ func (m *Repository) PostAdminUpdatePublisher(w http.ResponseWriter, r *http.Req
 		helpers.ServerError(w, err)
 		return
 	}
+	m.App.Session.Put(r.Context(), "flash", "Publisher Updated")
 	http.Redirect(w, r, fmt.Sprintf("/admin/publishers/detail/%d", id), http.StatusSeeOther)
 }
 
@@ -1210,6 +1240,10 @@ func (m *Repository) PostAdminInsertPublisher(w http.ResponseWriter, r *http.Req
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Publisher Added")
+
 	http.Redirect(w, r, "/admin/publishers", http.StatusSeeOther)
 }
 
@@ -1251,6 +1285,10 @@ func (m *Repository) PostAdminDeleteAuthor(w http.ResponseWriter, r *http.Reques
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Author Deleted")
+
 	http.Redirect(w, r, "/admin/authors", http.StatusSeeOther)
 }
 
@@ -1337,6 +1375,10 @@ func (m *Repository) PostAdminUpdateAuthor(w http.ResponseWriter, r *http.Reques
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Author Updated")
+
 	http.Redirect(w, r, fmt.Sprintf("/admin/authors/detail/%d", id), http.StatusSeeOther)
 }
 
@@ -1411,6 +1453,10 @@ func (m *Repository) PostAdminInsertAuthor(w http.ResponseWriter, r *http.Reques
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Author Inserted")
+
 	http.Redirect(w, r, "/admin/authors", http.StatusSeeOther)
 }
 
@@ -1455,6 +1501,10 @@ func (m *Repository) PostAdminDeleteLanguage(w http.ResponseWriter, r *http.Requ
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Language Deleted")
+
 	http.Redirect(w, r, "/admin/languages", http.StatusSeeOther)
 }
 
@@ -1502,6 +1552,10 @@ func (m *Repository) PostAdminUpdateLanguage(w http.ResponseWriter, r *http.Requ
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Language Updated")
+
 	http.Redirect(w, r, "/admin/languages", http.StatusSeeOther)
 }
 
@@ -1554,6 +1608,10 @@ func (m *Repository) PostAdminInsertLanguage(w http.ResponseWriter, r *http.Requ
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Language Added")
+
 	http.Redirect(w, r, "/admin/languages", http.StatusSeeOther)
 
 }
@@ -1594,6 +1652,10 @@ func (m *Repository) PostAdminDeleteBook(w http.ResponseWriter, r *http.Request)
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Book Deleted")
+
 	http.Redirect(w, r, "/admin/books", http.StatusSeeOther)
 }
 
@@ -1749,6 +1811,10 @@ func (m *Repository) PostAdminInsertBook(w http.ResponseWriter, r *http.Request)
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Book Added")
+
 	http.Redirect(w, r, "/admin/books", http.StatusSeeOther)
 }
 
@@ -1853,6 +1919,10 @@ func (m *Repository) PostAdminUpdateBook(w http.ResponseWriter, r *http.Request)
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Book Added")
+
 	http.Redirect(w, r, fmt.Sprintf("/admin/books/detail/%d", book.ID), http.StatusSeeOther)
 
 }
@@ -1915,6 +1985,10 @@ func (m *Repository) PostAdminDeleteBookAuthor(w http.ResponseWriter, r *http.Re
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Book Deleted")
+
 	http.Redirect(w, r, "/admin/bookAuthors", http.StatusSeeOther)
 }
 
@@ -2062,6 +2136,10 @@ func (m *Repository) PostAdminUpdateBookAuthor(w http.ResponseWriter, r *http.Re
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Book Updated")
+
 	http.Redirect(w, r, fmt.Sprintf("/admin/bookAuthors/detail/%d/%d", bookAuthor.BookID, bookAuthor.AuthorID), http.StatusSeeOther)
 }
 
@@ -2146,6 +2224,9 @@ func (m *Repository) PostAdminInsertBookAuthor(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Book Added")
+
 	http.Redirect(w, r, "/admin/bookAuthors", http.StatusSeeOther)
 }
 
@@ -2205,6 +2286,10 @@ func (m *Repository) PostAdminDeleteBookGenre(w http.ResponseWriter, r *http.Req
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Book Genre Relationship Deleted")
+
 	http.Redirect(w, r, "/admin/bookGenres", http.StatusSeeOther)
 }
 
@@ -2344,6 +2429,10 @@ func (m *Repository) PostAdminUpdateBookGenre(w http.ResponseWriter, r *http.Req
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Book Genre Relation Updated")
+
 	http.Redirect(w, r, fmt.Sprintf("/admin/bookGenres/detail/%d/%d", bookGenre.BookID, bookGenre.GenreID), http.StatusSeeOther)
 }
 
@@ -2430,6 +2519,9 @@ func (m *Repository) PostAdminInsertBookGenre(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Book Genre Relationship Added")
+
 	http.Redirect(w, r, "/admin/bookGenres", http.StatusSeeOther)
 }
 
@@ -2489,6 +2581,10 @@ func (m *Repository) PostAdminDeleteBookLanguage(w http.ResponseWriter, r *http.
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Book Language Deleted")
+
 	http.Redirect(w, r, "/admin/bookLanguages", http.StatusSeeOther)
 }
 
@@ -2676,6 +2772,9 @@ func (m *Repository) PostAdminUpdateBookLanguage(w http.ResponseWriter, r *http.
 		return
 	}
 
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Book Language Updated")
+
 	// Redirect to book language detail page if update successfull.
 	http.Redirect(w, r, fmt.Sprintf("/admin/bookLanguages/detail/%d/%d", bookLanguage.BookID, bookLanguage.LanguageID), http.StatusSeeOther)
 }
@@ -2766,6 +2865,8 @@ func (m *Repository) PostAdminInsertBookLanguage(w http.ResponseWriter, r *http.
 		return
 	}
 
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Book Language Relationship Added")
 	http.Redirect(w, r, "/admin/bookLanguages", http.StatusSeeOther)
 }
 
@@ -2878,6 +2979,9 @@ func (m *Repository) PostAdminInsertReadList(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Read List Added")
+
 	http.Redirect(w, r, "/admin/readLists", http.StatusSeeOther)
 }
 
@@ -2973,6 +3077,10 @@ func (m *Repository) PostAdminDeleteReadList(w http.ResponseWriter, r *http.Requ
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Read List Record Deleted")
+
 	http.Redirect(w, r, "/admin/readLists", http.StatusSeeOther)
 }
 
@@ -3090,6 +3198,9 @@ func (m *Repository) PostAdminUpdateReadList(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Read List record updated")
+
 	// Redirect to book language detail page if update successfull.
 	http.Redirect(w, r, fmt.Sprintf("/admin/readLists/detail/%d/%d", readList.BookID, readList.UserID), http.StatusSeeOther)
 }
@@ -3203,6 +3314,9 @@ func (m *Repository) PostAdminInsertBuyList(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Buy List record added")
+
 	http.Redirect(w, r, "/admin/buyLists", http.StatusSeeOther)
 }
 
@@ -3298,6 +3412,10 @@ func (m *Repository) PostAdminDeleteBuyList(w http.ResponseWriter, r *http.Reque
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Buy List record deleted")
+
 	http.Redirect(w, r, "/admin/buyLists", http.StatusSeeOther)
 }
 
@@ -3415,6 +3533,9 @@ func (m *Repository) PostAdminUpdateBuyList(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Buy List record updated")
+
 	// Redirect to book language detail page if update successfull.
 	http.Redirect(w, r, fmt.Sprintf("/admin/buyLists/detail/%d/%d", buyList.BookID, buyList.UserID), http.StatusSeeOther)
 }
@@ -3528,6 +3649,9 @@ func (m *Repository) PostAdminInsertFollower(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Follower record added")
+
 	http.Redirect(w, r, "/admin/followers", http.StatusSeeOther)
 }
 
@@ -3553,6 +3677,10 @@ func (m *Repository) PostAdminDeleteFollow(w http.ResponseWriter, r *http.Reques
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Follower record deleted")
+
 	http.Redirect(w, r, "/admin/followers", http.StatusSeeOther)
 }
 
@@ -3740,6 +3868,9 @@ func (m *Repository) PostAdminUpdateFollower(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Follower record updated")
+
 	// Redirect to book language detail page if update successfull.
 	http.Redirect(w, r, fmt.Sprintf("/admin/followers/detail/%d/%d", follower.AuthorID, follower.UserID), http.StatusSeeOther)
 }
@@ -3895,6 +4026,10 @@ func (m *Repository) PostAdminInsertReview(w http.ResponseWriter, r *http.Reques
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Review record added")
+
 	http.Redirect(w, r, "/admin/reviews", http.StatusSeeOther)
 }
 
@@ -3915,6 +4050,10 @@ func (m *Repository) PostAdminDeleteReview(w http.ResponseWriter, r *http.Reques
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Review record deleted")
+
 	http.Redirect(w, r, "/admin/reviews", http.StatusSeeOther)
 }
 
@@ -4080,6 +4219,10 @@ func (m *Repository) PostAdminUpdateReview(w http.ResponseWriter, r *http.Reques
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Review record updated")
+
 	http.Redirect(w, r, fmt.Sprintf("/admin/reviews/detail/%d", review_id), http.StatusSeeOther)
 }
 
@@ -4118,6 +4261,10 @@ func (m *Repository) PostAdminDeleteContact(w http.ResponseWriter, r *http.Reque
 		helpers.ServerError(w, err)
 		return
 	}
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Contact record deleted")
+
 	http.Redirect(w, r, "/admin/contacts", http.StatusSeeOther)
 }
 
@@ -4208,5 +4355,9 @@ func (m *Repository) PostContactUs(w http.ResponseWriter, r *http.Request) {
 		Content: fmt.Sprintf("%v %v contacted the company. \n %v", contact.FirstName, contact.LastName, contact.Message),
 	}
 	m.App.MailChan <- msg
+
+	// Add success message
+	m.App.Session.Put(r.Context(), "flash", "Message Successfull Sent")
+
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

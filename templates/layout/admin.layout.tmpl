@@ -4,10 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf_token" content="{{.CSRFToken}}">
+    {{with .Error}}
+    <meta name="message" content="{{.}}">
+    <meta name="type" content="error">
+    {{end}}
+    {{with .Flash}}
+    <meta name="message" content="{{.}}">
+    <meta name="type" content="flash">
+    {{end}}
+    {{with .Warning}}
+    <meta name="message" content="{{.}}">
+    <meta name="type" content="warning">
+    {{end}}
     {{block "meta" .}}
     
     {{end}}
     <title>{{block "title" .}}{{end}}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/static/css/notification.css">
     {{block "css" .}}
 
     {{end}}
@@ -35,6 +50,9 @@
 
     {{end}}
 
+    <div id="toastBox"></div>
+
+    <script src="/static/js/notification.js"></script>
     {{block "js" .}}
 
     {{end}}    

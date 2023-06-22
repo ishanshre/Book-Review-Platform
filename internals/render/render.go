@@ -35,6 +35,9 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 		td.Username = app.Session.GetString(r.Context(), "username")
 		td.AccessLevel = app.Session.GetInt(r.Context(), "access_level")
 	}
+	td.Flash = app.Session.GetString(r.Context(), "flash")
+	td.Error = app.Session.GetString(r.Context(), "error")
+	td.Warning = app.Session.GetString(r.Context(), "warning")
 	return td
 }
 
