@@ -151,6 +151,11 @@ func router(app *config.AppConfig) http.Handler {
 		mux.Get("/reviews/detail/{review_id}", handler.Repo.AdminGetReviewByID)
 		mux.Post("/reviews/detail/{review_id}/delete", handler.Repo.PostAdminDeleteReview)
 		mux.Post("/reviews/detail/{review_id}/update", handler.Repo.PostAdminUpdateReview)
+
+		// Contact router
+		mux.Get("/contacts", handler.Repo.AdminAllContacts)
+		mux.Post("/contacts/detail/{contact_id}/delete", handler.Repo.PostAdminDeleteContact)
+		mux.Get("/contacts/detail/{contact_id}", handler.Repo.AdminGetContactByID)
 	})
 	return mux
 }

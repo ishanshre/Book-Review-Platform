@@ -1,0 +1,55 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: All Contacts{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/admin.css">
+{{end}}
+
+{{define "content"}}
+{{$contacts := index .Data "contacts"}}
+<div>
+    <div>
+        <h1>All Contants</h1>
+    </div>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Subject</th>
+                    <th>Submitted At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $contacts}}
+                <tr>
+                    <td>{{.ID}}</td>
+                    <td>{{.FirstName}} {{.LastName}}</td>
+                    <td>{{.Email}}</td>
+                    <td>{{.Subject}}</td>
+                    <td>{{DateOnly .SubmittedAt}}</td>
+                    <td>
+                        <button><a href="/admin/contacts/detail/{{.ID}}">Detail</a></button>
+                        <button id="delete-{{.ID}}" onclick="showDeleteForm(this, '{{.ID}}')">Delete</button>
+                        <form action="/admin/contacts/detail/{{.ID}}/delete" method="post" class="no-display" id="{{.ID}}">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <p>Do you want to delete contact by @{{.FirstName}}?</p>
+                            <input type="submit" value="Delete">
+                            <button type="button" onclick="removeForm('{{.ID}}')">No</button>
+                        </form>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/admin.js"></script>
+{{end}}

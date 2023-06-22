@@ -1,0 +1,43 @@
+{{template "admin" .}}
+
+{{define "title"}}Admin: Detail Contact{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/admin.css">
+{{end}}
+
+{{define "content"}}
+{{$contact := index .Data "contact"}}
+<div>
+    <div>
+        <h1>Contact Detail</h1>
+    </div>
+    <div>
+        <div>
+            <p><strong>ID: </strong>{{$contact.ID}}</p>
+            <p><strong>First Name: </strong>{{$contact.FirstName}}</p>
+            <p><strong>Last Name</strong>{{$contact.LastName}}</p>
+            <p><strong>Email</strong>{{$contact.Email}}</p>
+            <p><strong>Phone</strong>{{$contact.Phone}}</p>
+            <p><strong>Subject</strong>{{$contact.Subject}}</p>
+            <p><strong>Message</strong>{{$contact.Message}}</p>
+            <p><strong>Submitted At</strong>{{DateOnly $contact.SubmittedAt}}</p>
+            <p><strong>Ip Address: </strong>{{$contact.IpAddress}}</p>
+            <p><strong>Browser Info: </strong>{{$contact.BrowserInfo}}</p>
+            <p><strong>Referring Page: </strong>{{$contact.ReferringPage}}</p>
+            <button onclick="showDeleteForm(this, '{{$contact.ID}}')" id="delete-{{$contact.ID}}">Delete</button>
+        </div>
+        
+        <form action="/admin/contacts/detail/{{$contact.ID}}/delete" method="post" id="{{$contact.ID}}" class="no-display"> 
+            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+            <p>Do you want to delete this Contact @{{$contact.FirstName}}?</p>
+            <input type="submit" value="Delete">
+            <button type="button" onclick="removeForm('{{$contact.ID}}')">No</button>
+        </form>
+    </div>
+</div>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/admin.js"></script>
+{{end}}

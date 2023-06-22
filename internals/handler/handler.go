@@ -4082,3 +4082,72 @@ func (m *Repository) PostAdminUpdateReview(w http.ResponseWriter, r *http.Reques
 	}
 	http.Redirect(w, r, fmt.Sprintf("/admin/reviews/detail/%d", review_id), http.StatusSeeOther)
 }
+
+// AdminAllContacts fetches all the record in Contacts.
+// It takes HTTP response writer and request as parameters.
+func (m *Repository) AdminAllContacts(w http.ResponseWriter, r *http.Request) {
+
+	// Get all the contacts from the database
+	contacts, err := m.DB.AllContacts()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["contacts"] = contacts
+	render.Template(w, r, "admin-allcontacts.page.tmpl", &models.TemplateData{
+		Data: data,
+		Form: forms.New(nil),
+	})
+}
+
+// PostAdminDeleteContact Handles the post method for deleting Contact record.
+// It takes HTTP response writer and request as paramters
+func (m *Repository) PostAdminDeleteContact(w http.ResponseWriter, r *http.Request) {
+
+	// Parsing the contact id from the url.
+	// If any error occurs, a server error is returned.
+	contact_id, err := strconv.Atoi(chi.URLParam(r, "contact_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// DeleteContact interface is used to deleting the record.
+	if err := m.DB.DeleteContact(contact_id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/contacts", http.StatusSeeOther)
+}
+
+// AdminGetContactByID handes the detail logic for Contact table.
+// It takes HTTP response writer and request as parameters.
+func (m *Repository) AdminGetContactByID(w http.ResponseWriter, r *http.Request) {
+
+	// Retrive contact id from the url.
+	// Parse them into integer.
+	// Return a server error if any error occurs while parsing them
+	contact_id, err := strconv.Atoi(chi.URLParam(r, "contact_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// Get the contact using contact id
+	contact, err := m.DB.GetContactByID(contact_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// create a data map that stores contact
+	data := make(map[string]interface{})
+	data["contact"] = contact
+
+	// render the detail page with form and data
+	render.Template(w, r, "admin-contactdetail.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
