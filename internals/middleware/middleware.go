@@ -1,15 +1,22 @@
-package main
+package middleware
 
 import (
 	"net/http"
 
+	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/helpers"
 	"github.com/justinas/nosurf"
 )
 
+var app *config.AppConfig
+
+func NewMiddlewareApp(a *config.AppConfig) {
+	app = a
+}
+
 // SessionLoad loads and saves the session on every request
 func SessionLoad(next http.Handler) http.Handler {
-	return session.LoadAndSave(next)
+	return app.Session.LoadAndSave(next)
 }
 
 // NoSurf implement csrf token middleware
