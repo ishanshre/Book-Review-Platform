@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"net/http"
@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/handler"
+	"github.com/ishanshre/Book-Review-Platform/internals/middleware"
 )
 
 // router creates and configures the application router.
@@ -14,11 +15,11 @@ import (
 // The app argument is the application configuration.
 //
 // Returns an http.Handler interface that represents the application router.
-func router(app *config.AppConfig) http.Handler {
+func Router(app *config.AppConfig) http.Handler {
 	mux := chi.NewRouter()
 
-	mux.Use(SessionLoad) // load the session middleware
-	mux.Use(NoSurf)      // csrf middleware
+	mux.Use(middleware.SessionLoad) // load the session middleware
+	mux.Use(middleware.NoSurf)      // csrf middleware
 
 	// Get route for Home page
 	mux.Get("/", handler.Repo.Home)
@@ -54,13 +55,13 @@ func router(app *config.AppConfig) http.Handler {
 	mux.Post("/contact-us", handler.Repo.PostContactUs)
 
 	mux.Route("/profile", func(mux chi.Router) {
-		mux.Use(Auth)
+		mux.Use(middleware.Auth)
 		mux.Get("/", handler.Repo.PersonalProfile)
 	})
 
 	mux.Route("/admin", func(mux chi.Router) {
-		mux.Use(Auth)
-		mux.Use(Admin)
+		mux.Use(middleware.Auth)
+		mux.Use(middleware.Admin)
 		mux.Get("/", handler.Repo.AdminDashboard)
 		mux.Get("/users", handler.Repo.AdminAllUsers)
 		mux.Get("/users/detail/{id}", handler.Repo.AdminGetUserDetailByID)

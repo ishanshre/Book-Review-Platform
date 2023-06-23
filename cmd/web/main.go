@@ -16,8 +16,10 @@ import (
 	"github.com/ishanshre/Book-Review-Platform/internals/driver"
 	"github.com/ishanshre/Book-Review-Platform/internals/handler"
 	"github.com/ishanshre/Book-Review-Platform/internals/helpers"
+	"github.com/ishanshre/Book-Review-Platform/internals/middleware"
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
 	"github.com/ishanshre/Book-Review-Platform/internals/render"
+	"github.com/ishanshre/Book-Review-Platform/internals/router"
 	"github.com/joho/godotenv"
 )
 
@@ -61,11 +63,14 @@ func main() {
 	// starting the mail listener
 	listenForMail()
 
+	// pass app config to middleware
+	middleware.NewMiddlewareApp(&app)
+
 	port = fmt.Sprintf(":%v", p)
 	// create a http server with address and the handlers
 	srv := http.Server{
 		Addr:    port,
-		Handler: router(&app),
+		Handler: router.Router(&app),
 	}
 	log.Printf("Starting server at port %v", p)
 
