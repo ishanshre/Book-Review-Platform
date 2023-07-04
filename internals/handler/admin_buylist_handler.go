@@ -36,6 +36,7 @@ func (m *Repository) AdminAllBuyList(w http.ResponseWriter, r *http.Request) {
 	data["buyList"] = buyList
 	data["allUsers"] = allUsers
 	data["allBooks"] = allBooks
+	data["base_path"] = base_buyLists_path
 	render.Template(w, r, "admin-allbuylists.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
@@ -97,6 +98,7 @@ func (m *Repository) PostAdminInsertBuyList(w http.ResponseWriter, r *http.Reque
 	data["allUsers"] = allUsers
 	data["buyList"] = buyList
 	data["buyLists"] = buyLists
+	data["base_path"] = base_buyLists_path
 	form.Required("book_id", "user_id")
 
 	exists, err := m.DB.BuyListExists(buyList.UserID, buyList.BookID)
@@ -190,6 +192,7 @@ func (m *Repository) AdminGetBuyListByID(w http.ResponseWriter, r *http.Request)
 	data["user"] = user
 	data["allUsers"] = allUsers
 	data["buyList"] = buyList
+	data["base_path"] = base_buyLists_path
 
 	// render the detail page with form and data
 	render.Template(w, r, "admin-buylistsdetail.page.tmpl", &models.TemplateData{
@@ -323,6 +326,7 @@ func (m *Repository) PostAdminUpdateBuyList(w http.ResponseWriter, r *http.Reque
 	data["user"] = user
 	data["allUsers"] = allUsers
 	data["buyList"] = buyList
+	data["base_path"] = base_buyLists_path
 
 	// Add required form validation for language id and book id
 	form.Required("book_id", "user_id")

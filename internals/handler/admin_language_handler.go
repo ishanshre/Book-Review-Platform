@@ -29,6 +29,7 @@ func (m *Repository) AdminAllLanguage(w http.ResponseWriter, r *http.Request) {
 	data["languages"] = languages
 	var emptyLanguage models.Language
 	data["language"] = emptyLanguage
+	data["base_path"] = base_languages_path
 	render.Template(w, r, "admin-alllanguages.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
@@ -92,6 +93,9 @@ func (m *Repository) PostAdminUpdateLanguage(w http.ResponseWriter, r *http.Requ
 	if exists {
 		form.Errors.Add("language", "This language already exists")
 	}
+
+	data["base_path"] = base_languages_path
+
 	if !form.Valid() {
 		render.Template(w, r, "admin-alllanguages.page.tmpl", &models.TemplateData{
 			Form: form,
@@ -148,6 +152,9 @@ func (m *Repository) PostAdminInsertLanguage(w http.ResponseWriter, r *http.Requ
 	if stat {
 		form.Errors.Add("language", "This language already exists")
 	}
+
+	data["base_path"] = base_languages_path
+
 	if !form.Valid() {
 		render.Template(w, r, "admin-alllanguages.page.tmpl", &models.TemplateData{
 			Form: form,

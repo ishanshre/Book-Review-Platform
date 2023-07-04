@@ -42,6 +42,7 @@ func (m *Repository) AdminAllBookLanguage(w http.ResponseWriter, r *http.Request
 	data["bookLanguage"] = bookLanguage
 	data["allLanguages"] = allLanguages
 	data["allBooks"] = allBooks
+	data["base_path"] = base_bookLanguages_path
 	render.Template(w, r, "admin-allbooklanguages.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
@@ -137,6 +138,7 @@ func (m *Repository) AdminGetBookLanguageByID(w http.ResponseWriter, r *http.Req
 	data["language"] = language
 	data["allLanguages"] = allLanguages
 	data["bookLanguage"] = bookLanguage
+	data["base_path"] = base_bookLanguages_path
 
 	// render the detail page with form and data
 	render.Template(w, r, "admin-booklanguagedetail.page.tmpl", &models.TemplateData{
@@ -241,6 +243,7 @@ func (m *Repository) PostAdminUpdateBookLanguage(w http.ResponseWriter, r *http.
 	data["language"] = language
 	data["allLanguages"] = allLanguages
 	data["bookLanguage"] = bookLanguage
+	data["base_path"] = base_bookLanguages_path
 
 	// Add required form validation for language id and book id
 	form.Required("book_id", "language_id")
@@ -327,6 +330,8 @@ func (m *Repository) PostAdminInsertBookLanguage(w http.ResponseWriter, r *http.
 	data["allLanguages"] = allLanguages
 	data["bookLanguage"] = bookLanguage
 	data["bookLanguages"] = bookLanguages
+	data["base_path"] = base_bookLanguages_path
+
 	form.Required("book_id", "language_id")
 
 	exists, err := m.DB.BookLanguageExists(bookLanguage.BookID, bookLanguage.LanguageID)

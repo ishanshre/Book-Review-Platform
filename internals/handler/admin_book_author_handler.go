@@ -43,6 +43,7 @@ func (m *Repository) AdminAllBookAuthor(w http.ResponseWriter, r *http.Request) 
 	data["bookAuthor"] = bookAuthor
 	data["allAuthors"] = allAuthors
 	data["allBooks"] = allBooks
+	data["base_path"] = base_bookAuthors_path
 	render.Template(w, r, "admin-allbookauthors.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
@@ -126,6 +127,8 @@ func (m *Repository) AdminGetBookAuthorByID(w http.ResponseWriter, r *http.Reque
 	data["author"] = author
 	data["allAuthors"] = allAuthors
 	data["bookAuthor"] = bookAuthor
+	data["base_path"] = base_bookAuthors_path
+
 	render.Template(w, r, "admin-bookauthordetial.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
@@ -209,6 +212,7 @@ func (m *Repository) PostAdminUpdateBookAuthor(w http.ResponseWriter, r *http.Re
 	data["author"] = author
 	data["allAuthors"] = allAuthors
 	data["bookAuthor"] = bookAuthor
+	data["base_path"] = base_bookAuthors_path
 	form.Required("book_id", "author_id")
 	if !form.Valid() {
 		render.Template(w, r, "admin-bookauthordetial.page.tmpl", &models.TemplateData{
@@ -285,6 +289,7 @@ func (m *Repository) PostAdminInsertBookAuthor(w http.ResponseWriter, r *http.Re
 	data["allAuthors"] = allAuthors
 	data["bookAuthor"] = bookAuthor
 	data["bookAuthors"] = bookAuthors
+	data["base_path"] = base_bookAuthors_path
 	form.Required("book_id", "author_id")
 
 	exists, err := m.DB.BookAuthorExists(bookAuthor.BookID, bookAuthor.AuthorID)

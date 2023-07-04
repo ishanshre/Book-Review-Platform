@@ -39,6 +39,7 @@ func (m *Repository) AdminAllReviews(w http.ResponseWriter, r *http.Request) {
 	data["review"] = review
 	data["allUsers"] = allUsers
 	data["allBooks"] = allBooks
+	data["base_path"] = base_reviews_path
 	render.Template(w, r, "admin-allreviews.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
@@ -73,6 +74,7 @@ func (m *Repository) AdminInsertReview(w http.ResponseWriter, r *http.Request) {
 	data["review"] = review
 	data["allBooks"] = allBooks
 	data["allUsers"] = allUsers
+	data["base_path"] = base_reviews_path
 	render.Template(w, r, "admin-reviewinsert.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
@@ -153,6 +155,7 @@ func (m *Repository) PostAdminInsertReview(w http.ResponseWriter, r *http.Reques
 	data["review"] = review
 	data["allBooks"] = allBooks
 	data["allUsers"] = allUsers
+	data["base_path"] = base_reviews_path
 	if !form.Valid() {
 		render.Template(w, r, "admin-reviewinsert.page.tmpl", &models.TemplateData{
 			Form: form,
@@ -248,6 +251,7 @@ func (m *Repository) AdminGetReviewByID(w http.ResponseWriter, r *http.Request) 
 	data["user"] = user
 	data["allUsers"] = allUsers
 	data["review"] = review
+	data["base_path"] = base_reviews_path
 
 	// render the detail page with form and data
 	render.Template(w, r, "admin-reviewdetail.page.tmpl", &models.TemplateData{
@@ -347,6 +351,7 @@ func (m *Repository) PostAdminUpdateReview(w http.ResponseWriter, r *http.Reques
 	data["user"] = user
 	data["allUsers"] = allUsers
 	data["review"] = review
+	data["base_path"] = base_reviews_path
 	if !form.Valid() {
 		render.Template(w, r, "admin-reviewdetail.page.tmpl", &models.TemplateData{
 			Form: form,

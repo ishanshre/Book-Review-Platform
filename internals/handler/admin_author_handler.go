@@ -28,6 +28,7 @@ func (m *Repository) AdminAllAuthor(w http.ResponseWriter, r *http.Request) {
 	}
 	data := make(map[string]interface{})
 	data["authors"] = authors
+	data["base_path"] = base_authors_path
 	render.Template(w, r, "admin-allauthors.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
@@ -78,6 +79,7 @@ func (m *Repository) AdminGetAuthorDetailByID(w http.ResponseWriter, r *http.Req
 	}
 	data := make(map[string]interface{})
 	data["author"] = author
+	data["base_path"] = base_authors_path
 	render.Template(w, r, "admin-authordetail.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
@@ -129,6 +131,8 @@ func (m *Repository) PostAdminUpdateAuthor(w http.ResponseWriter, r *http.Reques
 	}
 	data := make(map[string]interface{})
 	data["author"] = author
+	data["base_path"] = base_authors_path
+
 	if !form.Valid() {
 		render.Template(w, r, "admin-authordetail.page.tmpl", &models.TemplateData{
 			Form: form,
@@ -157,6 +161,8 @@ func (m *Repository) AdminInsertAuthor(w http.ResponseWriter, r *http.Request) {
 	var emptyAuthor models.Author
 	data := make(map[string]interface{})
 	data["author"] = emptyAuthor
+	data["base_path"] = base_authors_path
+
 	render.Template(w, r, "admin-authorinsert.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
@@ -207,6 +213,8 @@ func (m *Repository) PostAdminInsertAuthor(w http.ResponseWriter, r *http.Reques
 	form.Required("date_of_birth")
 	data := make(map[string]interface{})
 	data["author"] = author
+	data["base_path"] = base_authors_path
+
 	if !form.Valid() {
 		render.Template(w, r, "admin-authorinsert.page.tmpl", &models.TemplateData{
 			Form: form,
