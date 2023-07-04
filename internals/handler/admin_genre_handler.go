@@ -28,6 +28,7 @@ func (m *Repository) AdminAllGenres(w http.ResponseWriter, r *http.Request) {
 	// Create a map that holds the genres data
 	data := make(map[string]interface{})
 	data["genres"] = genres
+	data["base_path"] = base_genres_path
 
 	// Render the template with nill form and data
 	render.Template(w, r, "admin-allgenres.page.tmpl", &models.TemplateData{
@@ -84,6 +85,7 @@ func (m *Repository) PostAdminAddGenre(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	data["genres"] = genres
 	data["add_genre"] = add_genre
+	data["base_path"] = base_genres_path
 
 	// If form is not valid render "admin-allgenres.page.tmpl" with form and data
 	if !form.Valid() {
@@ -131,6 +133,7 @@ func (m *Repository) AdminGetGenreByID(w http.ResponseWriter, r *http.Request) {
 	// Create a  data map and store the genre model
 	data := make(map[string]interface{})
 	data["genre"] = genre
+	data["base_path"] = base_genres_path
 
 	// Render the "admin-genre-read-update.page.tmpl" template with empty form and data
 	render.Template(w, r, "admin-genre-read-update.page.tmpl", &models.TemplateData{
@@ -191,6 +194,7 @@ func (m *Repository) PostAdminGetGenreByID(w http.ResponseWriter, r *http.Reques
 	// Create a data map and store the genre model
 	data := make(map[string]interface{})
 	data["genre"] = genre
+	data["base_path"] = base_genres_path
 
 	// If form is invalid render "admin-genre-read-update.page.tmpl" page with form and data
 	if !form.Valid() {

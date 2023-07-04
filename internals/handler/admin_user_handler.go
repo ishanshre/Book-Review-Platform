@@ -48,6 +48,7 @@ func (m *Repository) AdminAllUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	data := make(map[string]interface{})
+	data["base_path"] = base_users_path
 	data["users"] = users
 	render.Template(w, r, "admin-allusers.page.tmpl", &models.TemplateData{
 		Data: data,
@@ -70,6 +71,7 @@ func (m *Repository) AdminGetUserDetailByID(w http.ResponseWriter, r *http.Reque
 	user.ID = id
 	data := make(map[string]interface{})
 	data["user"] = user
+	data["base_path"] = base_users_path
 	render.Template(w, r, "admin-userdetail.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
@@ -100,6 +102,7 @@ func (m *Repository) AdminUpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	user.ID = id
 	data := make(map[string]interface{})
+	data["base_path"] = base_users_path
 	data["user"] = user
 	if !form.Valid() {
 		render.Template(w, r, "admin-userdetail.page.tmpl", &models.TemplateData{
@@ -176,6 +179,7 @@ func (m *Repository) AdminUserAdd(w http.ResponseWriter, r *http.Request) {
 	var emptyUser models.User
 	data := make(map[string]interface{})
 	data["register"] = emptyUser
+	data["base_path"] = base_users_path
 	render.Template(w, r, "admin-usercreate.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
@@ -236,7 +240,7 @@ func (m *Repository) PostAdminUserAdd(w http.ResponseWriter, r *http.Request) {
 	// create a data map that holds register_user.
 	data := make(map[string]interface{})
 	data["register"] = register_user
-
+	data["base_path"] = base_users_path
 	// If form is invalid render "admin-usercreate.page.tmpl" with form and data.
 	if !form.Valid() {
 		render.Template(w, r, "admin-usercreate.page.tmpl", &models.TemplateData{

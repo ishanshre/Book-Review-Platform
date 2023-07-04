@@ -25,6 +25,7 @@ func (m *Repository) AdminAllContacts(w http.ResponseWriter, r *http.Request) {
 	}
 	data := make(map[string]interface{})
 	data["contacts"] = contacts
+	data["base_path"] = base_contacts_path
 	render.Template(w, r, "admin-allcontacts.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
@@ -78,6 +79,7 @@ func (m *Repository) AdminGetContactByID(w http.ResponseWriter, r *http.Request)
 	// create a data map that stores contact
 	data := make(map[string]interface{})
 	data["contact"] = contact
+	data["base_path"] = base_contacts_path
 
 	// render the detail page with form and data
 	render.Template(w, r, "admin-contactdetail.page.tmpl", &models.TemplateData{
@@ -92,6 +94,7 @@ func (m *Repository) ContactUs(w http.ResponseWriter, r *http.Request) {
 	var contact models.Contact
 	data := make(map[string]interface{})
 	data["contact"] = contact
+	data["base_path"] = base_contacts_path
 	render.Template(w, r, "contact-us.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
@@ -119,7 +122,10 @@ func (m *Repository) PostContactUs(w http.ResponseWriter, r *http.Request) {
 	}
 	form.Required("first_name", "last_name", "email", "phone", "subject", "message")
 	form.ValidatePhone("phone")
+
 	data["contact"] = contact
+	data["base_path"] = base_contacts_path
+
 	if !form.Valid() {
 		render.Template(w, r, "contact-us.page.tmpl", &models.TemplateData{
 			Form: form,

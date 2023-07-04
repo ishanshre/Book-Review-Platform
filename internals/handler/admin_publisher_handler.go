@@ -26,7 +26,7 @@ func (m *Repository) AdminAllPublusher(w http.ResponseWriter, r *http.Request) {
 	// create a data map that stores the publishers
 	data := make(map[string]interface{})
 	data["publishers"] = publishers
-
+	data["base_path"] = base_publishers_path
 	// render the "admin-allpublishers.page.tmpl" with data and new empty form
 	render.Template(w, r, "admin-allpublishers.page.tmpl", &models.TemplateData{
 		Data: data,
@@ -74,6 +74,7 @@ func (m *Repository) AdminGetPublisherDetailByID(w http.ResponseWriter, r *http.
 	}
 	data := make(map[string]interface{})
 	data["publisher"] = publisher
+	data["base_path"] = base_publishers_path
 	render.Template(w, r, "admin-publisherdetail.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
@@ -120,6 +121,7 @@ func (m *Repository) PostAdminUpdatePublisher(w http.ResponseWriter, r *http.Req
 	form.Required("name")
 	data := make(map[string]interface{})
 	data["publisher"] = publisher
+	data["base_path"] = base_publishers_path
 	if !form.Valid() {
 		render.Template(w, r, "admin-publisherdetail.page.tmpl", &models.TemplateData{
 			Form: form,
@@ -144,6 +146,7 @@ func (m *Repository) AdminInsertPublisher(w http.ResponseWriter, r *http.Request
 	var emptyPublisher models.Publisher
 	data := make(map[string]interface{})
 	data["publisher"] = emptyPublisher
+	data["base_path"] = base_publishers_path
 	render.Template(w, r, "admin-publisherinsert.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
@@ -190,6 +193,7 @@ func (m *Repository) PostAdminInsertPublisher(w http.ResponseWriter, r *http.Req
 	}
 	data := make(map[string]interface{})
 	data["publisher"] = publisher
+	data["base_path"] = base_publishers_path
 	if !form.Valid() {
 		render.Template(w, r, "admin-publisherinsert.page.tmpl", &models.TemplateData{
 			Form: form,

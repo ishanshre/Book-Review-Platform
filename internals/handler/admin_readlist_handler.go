@@ -36,6 +36,7 @@ func (m *Repository) AdminAllReadList(w http.ResponseWriter, r *http.Request) {
 	data["readList"] = readList
 	data["allUsers"] = allUsers
 	data["allBooks"] = allBooks
+	data["base_path"] = base_readLists_path
 	render.Template(w, r, "admin-allreadlists.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
@@ -97,6 +98,7 @@ func (m *Repository) PostAdminInsertReadList(w http.ResponseWriter, r *http.Requ
 	data["allUsers"] = allUsers
 	data["readList"] = readList
 	data["readLists"] = readLists
+	data["base_path"] = base_readLists_path
 	form.Required("book_id", "user_id")
 
 	exists, err := m.DB.ReadListExists(readList.UserID, readList.BookID)
@@ -190,6 +192,7 @@ func (m *Repository) AdminGetReadListByID(w http.ResponseWriter, r *http.Request
 	data["user"] = user
 	data["allUsers"] = allUsers
 	data["readList"] = readList
+	data["base_path"] = base_readLists_path
 
 	// render the detail page with form and data
 	render.Template(w, r, "admin-readlistsdetail.page.tmpl", &models.TemplateData{
@@ -323,6 +326,7 @@ func (m *Repository) PostAdminUpdateReadList(w http.ResponseWriter, r *http.Requ
 	data["user"] = user
 	data["allUsers"] = allUsers
 	data["readList"] = readList
+	data["base_path"] = base_readLists_path
 
 	// Add required form validation for language id and book id
 	form.Required("book_id", "user_id")

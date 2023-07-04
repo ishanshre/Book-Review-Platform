@@ -22,39 +22,64 @@
     {{end}}
     <title>{{block "title" .}}{{end}}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/static/css/admin.css">
     <link rel="stylesheet" href="/static/css/notification.css">
     {{block "css" .}}
 
     {{end}}
 </head>
 <body>
-    <a href="/">Public Site</a>
-    <a href="/user/logout">Logout</a>
-    <hr>
-    <a href="/admin/users">Users</a>
-    <a href="/admin/genres">Genres</a>
-    <a href="/admin/publishers">Publishers</a>
-    <a href="/admin/authors">Authors</a>
-    <a href="/admin/languages">Languages</a>
-    <a href="/admin/books">Books</a>
-    <a href="/admin/bookAuthors">BookAuthors</a>
-    <a href="/admin/bookGenres">BookGenres</a>
-    <a href="/admin/bookLanguages">BookLanguages</a>
-    <a href="/admin/readLists">Read List</a>
-    <a href="/admin/buyLists">Buy List</a>
-    <a href="/admin/followers">Followers</a>
-    <a href="/admin/reviews">Reviews</a>
-    <a href="/admin/contacts">Contacts</a>
-
-    {{block "content" .}}
-
-    {{end}}
+<header>
+    <nav class="nav-primary d-flex">
+        <span class="logo d-flex">
+                <div class="sidebar-toggle-btn">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+                <a href="/admin">BookWorm Admin</a>
+        </span>
+        
+        <div class="nav-links">
+            <ul class="d-flex">
+                <li class="nav-link"><a href="/"><i class="fa-solid fa-house"></i>PUBLIC SITE</a></li>
+                <li class="nav-link"><a href="#"><i class="fa-sharp fa-regular fa-at"></i>ADMIN</a></li>
+                <li class="nav-link"><a href="/user/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i>LOGOUT</a></li>
+            </ul>
+        </div>
+    </nav>
+    </header>
+    <main>
+        <section class="main d-grid">
+            <nav class="nav-sidebar">
+                <ul>
+                {{$url := index .Data "base_path"}}
+                    <li class="{{if eq $url "/admin/users"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/users">USER</a></li>
+                    <li class="{{if eq $url "/admin/genres"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/genres">GENRES</a></li>
+                    <li class="{{if eq $url "/admin/publishers"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/publishers">PUBLISHERS</a></li>
+                    <li class="{{if eq $url "/admin/authors"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/authors">AUTHORS</a></li>
+                    <li class="{{if eq $url "/admin/languages"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/languages">LANGUAGES</a> </li>
+                    <li class="{{if eq $url "/admin/books"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/books">BOOKS</a></li>
+                    <li class="{{if eq $url "/admin/bookAuthors"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/bookAuthors">BOOK-AUTHORS</a></li>
+                    <li class="{{if eq $url "/admin/bookGenres"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/bookGenres">BOOK-GENRES</a></li>
+                    <li class="{{if eq $url "/admin/bookLanguages"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/bookLanguages">BOOK-LANGUAGES</a></li>
+                    <li class="{{if eq $url "/admin/readLists"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/readLists">READ LIST</a></li>
+                    <li class="{{if eq $url "/admin/buyLists"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/buyLists">BUY LIST</a></li>
+                    <li class="{{if eq $url "/admin/followers"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/followers">FOLLOWERS</a></li>
+                    <li class="{{if eq $url "/admin/reviews"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/reviews">REVIEWS</a></li>
+                    <li class="{{if eq $url "/admin/contacts"}} nav-sidebar-link-clicked {{end}}"><a href="/admin/contacts">CONTACTS</a></li>
+                </ul>  
+            </nav> 
+            <section class="main-content">
+                {{block "content" .}}
+                {{end}}
+            </section>
+        </section>
+    </main>
+                
 
     <div id="toastBox"></div>
-
+    <script src="/static/js/admin.js"></script>
     <script src="/static/js/notification.js"></script>
     {{block "js" .}}
-
     {{end}}    
 </body>
 </html>

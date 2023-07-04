@@ -27,6 +27,7 @@ func (m *Repository) AdminAllBook(w http.ResponseWriter, r *http.Request) {
 	}
 	data := make(map[string]interface{})
 	data["books"] = books
+	data["base_path"] = base_books_path
 	render.Template(w, r, "admin-allbooks.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
@@ -94,6 +95,8 @@ func (m *Repository) AdminGetBookDetailByID(w http.ResponseWriter, r *http.Reque
 	data["book"] = book
 	data["publishers"] = publishers
 	data["publisher"] = publisher
+	data["base_path"] = base_books_path
+
 	render.Template(w, r, "admin-bookdetail.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
@@ -117,6 +120,8 @@ func (m *Repository) AdminInsertBook(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	data["book"] = book
 	data["publishers"] = publishers
+	data["base_path"] = base_books_path
+
 	render.Template(w, r, "admin-bookinsert.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
@@ -191,6 +196,7 @@ func (m *Repository) PostAdminInsertBook(w http.ResponseWriter, r *http.Request)
 	form.MinLength("isbn", 13)
 	form.MaxLength("isbn", 13)
 	data["book"] = book
+	data["base_path"] = base_books_path
 	publishers, err := m.DB.AllPublishers()
 	if err != nil {
 		helpers.ServerError(w, err)
@@ -305,6 +311,9 @@ func (m *Repository) PostAdminUpdateBook(w http.ResponseWriter, r *http.Request)
 	form.Required("title", "isbn")
 	form.MinLength("isbn", 13)
 	form.MaxLength("isbn", 13)
+
+	data["base_path"] = base_books_path
+
 	if !form.Valid() {
 		render.Template(w, r, "admin-bookdetail.page.tmpl", &models.TemplateData{
 			Form: form,

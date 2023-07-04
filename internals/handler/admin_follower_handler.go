@@ -36,6 +36,7 @@ func (m *Repository) AdminAllFollowers(w http.ResponseWriter, r *http.Request) {
 	data["follower"] = follower
 	data["allUsers"] = allUsers
 	data["allAuthors"] = allAuthors
+	data["base_path"] = base_followers_path
 	render.Template(w, r, "admin-allfollowers.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
@@ -97,6 +98,7 @@ func (m *Repository) PostAdminInsertFollower(w http.ResponseWriter, r *http.Requ
 	data["allUsers"] = allUsers
 	data["follower"] = follower
 	data["followers"] = followers
+	data["base_path"] = base_followers_path
 	form.Required("author_id", "user_id")
 
 	exists, err := m.DB.FollowerExists(&follower)
@@ -219,6 +221,7 @@ func (m *Repository) AdminGetFollowerByID(w http.ResponseWriter, r *http.Request
 	data["user"] = user
 	data["allUsers"] = allUsers
 	data["follower"] = follower
+	data["base_path"] = base_followers_path
 
 	// render the detail page with form and data
 	render.Template(w, r, "admin-followersdetail.page.tmpl", &models.TemplateData{
@@ -323,7 +326,7 @@ func (m *Repository) PostAdminUpdateFollower(w http.ResponseWriter, r *http.Requ
 	data["user"] = user
 	data["allUsers"] = allUsers
 	data["follower"] = follower
-
+	data["base_path"] = base_followers_path
 	// Add required form validation for language id and book id
 	form.Required("author_id", "user_id")
 	if !form.Valid() {

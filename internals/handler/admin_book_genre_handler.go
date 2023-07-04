@@ -43,6 +43,7 @@ func (m *Repository) AdminAllBookGenre(w http.ResponseWriter, r *http.Request) {
 	data["bookGenre"] = bookGenre
 	data["allGenres"] = allGenres
 	data["allBooks"] = allBooks
+	data["base_path"] = base_bookGenres_path
 	render.Template(w, r, "admin-allbookgenres.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
@@ -121,6 +122,7 @@ func (m *Repository) AdminGetBookGenreByID(w http.ResponseWriter, r *http.Reques
 	data["genre"] = genre
 	data["allGenres"] = allGenres
 	data["bookGenre"] = bookGenre
+	data["base_path"] = base_bookGenres_path
 	render.Template(w, r, "admin-bookgenredetail.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
@@ -200,6 +202,8 @@ func (m *Repository) PostAdminUpdateBookGenre(w http.ResponseWriter, r *http.Req
 	data["genre"] = genre
 	data["allGenres"] = allGenres
 	data["bookGenre"] = bookGenre
+	data["base_path"] = base_bookGenres_path
+
 	form.Required("book_id", "genre_id")
 	if !form.Valid() {
 		render.Template(w, r, "admin-bookgenredetail.page.tmpl", &models.TemplateData{
@@ -287,6 +291,8 @@ func (m *Repository) PostAdminInsertBookGenre(w http.ResponseWriter, r *http.Req
 		form.Errors.Add("book_id", "book-genre relationship already exists")
 		form.Errors.Add("genre_id", "book-genre relationship already exists")
 	}
+
+	data["base_path"] = base_bookGenres_path
 
 	if !form.Valid() {
 		log.Println("invlaiud")
