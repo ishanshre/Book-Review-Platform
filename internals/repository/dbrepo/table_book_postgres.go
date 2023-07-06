@@ -145,10 +145,10 @@ func (m *postgresDBRepo) UpdateBook(u *models.Book) error {
 func (m *postgresDBRepo) GetBookTitleByID(id int) (*models.Book, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	query := `SELECT title FROM books WHERE id=$1`
+	query := `SELECT id, title FROM books WHERE id=$1`
 	book := &models.Book{}
 	row := m.DB.QueryRowContext(ctx, query, id)
-	if err := row.Scan(&book.Title); err != nil {
+	if err := row.Scan(&book.ID, &book.Title); err != nil {
 		return nil, err
 	}
 	return book, nil

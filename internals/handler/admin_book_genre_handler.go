@@ -38,8 +38,27 @@ func (m *Repository) AdminAllBookGenre(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	bookGenreDatas := []*models.BookGenreData{}
+	for _, v := range bookGenres {
+		book, err := m.DB.GetBookTitleByID(v.BookID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		genre, err := m.DB.GetGenreByID(v.GenreID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		bookGenreData := &models.BookGenreData{
+			BookData:  book,
+			GenreData: genre,
+		}
+		bookGenreDatas = append(bookGenreDatas, bookGenreData)
+	}
 	data := make(map[string]interface{})
 	data["bookGenres"] = bookGenres
+	data["bookGenreDatas"] = bookGenreDatas
 	data["bookGenre"] = bookGenre
 	data["allGenres"] = allGenres
 	data["allBooks"] = allBooks

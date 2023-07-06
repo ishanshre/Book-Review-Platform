@@ -37,8 +37,27 @@ func (m *Repository) AdminAllBookLanguage(w http.ResponseWriter, r *http.Request
 		helpers.ServerError(w, err)
 		return
 	}
+	bookLanguageDatas := []*models.BookLanguageData{}
+	for _, v := range bookLanguages {
+		book, err := m.DB.GetBookTitleByID(v.BookID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		language, err := m.DB.GetLanguageByID(v.LanguageID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		bookLanguageData := &models.BookLanguageData{
+			BookData:     book,
+			LanguageData: language,
+		}
+		bookLanguageDatas = append(bookLanguageDatas, bookLanguageData)
+	}
 	data := make(map[string]interface{})
 	data["bookLanguages"] = bookLanguages
+	data["bookLanguageDatas"] = bookLanguageDatas
 	data["bookLanguage"] = bookLanguage
 	data["allLanguages"] = allLanguages
 	data["allBooks"] = allBooks
