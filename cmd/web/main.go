@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/gob"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/alexedwards/scs/redisstore"
@@ -23,7 +23,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var port string
 var app config.AppConfig // global config
 var session *scs.SessionManager
 var host string = "127.0.0.1:6379"
@@ -34,16 +33,11 @@ var infoLog *log.Logger
 var errorLog *log.Logger
 
 func main() {
-	// checking if command has argument
-	if len(os.Args) != 2 {
-		log.Fatalln("usuage: command <port>")
-		log.Fatalln("port must be from 1025 to 65535")
-	}
+	// using flag for command line arguments
+	port := flag.Int("port", 8000, "The port to run the web application")
 
-	p, err := strconv.Atoi(os.Args[1]) // convert the second argument to integer
-	if err != nil {
-		log.Fatalln("ports must be integers")
-	}
+	flag.Parse()
+
 	// load the environment variable from the .env file
 	if err := godotenv.Load(".env"); err != nil {
 		log.Fatalf("error in loading environment files: %v\n", err)
@@ -66,13 +60,13 @@ func main() {
 	// pass app config to middleware
 	middleware.NewMiddlewareApp(&app)
 
-	port = fmt.Sprintf(":%v", p)
+	addr := fmt.Sprintf(":%d", *port)
 	// create a http server with address and the handlers
 	srv := http.Server{
-		Addr:    port,
+		Addr:    addr,
 		Handler: router.Router(&app),
 	}
-	log.Printf("Starting server at port %v", p)
+	log.Printf("Starting server at port %d", *port)
 
 	// start the server and listen to the specified port
 	if err := srv.ListenAndServe(); err != nil {
