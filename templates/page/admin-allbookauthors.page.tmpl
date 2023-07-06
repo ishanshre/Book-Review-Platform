@@ -8,6 +8,7 @@
 
 {{define "content"}}
 {{$bookAuthors := index .Data "bookAuthors"}}
+{{$bookAuthorDatas := index .Data "bookAuthorDatas"}}
 {{$allBooks := index .Data "allBooks"}}
 {{$allAuthors := index .Data "allAuthors"}}
 <div>
@@ -47,25 +48,25 @@
         <table>
             <thead>
                 <tr>
-                    <th>Book ID</th>
-                    <th>Author ID</th>
+                    <th>Book</th>
+                    <th>Author</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                {{range $bookAuthors}}
+                {{range $bookAuthorDatas}}
                 <tr>
                     
-                    <td>{{.BookID}}</td>
-                    <td>{{.AuthorID}}</td>
+                    <td>{{.BookData.Title}}</td>
+                    <td>{{.AuthorData.FirstName}} {{.AuthorData.LastName}}</td>
                     <td>
-                        <button><a href="/admin/bookAuthors/detail/{{.BookID}}/{{.AuthorID}}">Detail</a></button>
-                        <button id="delete-{{.BookID}}-{{.AuthorID}}" onclick="showDeleteForm(this, '{{.BookID}}-{{.AuthorID}}')">Delete</button>
-                        <form action="/admin/bookAuthors/detail/{{.BookID}}/{{.AuthorID}}/delete" method="post" class="no-display" id="{{.BookID}}-{{.AuthorID}}">
+                        <button><a href="/admin/bookAuthors/detail/{{.BookData.ID}}/{{.AuthorData.ID}}">Detail</a></button>
+                        <button id="delete-{{.BookData.ID}}-{{.AuthorData.ID}}" onclick="showDeleteForm(this, '{{.BookData.ID}}-{{.AuthorData.ID}}')">Delete</button>
+                        <form action="/admin/bookAuthors/detail/{{.BookData.ID}}/{{.AuthorData.ID}}/delete" method="post" class="no-display" id="{{.BookData.ID}}-{{.AuthorData.ID}}">
                             <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
                             <p>Do you want to delete this relation ship?</p>
                             <input type="submit" value="Delete">
-                            <button onclick="removeForm('{{.BookID}}-{{.AuthorID}}')">No</button>
+                            <button onclick="removeForm('{{.BookData.ID}}-{{.AuthorData.ID}}')">No</button>
                         </form>
                     </td>
                 </tr>

@@ -31,8 +31,29 @@ func (m *Repository) AdminAllBuyList(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	buyListDatas := []*models.BuyListData{}
+	for _, v := range buyLists {
+		book, err := m.DB.GetBookTitleByID(v.BookID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		user, err := m.DB.GetUserByID(v.UserID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		user.ID = v.UserID
+		buyListData := &models.BuyListData{
+			BookData:  book,
+			UserData:  user,
+			CreatedAt: v.CreatedAt,
+		}
+		buyListDatas = append(buyListDatas, buyListData)
+	}
 	data := make(map[string]interface{})
 	data["buyLists"] = buyLists
+	data["buyListDatas"] = buyListDatas
 	data["buyList"] = buyList
 	data["allUsers"] = allUsers
 	data["allBooks"] = allBooks

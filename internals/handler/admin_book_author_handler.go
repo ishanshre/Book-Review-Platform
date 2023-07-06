@@ -38,8 +38,27 @@ func (m *Repository) AdminAllBookAuthor(w http.ResponseWriter, r *http.Request) 
 		helpers.ServerError(w, err)
 		return
 	}
+	bookAuthorDatas := []*models.BookAuthorData{}
+	for _, v := range bookAuthors {
+		book, err := m.DB.GetBookTitleByID(v.BookID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		author, err := m.DB.GetAuthorByID(v.AuthorID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		bookAuthorData := models.BookAuthorData{
+			BookData:   book,
+			AuthorData: author,
+		}
+		bookAuthorDatas = append(bookAuthorDatas, &bookAuthorData)
+	}
 	data := make(map[string]interface{})
 	data["bookAuthors"] = bookAuthors
+	data["bookAuthorDatas"] = bookAuthorDatas
 	data["bookAuthor"] = bookAuthor
 	data["allAuthors"] = allAuthors
 	data["allBooks"] = allBooks

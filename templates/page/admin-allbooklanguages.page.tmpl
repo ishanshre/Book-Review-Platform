@@ -8,6 +8,7 @@
 
 {{define "content"}}
 {{$bookLanguages := index .Data "bookLanguages"}}
+{{$bookLanguageDatas := index .Data "bookLanguageDatas"}}
 {{$allBooks := index .Data "allBooks"}}
 {{$allLanguages := index .Data "allLanguages"}}
 <div>
@@ -53,19 +54,19 @@
                 </tr>
             </thead>
             <tbody>
-                {{range $bookLanguages}}
+                {{range $bookLanguageDatas}}
                 <tr>
                     
-                    <td>{{.BookID}}</td>
-                    <td>{{.LanguageID}}</td>
+                    <td>{{.BookData.Title}}</td>
+                    <td>{{.LanguageData.Language}}</td>
                     <td>
-                        <button><a href="/admin/bookLanguages/detail/{{.BookID}}/{{.LanguageID}}">Detail</a></button>
-                        <button id="delete-{{.BookID}}-{{.LanguageID}}" onclick="showDeleteForm(this, '{{.BookID}}-{{.LanguageID}}')">Delete</button>
-                        <form action="/admin/bookLanguages/detail/{{.BookID}}/{{.LanguageID}}/delete" method="post" class="no-display" id="{{.BookID}}-{{.LanguageID}}">
+                        <button><a href="/admin/bookLanguages/detail/{{.BookData.ID}}/{{.LanguageData.ID}}">Detail</a></button>
+                        <button id="delete-{{.BookData.ID}}-{{.LanguageData.ID}}" onclick="showDeleteForm(this, '{{.BookData.ID}}-{{.LanguageData.ID}}')">Delete</button>
+                        <form action="/admin/bookLanguages/detail/{{.BookData.ID}}/{{.LanguageData.ID}}/delete" method="post" class="no-display" id="{{.BookData.ID}}-{{.LanguageData.ID}}">
                             <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
                             <p>Do you want to delete this relation ship?</p>
                             <input type="submit" value="Delete">
-                            <button onclick="removeForm('{{.BookID}}-{{.LanguageID}}')">No</button>
+                            <button onclick="removeForm('{{.BookData.ID}}-{{.LanguageData.ID}}')">No</button>
                         </form>
                     </td>
                 </tr>

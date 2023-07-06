@@ -31,16 +31,39 @@ func (m *Repository) AdminAllReadList(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	readListDatas := []*models.ReadListData{}
+	for _, v := range readLists {
+		book, err := m.DB.GetBookTitleByID(v.BookID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		user, err := m.DB.GetUserByID(v.UserID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		user.ID = v.UserID
+		readListData := &models.ReadListData{
+			BookData:  book,
+			UserData:  user,
+			CreatedAt: v.CreatedAt,
+		}
+		readListDatas = append(readListDatas, readListData)
+	}
 	data := make(map[string]interface{})
 	data["readLists"] = readLists
+	data["readListDatas"] = readListDatas
 	data["readList"] = readList
 	data["allUsers"] = allUsers
 	data["allBooks"] = allBooks
 	data["base_path"] = base_readLists_path
+
 	render.Template(w, r, "admin-allreadlists.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
 	})
+
 }
 
 // PostAdminInsertReadList handles post method logic for adding books to read list by admin.
