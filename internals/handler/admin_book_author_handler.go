@@ -303,11 +303,29 @@ func (m *Repository) PostAdminInsertBookAuthor(w http.ResponseWriter, r *http.Re
 		helpers.ServerError(w, err)
 		return
 	}
-
+	bookAuthorDatas := []*models.BookAuthorData{}
+	for _, v := range bookAuthors {
+		book, err := m.DB.GetBookTitleByID(v.BookID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		author, err := m.DB.GetAuthorByID(v.AuthorID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		bookAuthorData := models.BookAuthorData{
+			BookData:   book,
+			AuthorData: author,
+		}
+		bookAuthorDatas = append(bookAuthorDatas, &bookAuthorData)
+	}
 	data["allBooks"] = allBooks
 	data["allAuthors"] = allAuthors
 	data["bookAuthor"] = bookAuthor
 	data["bookAuthors"] = bookAuthors
+	data["bookAuthorDatas"] = bookAuthorDatas
 	data["base_path"] = base_bookAuthors_path
 	form.Required("book_id", "author_id")
 

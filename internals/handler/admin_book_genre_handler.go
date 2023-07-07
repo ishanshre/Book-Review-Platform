@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -22,39 +21,11 @@ import (
 // The function prepares the necessary data and renders the "admin-allbookgenres.page.tmpl" template,
 // displaying the list of book-genre relationships as well as new book genre relationship add form.
 func (m *Repository) AdminAllBookGenre(w http.ResponseWriter, r *http.Request) {
-	bookGenres, err := m.DB.AllBookGenre()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
 	var bookGenre models.BookGenre
-	allBooks, err := m.DB.AllBook()
+	allBooks, allGenres, bookGenres, bookGenreDatas, err := m.genericBookGenre()
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
-	}
-	allGenres, err := m.DB.AllGenre()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	bookGenreDatas := []*models.BookGenreData{}
-	for _, v := range bookGenres {
-		book, err := m.DB.GetBookTitleByID(v.BookID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		genre, err := m.DB.GetGenreByID(v.GenreID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		bookGenreData := &models.BookGenreData{
-			BookData:  book,
-			GenreData: genre,
-		}
-		bookGenreDatas = append(bookGenreDatas, bookGenreData)
 	}
 	data := make(map[string]interface{})
 	data["bookGenres"] = bookGenres
@@ -277,19 +248,7 @@ func (m *Repository) PostAdminInsertBookGenre(w http.ResponseWriter, r *http.Req
 		GenreID: genre_id,
 	}
 
-	bookGenres, err := m.DB.AllBookGenre()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-
-	allBooks, err := m.DB.AllBook()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-
-	allGenres, err := m.DB.AllGenre()
+	allBooks, allGenres, bookGenres, bookGenreDatas, err := m.genericBookGenre()
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -299,6 +258,7 @@ func (m *Repository) PostAdminInsertBookGenre(w http.ResponseWriter, r *http.Req
 	data["allGenres"] = allGenres
 	data["bookGenre"] = bookGenre
 	data["bookGenres"] = bookGenres
+	data["bookGenreDatas"] = bookGenreDatas
 	form.Required("book_id", "genre_id")
 
 	exists, err := m.DB.BookGenreExists(bookGenre.BookID, bookGenre.GenreID)
@@ -314,7 +274,6 @@ func (m *Repository) PostAdminInsertBookGenre(w http.ResponseWriter, r *http.Req
 	data["base_path"] = base_bookGenres_path
 
 	if !form.Valid() {
-		log.Println("invlaiud")
 		render.Template(w, r, "admin-allbookgenres.page.tmpl", &models.TemplateData{
 			Form: form,
 			Data: data,
@@ -331,4 +290,70 @@ func (m *Repository) PostAdminInsertBookGenre(w http.ResponseWriter, r *http.Req
 	m.App.Session.Put(r.Context(), "flash", "Book Genre Relationship Added")
 
 	http.Redirect(w, r, "/admin/bookGenres", http.StatusSeeOther)
+}
+
+func (m *Repository) genericBookGenre() ([]*models.Book, []*models.Genre, []*models.BookGenre, []*models.BookGenreData, error) {
+	allBookGenresCh := make(chan []*models.BookGenre)
+	allBooksCh := make(chan []*models.Book)
+	allGenresCh := make(chan []*models.Genre)
+	errorCh := make(chan error)
+
+	go func() {
+		books, err := m.DB.AllBook()
+		if err != nil {
+			errorCh <- err
+			return
+		}
+		allBooksCh <- books
+	}()
+	go func() {
+		allBookGenres, err := m.DB.AllBookGenre()
+		if err != nil {
+			errorCh <- err
+			return
+		}
+		allBookGenresCh <- allBookGenres
+	}()
+	go func() {
+		allGenres, err := m.DB.AllGenre()
+		if err != nil {
+			errorCh <- err
+			return
+		}
+		allGenresCh <- allGenres
+	}()
+
+	var allBooks []*models.Book
+	var allGenres []*models.Genre
+	var bookGenres []*models.BookGenre
+	var err error
+	for i := 0; i < 3; i++ {
+		select {
+		case allBooks = <-allBooksCh:
+		case allGenres = <-allGenresCh:
+		case bookGenres = <-allBookGenresCh:
+		case err = <-errorCh:
+		}
+	}
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+
+	bookGenreDatas := []*models.BookGenreData{}
+	for _, v := range bookGenres {
+		book, err := m.DB.GetBookTitleByID(v.BookID)
+		if err != nil {
+			return nil, nil, nil, nil, err
+		}
+		genre, err := m.DB.GetGenreByID(v.GenreID)
+		if err != nil {
+			return nil, nil, nil, nil, err
+		}
+		bookGenreData := &models.BookGenreData{
+			BookData:  book,
+			GenreData: genre,
+		}
+		bookGenreDatas = append(bookGenreDatas, bookGenreData)
+	}
+	return allBooks, allGenres, bookGenres, bookGenreDatas, nil
 }

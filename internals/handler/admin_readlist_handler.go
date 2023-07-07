@@ -116,11 +116,31 @@ func (m *Repository) PostAdminInsertReadList(w http.ResponseWriter, r *http.Requ
 		helpers.ServerError(w, err)
 		return
 	}
-
+	readListDatas := []*models.ReadListData{}
+	for _, v := range readLists {
+		book, err := m.DB.GetBookTitleByID(v.BookID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		user, err := m.DB.GetUserByID(v.UserID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		user.ID = v.UserID
+		readListData := &models.ReadListData{
+			BookData:  book,
+			UserData:  user,
+			CreatedAt: v.CreatedAt,
+		}
+		readListDatas = append(readListDatas, readListData)
+	}
 	data["allBooks"] = allBooks
 	data["allUsers"] = allUsers
 	data["readList"] = readList
 	data["readLists"] = readLists
+	data["readListDatas"] = readListDatas
 	data["base_path"] = base_readLists_path
 	form.Required("book_id", "user_id")
 

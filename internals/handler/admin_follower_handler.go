@@ -115,11 +115,33 @@ func (m *Repository) PostAdminInsertFollower(w http.ResponseWriter, r *http.Requ
 		helpers.ServerError(w, err)
 		return
 	}
+	followerDatas := []*models.FollowerData{}
+	for _, v := range followers {
+		user, err := m.DB.GetUserByID(v.UserID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		user.ID = v.UserID
+		author, err := m.DB.GetAuthorFullNameByID(v.AuthorID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		author.ID = v.AuthorID
+		followerData := &models.FollowerData{
+			UserData:   user,
+			AuthorData: author,
+			FollowedAt: v.FollowedAt,
+		}
+		followerDatas = append(followerDatas, followerData)
+	}
 
 	data["allAuthors"] = allAuthors
 	data["allUsers"] = allUsers
 	data["follower"] = follower
 	data["followers"] = followers
+	data["followerDatas"] = followerDatas
 	data["base_path"] = base_followers_path
 	form.Required("author_id", "user_id")
 

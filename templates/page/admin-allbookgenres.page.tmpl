@@ -8,7 +8,6 @@
 
 {{define "content"}}
 {{$bookGenres := index .Data "bookGenres"}}
-{{$bookGenreDatas := index .Data "bookGenreDatas"}}
 {{$allBooks := index .Data "allBooks"}}
 {{$allGenres := index .Data "allGenres"}}
 <div>
@@ -54,6 +53,7 @@
                 </tr>
             </thead>
             <tbody>
+            {{$bookGenreDatas := index .Data "bookGenreDatas"}}
                 {{range $bookGenreDatas}}
                 <tr>
                     

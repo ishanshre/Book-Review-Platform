@@ -114,11 +114,32 @@ func (m *Repository) PostAdminInsertBuyList(w http.ResponseWriter, r *http.Reque
 		helpers.ServerError(w, err)
 		return
 	}
+	buyListDatas := []*models.BuyListData{}
+	for _, v := range buyLists {
+		book, err := m.DB.GetBookTitleByID(v.BookID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		user, err := m.DB.GetUserByID(v.UserID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		user.ID = v.UserID
+		buyListData := &models.BuyListData{
+			BookData:  book,
+			UserData:  user,
+			CreatedAt: v.CreatedAt,
+		}
+		buyListDatas = append(buyListDatas, buyListData)
+	}
 
 	data["allBooks"] = allBooks
 	data["allUsers"] = allUsers
 	data["buyList"] = buyList
 	data["buyLists"] = buyLists
+	data["buyListDatas"] = buyListDatas
 	data["base_path"] = base_buyLists_path
 	form.Required("book_id", "user_id")
 

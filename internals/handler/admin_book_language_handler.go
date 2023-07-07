@@ -344,11 +344,30 @@ func (m *Repository) PostAdminInsertBookLanguage(w http.ResponseWriter, r *http.
 		helpers.ServerError(w, err)
 		return
 	}
+	bookLanguageDatas := []*models.BookLanguageData{}
+	for _, v := range bookLanguages {
+		book, err := m.DB.GetBookTitleByID(v.BookID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		language, err := m.DB.GetLanguageByID(v.LanguageID)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		bookLanguageData := &models.BookLanguageData{
+			BookData:     book,
+			LanguageData: language,
+		}
+		bookLanguageDatas = append(bookLanguageDatas, bookLanguageData)
+	}
 
 	data["allBooks"] = allBooks
 	data["allLanguages"] = allLanguages
 	data["bookLanguage"] = bookLanguage
 	data["bookLanguages"] = bookLanguages
+	data["bookLanguageDatas"] = bookLanguageDatas
 	data["base_path"] = base_bookLanguages_path
 
 	form.Required("book_id", "language_id")
