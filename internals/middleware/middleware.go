@@ -56,3 +56,10 @@ func Admin(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func Logger(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		app.InfoLog.Printf("| %s | %s | %s ", r.Method, r.URL.Path, r.Proto)
+		next.ServeHTTP(w, r)
+	})
+}

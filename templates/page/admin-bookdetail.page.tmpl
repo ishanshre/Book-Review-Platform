@@ -46,7 +46,13 @@
             </div>
             <div>
                 <label for="is_active">Is Active: </label>
-                <input type="text" name="is_active" id="is_active" value="{{$book.IsActive}}">
+                {{if eq $book.IsActive false}}
+                <input type="radio" name="is_active" id="is_active" value="false" checked> False
+                <input type="radio" name="is_active" id="is_active" value="true"> True
+                {{else}}
+                <input type="radio" name="is_active" id="is_active" value="false"> False
+                <input type="radio" name="is_active" id="is_active" value="true" checked> True
+                {{end}}
             </div>
             <div>
                 {{$publishers := index .Data "publishers"}}

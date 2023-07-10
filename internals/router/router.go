@@ -20,6 +20,7 @@ func Router(app *config.AppConfig) http.Handler {
 
 	mux.Use(middleware.SessionLoad) // load the session middleware
 	mux.Use(middleware.NoSurf)      // csrf middleware
+	mux.Use(middleware.Logger)
 
 	// Get route for Home page
 	mux.Get("/", handler.Repo.Home)

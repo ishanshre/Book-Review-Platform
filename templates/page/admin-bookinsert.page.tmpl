@@ -58,7 +58,8 @@
             </div>
             <div>
                 <label for="is_active">Is Active: </label>
-                <input type="text" name="is_active" id="is_active" value="{{$book.IsActive}}">
+                <input type="radio" name="is_active" id="is_active" value="false"> False
+                <input type="radio" name="is_active" id="is_active" value="true"> True
                 {{with .Form.Errors.Get "is_active"}}
                     <label>{{.}}</label>
                 {{end}}
