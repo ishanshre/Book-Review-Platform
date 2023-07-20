@@ -4,8 +4,6 @@ async function clearSession(type) {
     let formData = new FormData();
     let tkn = document.querySelector('meta[name="csrf_token"]').content
     formData.append("csrf_token", tkn)
-    console.log(formData.get("csrf_token"))
-
     const resp = await fetch(`/api/clear/${type}`, {
         method: "POST",
         body: formData,
@@ -38,7 +36,7 @@ function showToast(messages, types) {
         clearSession(type);
         setTimeout(() => {
           toast.remove();
-        }, 6000);
+        }, 2000);
       }
 }
 

@@ -3,7 +3,8 @@ package router
 import (
 	"net/http"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
+	chi_middlewares "github.com/go-chi/chi/v5/middleware"
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/handler"
 	"github.com/ishanshre/Book-Review-Platform/internals/middleware"
@@ -20,7 +21,7 @@ func Router(app *config.AppConfig) http.Handler {
 
 	mux.Use(middleware.SessionLoad) // load the session middleware
 	mux.Use(middleware.NoSurf)      // csrf middleware
-	mux.Use(middleware.Logger)
+	mux.Use(chi_middlewares.Logger)
 
 	// Get route for Home page
 	mux.Get("/", handler.Repo.Home)
