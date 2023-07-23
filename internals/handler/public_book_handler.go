@@ -15,9 +15,15 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	allBooks, err := m.DB.AllBookPage(10, 1)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
 	data := make(map[string]interface{})
 	data["allGenre"] = allGenres
-	render.Template(w, r, "home.page.tmpl", &models.TemplateData{
+	data["allBooks"] = allBooks
+	render.Template(w, r, "public_home.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
 }

@@ -61,6 +61,7 @@ type DatabaseRepo interface {
 
 	// book interface
 	AllBook() ([]*models.Book, error)
+	AllBookPage(limit, page int) ([]*models.Book, error)
 	DeleteBook(id int) error
 	InsertBook(u *models.Book) error
 	GetBookByID(id int) (*models.Book, error)
