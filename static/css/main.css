@@ -1,17 +1,101 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Open Sans', sans-serif;
+/* Box sizing rules*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
+
+/* Reset margin, padding and font-size */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Avoid text overflows */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/* Allow percentage-based heights in the application */
+html,
+body {
+  height: 100%;
+}
+
+/* Set core root defaults */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Set core body defaults */
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+}
+
+/* Remove list styles on ul, ol elements with a class attribute */
+ul[class],
+ol[class] {
+  list-style: none;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+  text-decoration-skip-ink: auto;
+}
+a.nav-links {
+  text-decoration: none;
+}
+/* Make images easier to work with */
+img,
+picture,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+/* Blur images when they have no alt attribute */
+img:not([alt]) {
+  filter: blur(10px);
+}
+
+/* Remove all animations and transitions for people that prefer not to see them */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Remove animations and transition on window resize */
+.resize-animation-stopper * {
+  animation: none !important;
+  transition: none !important;
+}
+
 
 body {
     height: 100vh;
     background-color: #000;
-    background-image: url("/static/images/background.jpg");
+    /* Set the background image URL */
+    background-image: url('/static/images/background.jpg');
+    /* Set the background image size and position */
     background-size: cover;
+    
     background-position: center;
-
+    /* Set the background attachment to fixed */
+    background-attachment: fixed;
 }
 
 li {
@@ -20,10 +104,10 @@ li {
 
 a {
     text-decoration: none;
-    color: #fff;
+    color: hsl(39, 100%, 50%);
 }
 
-a:hover {color: orange;}
+a:hover {color: #fff;}
 
 
 /* Header */
@@ -31,6 +115,33 @@ header {
     position: relative;
     padding: 0 2rem;
 }
+
+:root{
+    /* 600px */ --s: 37.5em;
+    /* 768px */ --m: 48em;
+    /* 1024px */ --l: 64em;
+    /* 1280px */ --xl: 80em;
+    /* 1440px */ --xxl: 90em;
+    --fs-1600:8rem;
+    --fs-1200:6rem;
+    --fs-1000:4rem;
+    --fs-800:2rem;
+    --fs-400:1rem;
+    --fs-300:0.875rem;
+    --fs-200:0.75rem;
+
+    --fw-100:100;
+    --fw-200:200;
+    --fw-300:300;
+    --fw-400:400;
+    --fw-500:500;
+    --fw-600:600;
+    --fw-700:700;
+    --fw-800:800;
+    --fw-900:900;
+    --fw-1000:1000;
+}
+
 
 .navbar {
     width: 100%;
@@ -115,8 +226,87 @@ header {
     justify-content: center;
 }
 
+.d-flex {
+    display: flex;
+    gap: var(--gap, 1rem);
+    align-items: var(--ai, center);
+    justify-content: var(--jc, center);
+}
+
+.d-grid {
+    display: grid;
+    gap: var(--gap, 1rem);
+    align-items: var(--ai, center);
+    justify-content: var(--jc, center);
+}
+
+.d-none {
+    display: none;
+}
+
+.text-white {
+    color: #fff;
+}
+
+.container {
+    margin-inline: auto;
+    width: 100%;
+    padding-inline: var(--cpx, 0.75rem);
+
+    @media (min-width:37.5em) {
+      padding: var(--cpy, 2rem) var(--cpx, 1rem);
+    }
+    @media (min-width: 48em) {
+      padding: var(--cpy, 4.5rem) var(--cpx, 0);
+      width: unset;
+      /* width: 45rem; */
+    }
+    @media (min-width: 64em) {
+      padding: var(--cpy, 5.25rem) var(--cpx, 0);
+      /* width: 52.5rem; */
+      width: var(--cw, clamp(52.5rem, 80vw, 55rem));
+    }
+    @media (min-width: 80em) {
+      padding-block: var(--cpy, 6.25rem);
+      padding-inline: var(--cpx, clamp(10rem, 12vw, 12.5rem));
+      width: 100%;
+    }
+    @media (min-width: 90em) {
+      padding-block: var(--cpy, 6.25rem);
+      padding-inline: var(--cpx, 0);
+      width: var(--cw, 72.5rem);
+    }
+  }
+
+.search-section,.search-section>.container{
+    height: 100%;
+}
 
 
+.title-heading {
+    font-style: normal;
+    color: hsl(39, 100%, 57%);
+    font-size: var(--fs-1600);
+    font-weight: var(--fw-900);
+    line-height: 1.1em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.title-paragraph {
+    font-style: normal;
+    color: hsl(39, 100%, 59%);
+    font-size: var(--fs-800);
+    font-weight: var(--fw-700);
+    line-height: 1.1em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.home-search{
+    margin: 0 auto;
+    text-align: center;
+}
 
 
 

@@ -35,6 +35,46 @@ func (m *postgresDBRepo) AllBook() ([]*models.Book, error) {
 	return books, nil
 }
 
+// AllBookPage returns slice of books of length limit
+func (m *postgresDBRepo) AllBookPage(limit, page int) ([]*models.Book, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if limit == 0 || limit < 0 {
+		limit = 10
+	}
+	if page == 0 || page < 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+
+	query := "SELECT * FROM books ORDER BY RANDOM() LIMIT $1 OFFSET $2"
+	rows, err := m.DB.QueryContext(ctx, query, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	books := []*models.Book{}
+	for rows.Next() {
+		book := &models.Book{}
+		if err := rows.Scan(
+			&book.ID,
+			&book.Title,
+			&book.Description,
+			&book.Cover,
+			&book.Isbn,
+			&book.PublishedDate,
+			&book.Paperback,
+			&book.IsActive,
+			&book.AddedAt,
+			&book.UpdatedAt,
+			&book.PublisherID,
+		); err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+	return books, nil
+}
+
 // DeleteBook deletes the Book from the db
 func (m *postgresDBRepo) DeleteBook(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

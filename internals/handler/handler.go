@@ -3,11 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/driver"
-	"github.com/ishanshre/Book-Review-Platform/internals/models"
-	"github.com/ishanshre/Book-Review-Platform/internals/render"
 	"github.com/ishanshre/Book-Review-Platform/internals/repository"
 	"github.com/ishanshre/Book-Review-Platform/internals/repository/dbrepo"
 )
@@ -48,11 +46,6 @@ const base_buyLists_path = "/admin/buyLists"
 const base_followers_path = "/admin/followers"
 const base_reviews_path = "/admin/reviews"
 const base_contacts_path = "/admin/contacts"
-
-// Home handles the home page
-func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "home.page.tmpl", &models.TemplateData{})
-}
 
 // ClearSessionMessage clears the session message like flash, error and warning after being displayed
 func (m *Repository) ClearSessionMessage(w http.ResponseWriter, r *http.Request) {

@@ -1,0 +1,42 @@
+{{template "base" .}}
+
+{{define "title"}}Book Review PlatForm{{end}}
+
+{{define "content"}}
+<main>
+    <section>
+        <div class="search-section">
+            <div class="container d-grid">
+              <p class="title-heading">
+                BookWorm
+              </p>
+              <p class="title-paragraph">
+                Welcome to Booktopia, where bookworms and literature enthusiasts unite! Dive into the world of endless literary adventures, thought-provoking reviews, and exhilarating recommendations.
+              </p>
+              <div class="home-search">
+                    <form action="#" method="post">
+                        <input type="search" name="search" id="search">
+                        <button type="submit">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </form>
+              </div>
+            </div>
+          </div>
+    </section>
+    <section class="recommendation-section">
+        <div class="container d-flex">
+            {{$allBooks := index .Data "allBooks"}}
+                {{range $allBooks}}                
+                        <li>
+                            <div>
+                                <img src="/{{.Cover}}" alt="" width="300px" height="auto">
+                                <p class="text-white">{{.Title}}</p>
+                            </div>
+                        </li>            
+                {{end}}
+            </ul>
+        </div>
+    </section>
+</main>
+{{end}}

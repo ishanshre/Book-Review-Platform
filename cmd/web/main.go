@@ -32,28 +32,32 @@ var connString string
 var infoLog *log.Logger
 var errorLog *log.Logger
 
+type FileLogger struct {
+	file *os.File
+}
+
+func (f *FileLogger) Write(p []byte) (n int, err error) {
+	return f.file.Write(p)
+}
+
 func main() {
 	// using flag for command line arguments
 	port := flag.Int("port", 8000, "The port to run the web application")
 
 	flag.Parse()
 
-	// load the environment variable from the .env file
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatalf("error in loading environment files: %v\n", err)
-	}
 	db, err := Run()
 	if err != nil {
-		log.Fatalln(err)
+		app.ErrorLog.Println(err)
 	}
-	log.Println("Connected to database")
+	app.InfoLog.Println("Connected to database")
 
 	defer db.SQL.Close()
 
 	// close the channel at last
 	defer close(app.MailChan)
 
-	log.Println("Starting the mail listener")
+	app.InfoLog.Println("Starting the mail listener")
 	// starting the mail listener
 	listenForMail()
 
@@ -66,15 +70,28 @@ func main() {
 		Addr:    addr,
 		Handler: router.Router(&app),
 	}
-	log.Printf("Starting server at port %d", *port)
+	app.InfoLog.Printf("Starting server at port %d", *port)
 
 	// start the server and listen to the specified port
 	if err := srv.ListenAndServe(); err != nil {
-		log.Fatalf("error in listining to server: %s", err)
+		app.ErrorLog.Fatalf("error in listining to server: %s", err)
 	}
 }
 
 func Run() (*driver.DB, error) {
+
+	// create a logger with log.New()
+	infoLog = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime)
+	errorLog = log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+
+	// assign logs to global configs
+	app.InfoLog = infoLog
+	app.ErrorLog = errorLog
+	// load the environment variable from the .env file
+	if err := godotenv.Load(".env"); err != nil {
+		return nil, fmt.Errorf("error in loading environment files")
+	}
+
 	// store the values in the session
 	gob.Register(models.User{})
 
@@ -85,14 +102,6 @@ func Run() (*driver.DB, error) {
 	// change to true in production
 	app.InProduction = false
 	app.UseRedis = true
-
-	// create a logger with log.New()
-	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
-	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
-
-	// assign logs to global configs
-	app.InfoLog = infoLog
-	app.ErrorLog = errorLog
 
 	// Initiate a session and configure it
 	session = scs.New()
@@ -116,7 +125,7 @@ func Run() (*driver.DB, error) {
 	// initiate the template cache
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
-		log.Println(err)
+		infoLog.Println(err)
 		return nil, err
 	}
 
