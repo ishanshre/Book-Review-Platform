@@ -25,6 +25,7 @@ func Router(app *config.AppConfig) http.Handler {
 
 	// Get route for Home page
 	mux.Get("/", handler.Repo.Home)
+	mux.Get("/books", handler.Repo.AllBooks)
 
 	// Api for clearing the messages
 	mux.Post("/api/clear/{type}", handler.Repo.ClearSessionMessage)

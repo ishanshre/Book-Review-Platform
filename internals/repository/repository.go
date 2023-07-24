@@ -61,7 +61,7 @@ type DatabaseRepo interface {
 
 	// book interface
 	AllBook() ([]*models.Book, error)
-	AllBookData() ([]*models.Book, error)
+	AllBookData(limit, page int) ([]*models.Book, error)
 	AllBookDataRandom() ([]*models.Book, error)
 	AllBookRandomPage(limit, page int) ([]*models.Book, error)
 	DeleteBook(id int) error

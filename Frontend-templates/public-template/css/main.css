@@ -233,6 +233,20 @@ header {
     justify-content: var(--jc, center);
 }
 
+.d-flex-col {
+    display: flex;
+    gap: var(--gap, 1rem);
+    align-items: var(--ai, center);
+    justify-content: var(--jc, center);
+    flex-direction: column;
+}
+
+.d-flex-wrap {
+  flex-wrap: wrap;
+}
+
+
+
 .d-grid {
     display: grid;
     gap: var(--gap, 1rem);
@@ -253,34 +267,24 @@ header {
 }
 
 .container {
-    margin-inline: auto;
-    width: 100%;
-    padding-inline: var(--cpx, 0.75rem);
+  max-width: 1200px; /* Set a maximum width for the container */
+  margin: 0 auto; /* Center the container horizontally */
+  padding: 20px;
+}
 
-    @media (min-width:37.5em) {
-      padding: var(--cpy, 2rem) var(--cpx, 1rem);
-    }
-    @media (min-width: 48em) {
-      padding: var(--cpy, 4.5rem) var(--cpx, 0);
-      width: unset;
-      /* width: 45rem; */
-    }
-    @media (min-width: 64em) {
-      padding: var(--cpy, 5.25rem) var(--cpx, 0);
-      /* width: 52.5rem; */
-      width: var(--cw, clamp(52.5rem, 80vw, 55rem));
-    }
-    @media (min-width: 80em) {
-      padding-block: var(--cpy, 6.25rem);
-      padding-inline: var(--cpx, clamp(10rem, 12vw, 12.5rem));
-      width: 100%;
-    }
-    @media (min-width: 90em) {
-      padding-block: var(--cpy, 6.25rem);
-      padding-inline: var(--cpx, 0);
-      width: var(--cw, 72.5rem);
-    }
+/* Media query for smaller screens */
+@media screen and (max-width: 768px) {
+  .container {
+      padding: 10px;
   }
+}
+
+/* Media query for even smaller screens */
+@media screen and (max-width: 480px) {
+  .container {
+      padding: 5px;
+  }
+}
 
 .search-section,.search-section>.container{
     height: 100%;
@@ -336,6 +340,11 @@ header {
         width: unset;
     }
 }
+
+.search-section {
+  margin-bottom: 150px;
+}
+
 
 form.search input[type=search] {
   padding: 10px;
@@ -436,4 +445,53 @@ footer {
   padding-block: 20px;
   width: 100%;
   text-align: center;
+}
+
+
+/* book page css */
+
+.card-box {
+  width: 200px;
+  height: 300px;
+  background-color: hsl(0, 0%, 83%);
+  border: 1px solid hsl(0, 9%, 76%);
+  border-radius: 5px;
+  margin: 20px;
+}
+
+.card-box:hover {
+  border: 2px solid red;
+  cursor: pointer;
+  transition: all ease 0.3s;
+}
+
+.card-img {
+  width: 100%;
+  height: auto;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+}
+
+.card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.card-text {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-text span{
+  color: red;
+  font-size: 0.9rem;
+}
+
+@media(max-width:1250px) {
+  .card-box {
+    width: 150px;
+  }
 }

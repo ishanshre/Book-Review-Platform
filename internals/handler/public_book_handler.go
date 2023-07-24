@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/ishanshre/Book-Review-Platform/internals/helpers"
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
@@ -70,6 +71,28 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	data["allBooks"] = allBooks
 	data["topRatedBooks"] = topRatedBooks
 	render.Template(w, r, "public_home.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
+}
+
+// AllBooks return all books in pages
+func (m *Repository) AllBooks(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		limit = 10
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		page = 1
+	}
+	books, err := m.DB.AllBookData(limit, page)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["books"] = books
+	render.Template(w, r, "public_books.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
 }
