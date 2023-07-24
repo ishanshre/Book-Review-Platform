@@ -35,8 +35,70 @@ func (m *postgresDBRepo) AllBook() ([]*models.Book, error) {
 	return books, nil
 }
 
+func (m *postgresDBRepo) AllBookData() ([]*models.Book, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT * FROM books`
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	books := []*models.Book{}
+	for rows.Next() {
+		book := new(models.Book)
+		if err := rows.Scan(
+			&book.ID,
+			&book.Title,
+			&book.Description,
+			&book.Cover,
+			&book.Isbn,
+			&book.PublishedDate,
+			&book.Paperback,
+			&book.IsActive,
+			&book.AddedAt,
+			&book.UpdatedAt,
+			&book.PublisherID,
+		); err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+	return books, nil
+}
+
+func (m *postgresDBRepo) AllBookDataRandom() ([]*models.Book, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT * FROM books ORDER BY RANDOM()`
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	books := []*models.Book{}
+	for rows.Next() {
+		book := new(models.Book)
+		if err := rows.Scan(
+			&book.ID,
+			&book.Title,
+			&book.Description,
+			&book.Cover,
+			&book.Isbn,
+			&book.PublishedDate,
+			&book.Paperback,
+			&book.IsActive,
+			&book.AddedAt,
+			&book.UpdatedAt,
+			&book.PublisherID,
+		); err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+	return books, nil
+}
+
 // AllBookPage returns slice of books of length limit
-func (m *postgresDBRepo) AllBookPage(limit, page int) ([]*models.Book, error) {
+func (m *postgresDBRepo) AllBookRandomPage(limit, page int) ([]*models.Book, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	if limit == 0 || limit < 0 {

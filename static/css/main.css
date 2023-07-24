@@ -89,7 +89,7 @@ body {
     height: 100vh;
     background-color: #000;
     /* Set the background image URL */
-    background-image: url('/static/images/background.jpg');
+    background-image: url('../images/background.jpg');
     /* Set the background image size and position */
     background-size: cover;
     
@@ -248,6 +248,10 @@ header {
     color: #fff;
 }
 
+.text-orange {
+  color: orange;
+}
+
 .container {
     margin-inline: auto;
     width: 100%;
@@ -331,4 +335,105 @@ header {
         left: 2rem;
         width: unset;
     }
+}
+
+form.search input[type=search] {
+  padding: 10px;
+  font-size: 20px;
+  border: 3px solid gray;
+  border-right: none;
+  border-radius: 20px 0 0 20px;
+  float: left;
+  width: 80%;
+  background: #f1f1f1;
+}
+
+form.search button {
+  float: left;
+  width: 20%;
+  padding: 10px;
+  background: gray;
+  color: orange;
+  font-size: 20px;
+  border: 3px solid gray;
+  border-left: none;
+  border-radius: 0px 20px 20px 0px;
+  cursor: pointer;
+}
+
+form.search input[type=search]:hover,
+form.search button[type=submit]:hover {
+  border: 3px solid orange;
+  opacity: 1;
+}
+
+.carousel {
+  position: relative;
+}
+
+
+.slide {
+  color: orange;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.slide > img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  object-position: center;
+  transition: 200ms opacity ease-in-out;
+  transition-delay: 200ms;
+}
+
+
+.slide[data-active] {
+  opacity: 1;
+  z-index: 1;
+  transition-delay: 0ms;
+}
+
+.carousel-button {
+  position: absolute;
+  z-index: 2;
+  background: none;
+  border: none;
+  font-size: 4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255,255, .5);
+  cursor: pointer;
+  border-radius: .25rem;
+  padding: 0.5rem;
+  background-color: rgba(0,0,0,.1);
+}
+
+.carousel-button:hover,
+.carousel-button:focus {
+  color: white;
+  background-color: rgba(0, 0, 0, .2);
+}
+
+.carousel-button:focus {
+  outline: 1px solid black;
+}
+
+.carousel-button.prev {
+  left: -5rem;
+}
+
+.carousel-button.next {
+  right: -5rem;
+}
+
+footer {
+  color: orange;
+  left: 0;
+  bottom: 0;
+  margin-block: 20px;
+  padding-block: 20px;
+  width: 100%;
+  text-align: center;
 }

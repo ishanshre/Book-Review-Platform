@@ -61,7 +61,9 @@ type DatabaseRepo interface {
 
 	// book interface
 	AllBook() ([]*models.Book, error)
-	AllBookPage(limit, page int) ([]*models.Book, error)
+	AllBookData() ([]*models.Book, error)
+	AllBookDataRandom() ([]*models.Book, error)
+	AllBookRandomPage(limit, page int) ([]*models.Book, error)
 	DeleteBook(id int) error
 	InsertBook(u *models.Book) error
 	GetBookByID(id int) (*models.Book, error)
@@ -73,6 +75,7 @@ type DatabaseRepo interface {
 	AllBookAuthor() ([]*models.BookAuthor, error)
 	DeleteBookAuthor(book_id, author_id int) error
 	GetBookAuthorByID(book_id, author_id int) (*models.BookAuthor, error)
+	GetBookAuthorByBookID(book_id int) ([]*models.BookAuthor, error)
 	BookAuthorExists(book_id, author_id int) (bool, error)
 	UpdateBookAuthor(u *models.BookAuthor, book_id, author_id int) error
 	InsertBookAuthor(u *models.BookAuthor) error
@@ -122,10 +125,10 @@ type DatabaseRepo interface {
 	ReviewExists(u *models.Review) (bool, error)
 	InsertReview(u *models.Review) error
 	GetReviewByID(id int) (*models.Review, error)
-	GetReviewByBookID(id int) (*models.Review, error)
 	GetReviewByUserID(id int) (*models.Review, error)
 	DeleteReview(id int) error
 	UpdateReview(u *models.Review) error
+	GetReviewsByBookID(bookID int) ([]*models.Review, error)
 
 	// Contact interface
 	AllContacts() ([]*models.Contact, error)

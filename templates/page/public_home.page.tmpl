@@ -14,8 +14,8 @@
                 Welcome to Booktopia, where bookworms and literature enthusiasts unite! Dive into the world of endless literary adventures, thought-provoking reviews, and exhilarating recommendations.
               </p>
               <div class="home-search">
-                    <form action="#" method="post">
-                        <input type="search" name="search" id="search">
+                    <form class="search" method="post">
+                        <input type="search" name="search" id="search" placeholder="Search...">
                         <button type="submit">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
@@ -24,20 +24,40 @@
             </div>
           </div>
     </section>
-    <section class="recommendation-section">
-        <div class="container d-flex">
-            {{$allBooks := index .Data "allBooks"}}
-            <ul>
-                {{range $allBooks}}                
-                        <li>
-                            <div>
-                                <img src="/{{.Cover}}" alt="" width="300px" height="auto">
-                                <p class="text-white">{{.Title}}</p>
+    <section class="top-rated-section">
+        <div class="container">             
+            <section aria-label="Top 10 Random Rated Books">
+                <div class="carousel" data-carousel>
+                    <button class="carousel-button prev" data-carousel-button="prev">&#8656</button>
+                    <button class="carousel-button next" data-carousel-button="next">&#8658</button>
+                    <ul data-slides>
+                        {{$topRatedBooks := index .Data "topRatedBooks"}}
+                        {{range $topID, $topRated := $topRatedBooks}}
+                        <li class="slide d-flex" data-active>
+                            <img src="{{$topRated.Book.Cover}}" alt="Img1">
+                            <div>                        
+                                <h1>{{$topRated.Book.Title}}</h1>
+                                <p><strong>Author: </strong>
+                                    {{range $i, $author := $topRated.Authors}}
+                                        {{$author.FirstName}} {{$author.LastName}}{{if ne $i $topRated.LenAuthors}},{{end}}                                        
+                                    {{end}}
+                                </p>
+                                <p><strong>Description: </strong>
+                                    {{$topRated.Book.Description}}
+                                </p>
+                                <p><strong>Published Date: </strong>2022-01-01</p>
+                                <p><strong>Rating: </strong>5</p>
                             </div>
-                        </li>            
-                {{end}}
-            </ul>
+                        </li>  
+                        {{end}}                      
+                    </ul>
+                </div>
+            </section>
         </div>
     </section>
 </main>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/public_home.js"></script>
 {{end}}
