@@ -28,6 +28,12 @@ func ServerError(w http.ResponseWriter, err error) {
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
 
+func PageNotFound(w http.ResponseWriter, err error) {
+	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
+	app.ErrorLog.Println(trace)
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+}
+
 // IsAuthenticated return true if authenticated else false
 func IsAuthenticated(r *http.Request) bool {
 	exists := app.Session.Exists(r.Context(), "user_id")

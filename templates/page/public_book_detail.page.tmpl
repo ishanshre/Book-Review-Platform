@@ -1,0 +1,65 @@
+{{template "base" .}}
+
+{{define "title"}}{{$book := index .Data "book"}}{{$book.Title}}{{end}}
+
+
+{{define "content"}}
+    {{$book := index .Data "book"}}
+    <section>
+        <div class="container">
+            <div class="d-flex text-orange">
+                <img src="/{{$book.Cover}}" alt="{{$book.Isbn}}" width="200px" height="300px">
+                <div class="d-flex-col d-left"> 
+                    <h1>{{$book.Title}}</h1>
+                    <p><strong>By 
+                        {{$authors := index .Data "authors"}}
+                        {{$lastIndexAuthors := index .Data "lastIndexAuthors"}}
+                        {{range $id, $author := $authors}}
+                            {{$author.FirstName}} {{$author.LastName}}{{if ne $id $lastIndexAuthors}},{{end}}
+                        {{end}}
+                    </strong></p>
+                    <p>{{$book.Description}}</p>
+                    <p><strong>ISBN: </strong>{{$book.Isbn}}</p>
+                    <p><strong>Pages: </strong>{{$book.Paperback}}</p>
+                    <p><strong>Published Date: </strong>{{DateOnly $book.PublishedDate}}</p>
+                    <p><strong>Published By: </strong>
+                        {{$publisher := index .Data "publisher"}}
+                        {{$publisher.Name}}
+                    </p>
+                    {{$averageRating := index .Data "averageRating"}}
+                    <p><strong>Average Rating: </strong>{{$averageRating}}</p>
+                    <p><strong>Book Added</strong>{{DateOnly $book.AddedAt}}</p>
+                    <p><strong>Last Updated</strong>{{DateOnly $book.UpdatedAt}}</p>
+                    <div>
+                        <div class="d-flex">
+                            <h2>Reviews</h2>
+                            <button class="addBtn"><a href="/books/{{$book.Isbn}}/create-review">Write a Review</a></button>
+                        </div>
+                        {{$reviewDatas := index .Data "reviewDatas"}}
+                        <div class="d-flex-col m-t5">
+                        {{range $id, $reviewData := $reviewDatas}}
+                            <div class="review-box">
+                                <p><strong>Rating: </strong>{{$reviewData.Review.Rating}}</p>
+                                <p><strong>By </strong>@{{$reviewData.User.Username}}</p>
+                                <p>{{$reviewData.Review.Body}}</p>
+                                {{if eq $.IsAuthenticated 1}}
+                                {{if eq $reviewData.Review.UserID $.UserID}}
+                                <button class="btn" id="delete-{{$reviewData.Review.ID}}" onclick="showDeleteForm(this, '{{$reviewData.Review.ID}}')">Delete</button>
+                                <a href="#"><button class="btn">Update</button></a>
+                                {{end}}
+                                {{end}}
+                                <form action="/books/{{$book.Isbn}}/reviews/{{$reviewData.Review.ID}}/delete" class="d-none" method="post" id="{{$reviewData.Review.ID}}">
+                                    <h2>You are deleteing this review?</h2>
+                                    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                    <input type="submit" value="Delete" class="btn">
+                                    <button type="button" onclick="removeForm('{{$reviewData.Review.ID}}')" class="btn">Cancel</button>
+                                </form>
+                            </div>
+                        {{end}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{{end}}

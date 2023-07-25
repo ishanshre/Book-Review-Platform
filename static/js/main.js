@@ -10,3 +10,15 @@ toogleBtn.onclick = function () {
         : 'fa-solid fa-bars'
 }
 
+function showDeleteForm(element, id) {
+    const form = document.getElementById(id)
+    element.classList.add("d-none")
+    form.classList.remove("d-none")
+}
+
+function removeForm(id) {
+    const form = document.getElementById(id)
+    form.classList.add("d-none")
+    const deleteButton = document.getElementById("delete-"+id)
+    deleteButton.classList.remove("d-none")
+}

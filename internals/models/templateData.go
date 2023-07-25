@@ -15,5 +15,6 @@ type TemplateData struct {
 	Form            *forms.Form
 	IsAuthenticated int
 	Username        string
+	UserID          int
 	AccessLevel     int
 }

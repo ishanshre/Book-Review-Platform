@@ -35,11 +35,18 @@ func (m *postgresDBRepo) AllBook() ([]*models.Book, error) {
 	return books, nil
 }
 
-func (m *postgresDBRepo) AllBookData() ([]*models.Book, error) {
+func (m *postgresDBRepo) AllBookData(limit, page int) ([]*models.Book, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	query := `SELECT * FROM books`
-	rows, err := m.DB.QueryContext(ctx, query)
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	skip := (page - 1) * limit
+	query := `SELECT * FROM books ORDER BY title ASC LIMIT $1 OFFSET $2`
+	rows, err := m.DB.QueryContext(ctx, query, limit, skip)
 	if err != nil {
 		return nil, err
 	}
@@ -155,6 +162,34 @@ func (m *postgresDBRepo) GetBookByID(id int) (*models.Book, error) {
 		WHERE id=$1
 	`
 	row := m.DB.QueryRowContext(ctx, query, id)
+	book := &models.Book{}
+	if err := row.Scan(
+		&book.ID,
+		&book.Title,
+		&book.Description,
+		&book.Cover,
+		&book.Isbn,
+		&book.PublishedDate,
+		&book.Paperback,
+		&book.IsActive,
+		&book.AddedAt,
+		&book.UpdatedAt,
+		&book.PublisherID,
+	); err != nil {
+		return nil, err
+	}
+	return book, nil
+}
+
+// GetBookByISBN returns the book from database using id
+func (m *postgresDBRepo) GetBookByISBN(isbn int64) (*models.Book, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT * FROM books
+		WHERE isbn=$1
+	`
+	row := m.DB.QueryRowContext(ctx, query, isbn)
 	book := &models.Book{}
 	if err := row.Scan(
 		&book.ID,

@@ -1,0 +1,33 @@
+{{template "base" .}}
+
+{{define "title"}}Books{{end}}
+
+
+{{define "content"}}
+    <main>
+            <section class="container d-flex-col text-orange">
+                  <div class="card-heading">
+                    <span>All Books</span>
+                  </div>
+                    {{$books := index .Data "books"}}
+                    <div class="d-flex d-flex-wrap">
+                        {{range $id, $book := $books}}
+                        <!-- Start the card box -->
+                        <div class="card-box">
+                            <a href="/books/{{$book.Isbn}}">
+                                <div class="card-img">
+                                    <img src="/{{$book.Cover}}" alt="img-{{$book.Title}}">
+                                </div>
+    
+                                <div class="card-text">
+                                    <span>{{$book.Title}}</span>
+                                </div>
+                            </a>
+                        </div>
+                    {{end}}
+                  </div>
+
+                </section>
+            </section>
+        </main>
+{{end}}

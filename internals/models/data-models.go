@@ -40,3 +40,8 @@ type FollowerData struct {
 	AuthorData *Author
 	FollowedAt time.Time
 }
+
+type ReviewUserData struct {
+	Review *Review
+	User   *User
+}

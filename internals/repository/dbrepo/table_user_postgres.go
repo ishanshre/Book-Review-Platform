@@ -125,12 +125,37 @@ func (m *postgresDBRepo) GetGlobalUserByID(id int) (*models.User, error) {
 	query := `
 		SELECT id, first_name, last_name, gender, address, profile_pic, created_at
 		FROM users
-		WHERE access_level = 2
+		WHERE (access_level = $1 AND id= $1)
 	`
-	row := m.DB.QueryRowContext(ctx, query)
+	row := m.DB.QueryRowContext(ctx, query, id)
 	var u *models.User
 	if err := row.Scan(
 		&u.ID,
+		&u.FirstName,
+		&u.LastName,
+		&u.Gender,
+		&u.Address,
+		&u.ProfilePic,
+		&u.CreatedAt,
+	); err != nil {
+		return nil, fmt.Errorf("could not fetch id %d from database: %s", id, err)
+	}
+	return u, nil
+}
+
+// GetGlobalUserByID return user by id
+func (m *postgresDBRepo) GetGlobalUserByIDAny(id int) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT id, username, first_name, last_name, gender, address, profile_pic, created_at
+		FROM users where id = $1
+	`
+	row := m.DB.QueryRowContext(ctx, query, id)
+	u := &models.User{}
+	if err := row.Scan(
+		&u.ID,
+		&u.Username,
 		&u.FirstName,
 		&u.LastName,
 		&u.Gender,
