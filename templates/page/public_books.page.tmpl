@@ -14,13 +14,15 @@
                         {{range $id, $book := $books}}
                         <!-- Start the card box -->
                         <div class="card-box">
-                            <div class="card-img">
-                                <img src="/{{$book.Cover}}" alt="img-{{$book.Title}}">
-                            </div>
-
-                            <div class="card-text">
-                                <span>{{$book.Title}}</span>
-                            </div>
+                            <a href="/books/{{$book.Isbn}}">
+                                <div class="card-img">
+                                    <img src="/{{$book.Cover}}" alt="img-{{$book.Title}}">
+                                </div>
+    
+                                <div class="card-text">
+                                    <span>{{$book.Title}}</span>
+                                </div>
+                            </a>
                         </div>
                     {{end}}
                   </div>

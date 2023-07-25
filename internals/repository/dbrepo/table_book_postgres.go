@@ -181,6 +181,34 @@ func (m *postgresDBRepo) GetBookByID(id int) (*models.Book, error) {
 	return book, nil
 }
 
+// GetBookByISBN returns the book from database using id
+func (m *postgresDBRepo) GetBookByISBN(isbn int64) (*models.Book, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT * FROM books
+		WHERE isbn=$1
+	`
+	row := m.DB.QueryRowContext(ctx, query, isbn)
+	book := &models.Book{}
+	if err := row.Scan(
+		&book.ID,
+		&book.Title,
+		&book.Description,
+		&book.Cover,
+		&book.Isbn,
+		&book.PublishedDate,
+		&book.Paperback,
+		&book.IsActive,
+		&book.AddedAt,
+		&book.UpdatedAt,
+		&book.PublisherID,
+	); err != nil {
+		return nil, err
+	}
+	return book, nil
+}
+
 // InsertBook add new author to db
 func (m *postgresDBRepo) InsertBook(u *models.Book) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

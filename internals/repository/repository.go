@@ -10,6 +10,7 @@ type DatabaseRepo interface {
 
 	GetUserByID(id int) (*models.User, error)
 	GetGlobalUserByID(id int) (*models.User, error)
+	GetGlobalUserByIDAny(id int) (*models.User, error)
 
 	DeleteUser(id int) error
 	UpdateUser(u *models.User) error
@@ -67,6 +68,7 @@ type DatabaseRepo interface {
 	DeleteBook(id int) error
 	InsertBook(u *models.Book) error
 	GetBookByID(id int) (*models.Book, error)
+	GetBookByISBN(isbn int64) (*models.Book, error)
 	BookIsbnExists(isbn int64) (bool, error)
 	UpdateBook(u *models.Book) error
 	GetBookTitleByID(id int) (*models.Book, error)

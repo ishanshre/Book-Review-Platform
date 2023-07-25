@@ -227,19 +227,26 @@ header {
 }
 
 .d-flex {
-    display: flex;
-    gap: var(--gap, 1rem);
-    align-items: var(--ai, center);
-    justify-content: var(--jc, center);
+  display: flex;
+  gap: var(--gap, 1rem);
 }
 
 .d-flex-col {
-    display: flex;
-    gap: var(--gap, 1rem);
-    align-items: var(--ai, center);
-    justify-content: var(--jc, center);
-    flex-direction: column;
+  display: flex;
+  gap: var(--gap, 1rem);
+  flex-direction: column;
 }
+
+.d-center {
+  align-items: var(--ai, center);
+  justify-content: var(--jc, center);
+}
+
+.d-left {
+  align-items: var(--ai, left);
+  justify-content: var(--jc, left);
+}
+
 
 .d-flex-wrap {
   flex-wrap: wrap;
@@ -386,6 +393,7 @@ form.search button[type=submit]:hover {
   position: absolute;
   inset: 0;
   opacity: 0;
+  
 }
 
 .slide > img {
@@ -499,4 +507,12 @@ footer {
   .card-box {
     width: 150px;
   }
+}
+
+
+/* review in book detail */
+.review-box{
+  border: 1px solid orange;
+  border-radius: 10px;
+  padding: 4px;
 }
