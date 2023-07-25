@@ -33,7 +33,7 @@
                     <ul data-slides>
                         {{$topRatedBooks := index .Data "topRatedBooks"}}
                         {{range $topID, $topRated := $topRatedBooks}}
-                        <li class="slide d-flex" data-active>
+                        <li class="slide d-flex d-center" data-active>
                             <img src="{{$topRated.Book.Cover}}" alt="Img1">
                             <div>                        
                                 <h1>{{$topRated.Book.Title}}</h1>

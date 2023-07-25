@@ -1,4 +1,4 @@
-body {
+/* body {
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
@@ -6,37 +6,86 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh; 
-  }
+  } */
 
-.attribute{
-    display: block;
+  body {
+    height: 100vh;
+    background-color: #000;
+    /* Set the background image URL */
+    background-image: url('public-template/images/loginReg.jpg');
+    /* Set the background image size and position */
+    background-size: cover;
+    
+    background-position: center;
+    /* Set the background attachment to fixed */
+    background-attachment: fixed;
 }
-.attribute::placeholder{
+
+.form{
+    width: 382px;
+    overflow: hidden;
+    margin: 50px auto;
+    padding: 80px;
+    
+}
+
+a {
+    text-decoration: none;
+}
+
+.form h1 {
+    text-align: center;
+    color: #fff;
+}
+
+.form h1 a {
+    color: #fff;
+}
+
+.form h1 a:hover {
+    color: orange;
+}
+
+.form-field{
+    width: 357px;
+    height: 40px;
+    background: #F7F7F7;
+    border: 1px solid #D9D9D9;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    padding-left: 0 30px 0 68px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    font-size: 15px;
+    display: block;
+    text-indent: 10px;
+}
+
+.form-field:hover {
+    border: 2px solid orange;
+}
+
+.form-field::placeholder {
     text-indent: 20px;
 }
-.username{
-    width: 357px;
-    height: 40px;
-    background: #F7F7F7;
-    border: 1px solid #D9D9D9;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 6px;
-    margin-bottom: 20px;
-}
-.password{
-    width: 357px;
-    height: 40px;
-    background: #F7F7F7;
-    border: 1px solid #D9D9D9;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 6px;
-    margin-bottom: 20px;
+
+.btn{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;    
 }
 
-.login_button{
+.login-btn{
     width: 119px;
     height: 40px;
-    background: #286DA8;
+    background: #3686cc;
+    color: #fff;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background: orange;
 }

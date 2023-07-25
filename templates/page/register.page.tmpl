@@ -3,70 +3,55 @@
 {{define "title"}}Register{{end}}
 
 {{define "content"}}
-    <div class="container">
-        <h1>New Register</h1>
-
+<div class="d-flex">
+    <div class="container d-flex-col text-orange">
         {{$res := index .Data "register"}}
-        <form action="/user/register" method="post" enctype="multipart/form-data" novalidate>
+        <form action="/user/register" method="post" enctype="multipart/form-data" class="form-group" novalidate>
+            <h1><a href="/user/login">Login</a> | <a href="/user/register">Register</a></h1>
             <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
 
-            <div class="form-group mt-3">
-                <label for="first_name">First Name:</label>
+            <div class="d-flex">
                 {{with .Form.Errors.Get "first_name"}}
                     <label class="text-danger">{{.}}</label>
                 {{end}}
                 <input type="text" name="first_name" id="first_name"
-                class="form-control {{with .Form.Errors.Get "first_name"}} is-invalid {{end}}"
+                class="form-control {{with .Form.Errors.Get "first_name"}} is-invalid {{end}}" placeholder="First Name"
                 autocomplete="off" required value={{$res.FirstName}}
                 >
-            </div>
-
-            <div class="form-group mt-3">
-                <label for="last_name">Last Name:</label>
                 {{with .Form.Errors.Get "last_name"}}
                     <label class="text-danger">{{.}}</label>
                 {{end}}
                 <input type="text" name="last_name" id="last_name"
-                class="form-control {{with .Form.Errors.Get "last_name"}} is-invalid {{end}}"
+                class="form-control {{with .Form.Errors.Get "last_name"}} is-invalid {{end}}" placeholder="Last Name"
                 autocomplete="off" required value={{$res.LastName}}
                 >
             </div>
 
-            <div class="form-group mt-3">
-                <label for="email">Email Address:</label>
+            <div class="d-flex">
                 {{with .Form.Errors.Get "email"}}
                     <label class="text-danger">{{.}}</label>
                 {{end}}
                 <input type="text" name="email" id="email"
-                class="form-control {{with .Form.Errors.Get "email"}} is-invalid {{end}}"
+                class="form-control {{with .Form.Errors.Get "email"}} is-invalid {{end}}" placeholder="Email Address"
                 autocomplete="off" required value={{$res.Email}}
                 >
-            </div>
-
-            <div class="form-group mt-3">
-                <label for="username">Username:</label>
                 {{with .Form.Errors.Get "username"}}
                     <label class="text-danger">{{.}}</label>
                 {{end}}
                 <input type="text" name="username" id="username"
-                class="form-control {{with .Form.Errors.Get "username"}} is-invalid {{end}}"
+                class="form-control {{with .Form.Errors.Get "username"}} is-invalid {{end}}" placeholder="Username"
                 autocomplete="off" required value={{$res.Username}}
                 >
             </div>
 
-            <div class="form-group mt-3">
-                <label for="password">Password:</label>
+            <div class="d-flex">
                 {{with .Form.Errors.Get "password"}}
                     <label class="text-danger">{{.}}</label>
                 {{end}}
                 <input type="password" name="password" id="password"
-                class="form-control {{with .Form.Errors.Get "password"}} is-invalid {{end}}"
+                class="form-control {{with .Form.Errors.Get "password"}} is-invalid {{end}}" placeholder="Password"
                 autocomplete="off" required value={{$res.Password}}
                 >
-            </div>
-
-            <div class="form-group mt-3">
-                <label for="gender">Gender:</label>
                 {{with .Form.Errors.Get "gender"}}
                     <label class="text-danger">{{.}}</label>
                 {{end}}
@@ -77,42 +62,39 @@
                 </select>
             </div>
 
-            <div class="form-group mt-3">
-                <label for="citizenship_number">Citizenship Number:</label>
+            <div>
                 {{with .Form.Errors.Get "citizenship_number"}}
                     <label class="text-danger">{{.}}</label>
                 {{end}}
                 <input type="text" name="citizenship_number" id="citizenship_number"
                 class="form-control {{with .Form.Errors.Get "citizenship_number"}} is-invalid {{end}}"
+                placeholder="Citizenship Number"
                 autocomplete="off" required value={{$res.CitizenshipNumber}}
                 >
             </div>
 
-            <div class="form-group mt-3">
-                <label for="citizenship_front">Citizenship Front Side Image:</label>
+            
+            <div class="d-flex d-center file-input-container">
+                <label for="citizenship_front" class="custom-file-label">Citizenship Front Side Image:</label>
                 {{with .Form.Errors.Get "citizenship_front"}}
                     <label class="text-danger">{{.}}</label>
                 {{end}}
                 <input type="file" name="citizenship_front" id="citizenship_front"
-                class="form-control {{with .Form.Errors.Get "citizenship_front"}} is-invalid {{end}}"
+                class="input-file {{with .Form.Errors.Get "citizenship_front"}} is-invalid {{end}}"
                 autocomplete="off" required accept="image/png, image/jpg"
                 >
-            </div>
-
-            <div class="form-group mt-3">
-                <label for="citizenship_back">Citizenship Back Side Image:</label>
+            
+                <label for="citizenship_back" class="custom-file-label">Citizenship Back Side Image:</label>
                 {{with .Form.Errors.Get "citizenship_back"}}
                     <label class="text-danger">{{.}}</label>
                 {{end}}
                 <input type="file" name="citizenship_back" id="citizenship_back"
-                class="form-control {{with .Form.Errors.Get "citizenship_back"}} is-invalid {{end}}"
+                class="input-file {{with .Form.Errors.Get "citizenship_back"}} is-invalid {{end}}"
                 autocomplete="off" required accept="image/png, image/jpg"
                 >
             </div>
-
-            
-
-            <input type="submit" value="Register" class="btn btn-primary mt-3">
+            <div class="btn-div"><input type="submit" value="Register" class="btn"></div>
         </form>
     </div>
+</div>
 {{end}}
