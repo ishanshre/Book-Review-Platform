@@ -25,10 +25,17 @@ func Router(app *config.AppConfig) http.Handler {
 
 	// Get route for Home page
 	mux.Get("/", handler.Repo.Home)
-	mux.Get("/books", handler.Repo.AllBooks)
-	mux.Get("/books/{isbn}", handler.Repo.BookDetailByISBN)
-	mux.Get("/books/{isbn}/create-review", handler.Repo.PublicCreateReview)
-	mux.Post("/books/{isbn}/create-review", handler.Repo.PostPublicCreateReview)
+
+	mux.Route("/books", func(mux chi.Router) {
+		mux.Get("/", handler.Repo.AllBooks)
+		mux.Get("/{isbn}", handler.Repo.BookDetailByISBN)
+		mux.Route("/", func(mux chi.Router) {
+			mux.Use(middleware.Auth)
+			mux.Get("/{isbn}/create-review", handler.Repo.PublicCreateReview)
+			mux.Post("/{isbn}/create-review", handler.Repo.PostPublicCreateReview)
+			mux.Post("/{isbn}/reviews/{review_id}/delete", handler.Repo.PostPublicDeleteReview)
+		})
+	})
 
 	// Api for clearing the messages
 	mux.Post("/api/clear/{type}", handler.Repo.ClearSessionMessage)

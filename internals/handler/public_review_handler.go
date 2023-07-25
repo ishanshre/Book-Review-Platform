@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -86,4 +87,33 @@ func (m *Repository) PostPublicCreateReview(w http.ResponseWriter, r *http.Reque
 	}
 	http.Redirect(w, r, fmt.Sprintf("/books/%d", isbn), http.StatusSeeOther)
 
+}
+
+func (m *Repository) PostPublicDeleteReview(w http.ResponseWriter, r *http.Request) {
+	isbn, err := strconv.ParseInt(chi.URLParam(r, "isbn"), 10, 64)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	review_id, err := strconv.Atoi(chi.URLParam(r, "review_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	review, err := m.DB.GetReviewByID(review_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.Get(r.Context(), "user_id").(int)
+	if user_id != int(review.UserID) {
+		helpers.PageNotFound(w, errors.New("user not authorized"))
+		return
+	}
+
+	if err := m.DB.DeleteReview(review_id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/books/%d", isbn), http.StatusSeeOther)
 }

@@ -42,6 +42,18 @@
                                 <p><strong>Rating: </strong>{{$reviewData.Review.Rating}}</p>
                                 <p><strong>By </strong>@{{$reviewData.User.Username}}</p>
                                 <p>{{$reviewData.Review.Body}}</p>
+                                {{if eq $.IsAuthenticated 1}}
+                                {{if eq $reviewData.Review.UserID $.UserID}}
+                                <button class="btn" id="delete-{{$reviewData.Review.ID}}" onclick="showDeleteForm(this, '{{$reviewData.Review.ID}}')">Delete</button>
+                                <a href="#"><button class="btn">Update</button></a>
+                                {{end}}
+                                {{end}}
+                                <form action="/books/{{$book.Isbn}}/reviews/{{$reviewData.Review.ID}}/delete" class="d-none" method="post" id="{{$reviewData.Review.ID}}">
+                                    <h2>You are deleteing this review?</h2>
+                                    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                    <input type="submit" value="Delete" class="btn">
+                                    <button type="button" onclick="removeForm('{{$reviewData.Review.ID}}')" class="btn">Cancel</button>
+                                </form>
                             </div>
                         {{end}}
                         </div>

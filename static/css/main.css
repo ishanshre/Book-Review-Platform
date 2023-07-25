@@ -592,6 +592,7 @@ footer {
 }
 
 .btn:hover {
+  color: #000;
   background: orange;
 }
 
