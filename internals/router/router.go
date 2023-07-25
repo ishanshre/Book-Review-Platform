@@ -27,6 +27,8 @@ func Router(app *config.AppConfig) http.Handler {
 	mux.Get("/", handler.Repo.Home)
 	mux.Get("/books", handler.Repo.AllBooks)
 	mux.Get("/books/{isbn}", handler.Repo.BookDetailByISBN)
+	mux.Get("/books/{isbn}/create-review", handler.Repo.PublicCreateReview)
+	mux.Post("/books/{isbn}/create-review", handler.Repo.PostPublicCreateReview)
 
 	// Api for clearing the messages
 	mux.Post("/api/clear/{type}", handler.Repo.ClearSessionMessage)

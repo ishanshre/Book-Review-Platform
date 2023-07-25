@@ -1,0 +1,31 @@
+{{template "base" .}}
+
+{{define "title"}}{{$book := index .Data "book"}} Add review for {{$book.Title}}{{end}}
+
+{{define "content"}}
+{{$book := index .Data "book"}}
+{{$review := index .Data "review"}}
+<div class="d-flex">
+    <div class="d-flex-col container text-orange">
+        <div>
+            <h1>Create Add review for {{$book.Title}} </h1>
+        </div>
+        <div>
+            <form method="post" class="d-flex-col">                
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                <input type="number" step="0.01" name="rating" id="rating" placeholder="Rating" class="form-control" value="{{$review.Rating}}">
+                {{with .Form.Errors.Get "rating"}}
+                <label class="d-flex d-center text-danger">{{.}}</label>
+                {{end}}
+
+                <textarea class="textArea" name="body" id="body" cols="50" rows="10" placeholder="Review">{{$review.Body}}</textarea>
+                {{with .Form.Errors.Get "body"}}
+                <label class="text-danger">{{.}}</label>
+                {{end}}
+                <div class="btn-div"><input type="submit" value="Add Review" class="btn"></div>
+            </form>
+        </div>
+        
+    </div>
+</div>
+{{end}}
