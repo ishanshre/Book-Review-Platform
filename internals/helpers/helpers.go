@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"runtime/debug"
@@ -13,6 +14,39 @@ var app *config.AppConfig
 // NewHelpers sets up access to gloabal app config
 func NewHelpers(a *config.AppConfig) {
 	app = a
+}
+
+type Message struct {
+	Status  string `json:"status,omitempty"`
+	Message string `json:"message,omitempty"`
+	Data    any    `json:"data,omitempty"`
+}
+
+func WriteJson(w http.ResponseWriter, status int, data any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(data)
+}
+
+func StatusOk(w http.ResponseWriter, message string) {
+	WriteJson(w, http.StatusOK, Message{
+		Status:  "success",
+		Message: message,
+	})
+}
+
+func StatusOkData(w http.ResponseWriter, data any) {
+	WriteJson(w, http.StatusOK, Message{
+		Status: "success",
+		Data:   data,
+	})
+}
+
+func StatusInternalServerError(w http.ResponseWriter, message string) {
+	WriteJson(w, http.StatusInternalServerError, Message{
+		Status:  "error",
+		Message: message,
+	})
 }
 
 // ClientError handles the client errors

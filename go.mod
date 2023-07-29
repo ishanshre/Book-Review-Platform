@@ -20,7 +20,9 @@ require (
 )
 
 require (
+	github.com/go-faker/faker/v4 v4.1.1 // indirect
 	github.com/go-test/deep v1.1.0 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
+	golang.org/x/text v0.11.0 // indirect
 )
