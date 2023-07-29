@@ -70,7 +70,7 @@ func (m *Repository) PostResetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// If exists then add error to the form.
-	if exists {
+	if !exists {
 		form.Errors.Add("email", "This email does not exist")
 	}
 

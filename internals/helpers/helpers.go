@@ -43,5 +43,5 @@ func IsAuthenticated(r *http.Request) bool {
 // IsAdmin returns true if authenticated user is admin else return false
 func IsAdmin(r *http.Request) bool {
 	access_level := app.Session.GetInt(r.Context(), "access_level")
-	return access_level == 0
+	return access_level == 1
 }

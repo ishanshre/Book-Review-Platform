@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/ishanshre/Book-Review-Platform/internals/forms"
@@ -88,17 +89,46 @@ func (m *Repository) AdminUpdateUser(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	user, err := m.DB.GetUserByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	email := user.Email
 	if err := r.ParseForm(); err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
+
 	form := forms.New(r.PostForm)
-	user := &models.User{
-		FirstName: r.Form.Get("first_name"),
-		LastName:  r.Form.Get("last_name"),
-		Gender:    r.Form.Get("gender"),
-		Phone:     r.Form.Get("phone"),
-		Address:   r.Form.Get("address"),
+	access_level, _ := strconv.Atoi(r.Form.Get("access_level"))
+	is_validated, _ := strconv.ParseBool(r.Form.Get("is_validated"))
+	layout := "2006-01-02"
+	dob, err := time.Parse(layout, r.Form.Get("date_of_birth"))
+	if err != nil {
+		form.Errors.Add("date_of_birth", err.Error())
+	}
+
+	user.FirstName = r.Form.Get("first_name")
+	user.LastName = r.Form.Get("last_name")
+	user.Email = r.Form.Get("email")
+	user.Gender = r.Form.Get("gender")
+	user.Phone = r.Form.Get("phone")
+	user.Address = r.Form.Get("address")
+	user.DateOfBirth = dob
+	user.AccessLevel = access_level
+	user.IsValidated = is_validated
+	user.UpdatedAt = time.Now()
+
+	if email != user.Email {
+		exists, err := m.DB.EmailExists(user.Email)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		if exists {
+			form.Errors.Add("email", "email already exists")
+		}
 	}
 	user.ID = id
 	data := make(map[string]interface{})
@@ -128,7 +158,7 @@ func (m *Repository) PostAdminUserProfileUpdate(w http.ResponseWriter, r *http.R
 		helpers.ServerError(w, err)
 	}
 	username := m.App.Session.Get(r.Context(), "username")
-	path, err := helpers.UserRegitserFileUpload(r, "profile_pic", username.(string))
+	path, err := helpers.MediaPicUpload(r, "profile_pic", username.(string))
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -201,7 +231,7 @@ func (m *Repository) PostAdminUserAdd(w http.ResponseWriter, r *http.Request) {
 	form := forms.New(r.PostForm)
 
 	// Add form field validations
-	form.Required("username", "email", "password", "citizenship_number")
+	form.Required("username", "email", "password")
 	form.MinLength("username", 5)
 	form.MinLength("password", 8)
 	form.HasLowerCase("password")
@@ -211,10 +241,9 @@ func (m *Repository) PostAdminUserAdd(w http.ResponseWriter, r *http.Request) {
 
 	// Store the data from post form to register_user.
 	register_user := models.User{
-		Username:          r.Form.Get("username"),
-		Email:             r.Form.Get("email"),
-		Password:          r.Form.Get("password"),
-		CitizenshipNumber: r.Form.Get("citizenship_number"),
+		Username: r.Form.Get("username"),
+		Email:    r.Form.Get("email"),
+		Password: r.Form.Get("password"),
 	}
 
 	// UsernameExists interface is called to check if username already exists.

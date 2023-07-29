@@ -10,6 +10,7 @@
 {{$res := index .Data "user"}}
     <div>
         <div>
+            <h1>User: {{$res.FirstName}} {{$res.LastName}}</h1>
             <form action="/admin/users/detail/{{$res.ID}}" method="post">
                 <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                 <div>
@@ -25,6 +26,13 @@
                         <label>{{.}}</label>
                     {{end}}
                     <input type="text" name="last_name" id="last_name" value="{{$res.LastName}}">
+                </div>
+                <div>
+                    <label for="email">Email: </label>
+                    {{with .Form.Errors.Get "Email"}}
+                        <label>{{.}}</label>
+                    {{end}}
+                    <input type="email" name="email" id="email" value="{{$res.Email}}">
                 </div>
                 <div>
                     <label for="gender">Gender: </label>
@@ -48,8 +56,39 @@
                     {{end}}
                     <input type="text" name="address" id="address" value="{{$res.Address}}">
                 </div>
+                <div>
+                    <label for="date_of_birth">Date Of Birth: </label>
+                    {{with .Form.Errors.Get "date_of_birth"}}
+                        <label>{{.}}</label>
+                    {{end}}
+                    <input type="date" name="date_of_birth" id="date_of_birth" value="{{DateOnly $res.DateOfBirth}}">
+                </div>
+                <div>
+                    <label for="access_level">Access Level: </label>
+                    {{with .Form.Errors.Get "access_level"}}
+                        <label>{{.}}</label>
+                    {{end}}
+                    <select name="access_level" id="access_level">
+                        <option value=1 {{if eq $res.AccessLevel 1}} selected {{end}}>1</option>
+                        <option value=2  {{if eq $res.AccessLevel 2}} selected {{end}}>2</option>
+                        <option value=3  {{if eq $res.AccessLevel 3}} selected {{end}}>3</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="is_validated">Validated: </label>
+                    {{with .Form.Errors.Get "is_validated"}}
+                        <label>{{.}}</label>
+                    {{end}}
+                    <select name="is_validated" id="is_validated">
+                        <option value="true" {{if eq $res.IsValidated true}} selected {{end}}>Verified</option>
+                        <option value="false"  {{if eq $res.IsValidated false}} selected {{end}}>Unverified</option>
+                    </select>
+                </div>
                 <input type="submit" value="Update">
             </form>
+        </div>
+        <div>
+            <img src="/{{$res.ProfilePic}}" alt="profile_pic" width="200px" height="200px">
         </div>
         <div>
             <form action="/admin/users/detail/{{$res.ID}}/profile" method="post" enctype="multipart/form-data">
@@ -60,19 +99,13 @@
             </form>
         </div>
         <div>
-            <h1>User: {{$res.FirstName}} {{$res.LastName}}</h1>
+            
             <p><strong>Username: </strong>@{{$res.Username}}</p>
-            <p><strong>Email: </strong>{{$res.Email}}</p>
             <p><strong>Password: </strong>{{$res.Password}}</p>
-            <p><strong>Gender: </strong>{{$res.Gender}}</p>
-            <p><strong>Address: </strong>{{$res.Address}}</p>
-            <p><strong>Phone: </strong>{{$res.Phone}}</p>
-            <p><strong>ProfilePic: </strong>{{$res.ProfilePic}}</p>
-            <p><strong>Citizen number: </strong>{{$res.CitizenshipNumber}}</p>
-            <p><strong>Cit front: </strong>{{$res.CitizenshipFront}}</p>
-            <p><strong>cit back: </strong>{{$res.CitizenshipBack}}</p>
-            <p><strong>Access Level: </strong>{{$res.AccessLevel}}</p>
-            <p><strong>Validated: </strong>{{$res.IsValidated}}</p>
+            <p><strong>Document Type: </strong>{{$res.DocumentType}}</p>
+            <p><strong>Document number: </strong>{{$res.DocumentNumber}}</p>
+            <p><strong>Document front: </strong>{{$res.DocumentFront}}</p>
+            <p><strong>Document back: </strong>{{$res.DocumentBack}}</p>
             <p><strong>Joined At: </strong>{{TimeSince $res.CreatedAt}}</p>
             <p><strong>Updated At: </strong>{{TimeSince $res.UpdatedAt}}</p>
             <p><strong>Last Login: </strong>{{TimeSince $res.LastLogin}}</p>

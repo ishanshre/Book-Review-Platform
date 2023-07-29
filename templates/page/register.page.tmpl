@@ -7,7 +7,7 @@
     <div class="container d-flex-col text-orange">
         {{$res := index .Data "register"}}
         <form action="/user/register" method="post" enctype="multipart/form-data" class="form-group" novalidate>
-            <h1><a href="/user/login">Login</a> | <a href="/user/register">Register</a></h1>
+            <h1>Register</h1>
             <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
 
             <div class="d-flex">
@@ -61,39 +61,8 @@
                     <option value="Others">Others</option>
                 </select>
             </div>
-
-            <div>
-                {{with .Form.Errors.Get "citizenship_number"}}
-                    <label class="text-danger">{{.}}</label>
-                {{end}}
-                <input type="text" name="citizenship_number" id="citizenship_number"
-                class="form-control {{with .Form.Errors.Get "citizenship_number"}} is-invalid {{end}}"
-                placeholder="Citizenship Number"
-                autocomplete="off" required value={{$res.CitizenshipNumber}}
-                >
-            </div>
-
-            
-            <div class="d-flex d-center file-input-container">
-                <label for="citizenship_front" class="custom-file-label">Citizenship Front Side Image:</label>
-                {{with .Form.Errors.Get "citizenship_front"}}
-                    <label class="text-danger">{{.}}</label>
-                {{end}}
-                <input type="file" name="citizenship_front" id="citizenship_front"
-                class="input-file {{with .Form.Errors.Get "citizenship_front"}} is-invalid {{end}}"
-                autocomplete="off" required accept="image/png, image/jpg"
-                >
-            
-                <label for="citizenship_back" class="custom-file-label">Citizenship Back Side Image:</label>
-                {{with .Form.Errors.Get "citizenship_back"}}
-                    <label class="text-danger">{{.}}</label>
-                {{end}}
-                <input type="file" name="citizenship_back" id="citizenship_back"
-                class="input-file {{with .Form.Errors.Get "citizenship_back"}} is-invalid {{end}}"
-                autocomplete="off" required accept="image/png, image/jpg"
-                >
-            </div>
             <div class="btn-div"><input type="submit" value="Register" class="btn"></div>
+            <center><a href="/user/login">Already have an account? Login</a></center>
         </form>
     </div>
 </div>

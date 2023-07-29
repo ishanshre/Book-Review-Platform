@@ -65,8 +65,8 @@ func (m *Repository) PostContactUs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	msg := models.MailData{
-		To:      contact.Email,
-		From:    "admin@bookworm.com",
+		To:      "admin@bookworm.com",
+		From:    contact.Email,
 		Subject: fmt.Sprintf("Contact Notification: %v", contact.Subject),
 		Content: fmt.Sprintf("%v %v contacted the company. \n %v", contact.FirstName, contact.LastName, contact.Message),
 	}

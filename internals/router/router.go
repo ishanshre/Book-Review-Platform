@@ -63,6 +63,10 @@ func Router(app *config.AppConfig) http.Handler {
 	fileServerPublic := http.FileServer(http.Dir("./public/"))
 	mux.Handle("/public/*", http.StripPrefix("/public", fileServerPublic))
 
+	// media file server
+	fileServerMedia := http.FileServer(http.Dir("./media/"))
+	mux.Handle("/media/*", http.StripPrefix("/media", fileServerMedia))
+
 	// Contact Us router
 	mux.Get("/contact-us", handler.Repo.ContactUs)
 	mux.Post("/contact-us", handler.Repo.PostContactUs)

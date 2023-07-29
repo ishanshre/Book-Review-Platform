@@ -10,7 +10,7 @@ import (
 )
 
 // UserRegisterFileUpload uploads single file
-func UserRegitserFileUpload(r *http.Request, field, username string) (string, error) {
+func MediaPicUpload(r *http.Request, field, username string) (string, error) {
 	file, handler, err := r.FormFile(field)
 	if err != nil {
 		return "", fmt.Errorf("error in getting file: %s", err)

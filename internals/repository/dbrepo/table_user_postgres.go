@@ -104,9 +104,11 @@ func (m *postgresDBRepo) GetUserByID(id int) (*models.User, error) {
 		&u.Address,
 		&u.Phone,
 		&u.ProfilePic,
-		&u.CitizenshipNumber,
-		&u.CitizenshipFront,
-		&u.CitizenshipBack,
+		&u.DateOfBirth,
+		&u.DocumentType,
+		&u.DocumentNumber,
+		&u.DocumentFront,
+		&u.DocumentBack,
 		&u.AccessLevel,
 		&u.IsValidated,
 		&u.CreatedAt,
@@ -197,7 +199,7 @@ func (m *postgresDBRepo) UpdateUser(u *models.User) error {
 	defer cancel()
 	stmt := `
 		UPDATE users
-		SET first_name = $2, last_name = $3, gender = $4, address = $5, phone = $6, updated_at = $7
+		SET first_name = $2, last_name = $3, email = $4, gender = $5, address = $6, phone = $7, dob = $8, access_level = $9, is_validated = $10, updated_at = $11
 		WHERE id = $1
 	`
 	_, err := m.DB.ExecContext(
@@ -206,10 +208,14 @@ func (m *postgresDBRepo) UpdateUser(u *models.User) error {
 		u.ID,
 		u.FirstName,
 		u.LastName,
+		u.Email,
 		u.Gender,
 		u.Address,
 		u.Phone,
-		time.Now(),
+		u.DateOfBirth,
+		u.AccessLevel,
+		u.IsValidated,
+		u.UpdatedAt,
 	)
 	if err != nil {
 		return fmt.Errorf("cannot update the user with id %d : %s", u.ID, err)
@@ -235,8 +241,8 @@ func (m *postgresDBRepo) InsertUser(u *models.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	stmt := `
-		INSERT INTO users (first_name, last_name, email, username, password,address, gender, phone, profile_pic, citizenship_number, citizenship_front, citizenship_back, created_at, updated_at, last_login)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+		INSERT INTO users (first_name, last_name, email, username, password,address, gender, phone, profile_pic, dob, document_number, document_front, document_back, created_at, updated_at, last_login)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
 	`
 	res, err := m.DB.ExecContext(
 		ctx,
@@ -250,11 +256,12 @@ func (m *postgresDBRepo) InsertUser(u *models.User) error {
 		u.Gender,
 		"",
 		"",
-		u.CitizenshipNumber,
-		u.CitizenshipFront,
-		u.CitizenshipBack,
-		time.Now(),
 		time.Time{},
+		"",
+		"",
+		"",
+		time.Now(),
+		time.Now(),
 		time.Time{},
 	)
 	if err != nil {
@@ -272,8 +279,8 @@ func (m *postgresDBRepo) AdminInsertUser(u *models.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	stmt := `
-		INSERT INTO users (first_name, last_name, email, username, password,address, gender, phone, profile_pic, citizenship_number, citizenship_front, citizenship_back, created_at, updated_at, last_login)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+		INSERT INTO users (first_name, last_name, email, username, password, address, gender, phone, profile_pic, dob, document_number, document_front, document_back, created_at, updated_at, last_login)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
 	`
 	res, err := m.DB.ExecContext(
 		ctx,
@@ -287,7 +294,8 @@ func (m *postgresDBRepo) AdminInsertUser(u *models.User) error {
 		"Male",
 		"",
 		"",
-		u.CitizenshipNumber,
+		time.Time{},
+		"",
 		"",
 		"",
 		time.Now(),
@@ -349,7 +357,7 @@ func (m *postgresDBRepo) GetProfilePersonal(id int) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	query := `
-		SELECT first_name, last_name, email, username, gender, address, phone, profile_pic, citizenship_number, citizenship_front, citizenship_back, created_at, updated_at, last_login
+		SELECT first_name, last_name, email, username, gender, address, phone, profile_pic, dob, document_type, document_number, document_front, document_back, created_at, updated_at, last_login
 		FROM users
 		WHERE id = $1
 	`
@@ -364,9 +372,11 @@ func (m *postgresDBRepo) GetProfilePersonal(id int) (*models.User, error) {
 		&u.Address,
 		&u.Phone,
 		&u.ProfilePic,
-		&u.CitizenshipNumber,
-		&u.CitizenshipFront,
-		&u.CitizenshipBack,
+		&u.DateOfBirth,
+		&u.DocumentType,
+		&u.DocumentNumber,
+		&u.DocumentFront,
+		&u.DocumentBack,
 		&u.CreatedAt,
 		&u.UpdatedAt,
 		&u.LastLogin,
