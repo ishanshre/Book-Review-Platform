@@ -256,32 +256,34 @@ header {
   justify-content: center;
 }
 
-.d-flex {
+.d-flex{
   display: flex;
-  gap: var(--gap, 1rem);
 }
 
+.d-flex-row {
+  flex-direction: row;
+}
 .d-flex-col {
-  display: flex;
-  gap: var(--gap, 1rem);
   flex-direction: column;
 }
-
-.d-center {
-  align-items: var(--ai, center);
-  justify-content: var(--jc, center);
-}
-
-.d-left {
-  align-items: var(--ai, left);
-  justify-content: var(--jc, left);
-}
-
-
-.d-flex-wrap {
+.d-wrap {
   flex-wrap: wrap;
 }
 
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.d-gap {
+  gap: 20px;
+}
+.w-75 {
+  width: 100%;
+}
 
 
 .d-grid {
@@ -334,7 +336,6 @@ header {
 }
 
 .search-section {
-  margin-bottom: 150px;
   margin-top: 100px;
 }
 
@@ -354,6 +355,7 @@ header {
   text-transform: uppercase;
 }
 
+
 .title-paragraph {
   font-style: normal;
   color: var(--bk-tcolor);
@@ -362,6 +364,27 @@ header {
   line-height: 1.1em;
   text-align: center;
   text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .title-heading {
+    font-size: var(--fs-1200);
+  }
+}
+
+@media (max-width: 680px) {
+  .title-heading {
+    font-size: var(--fs-1000);
+  }
+}
+
+@media (max-width: 430px) {
+  .title-heading {
+    font-size: var(--fs-800);
+  }
+  .title-paragraph {
+    font-size: var(--fs-600);
+  }
 }
 
 .home-search {
@@ -428,67 +451,7 @@ form.search button[type=submit]:hover {
   opacity: 1;
 }
 
-.carousel {
-  position: relative;
-}
 
-
-.slide {
-  color: orange;
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-
-}
-
-.slide>img {
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-  object-position: center;
-  transition: 200ms opacity ease-in-out;
-  transition-delay: 200ms;
-}
-
-
-.slide[data-active] {
-  opacity: 1;
-  z-index: 1;
-  transition-delay: 0ms;
-}
-
-.carousel-button {
-  position: absolute;
-  z-index: 2;
-  background: none;
-  border: none;
-  font-size: 4rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: rgba(255, 255, 255, .5);
-  cursor: pointer;
-  border-radius: .25rem;
-  padding: 0.5rem;
-  background-color: rgba(0, 0, 0, .1);
-}
-
-.carousel-button:hover,
-.carousel-button:focus {
-  color: white;
-  background-color: rgba(0, 0, 0, .2);
-}
-
-.carousel-button:focus {
-  outline: 1px solid black;
-}
-
-.carousel-button.prev {
-  left: -5rem;
-}
-
-.carousel-button.next {
-  right: -5rem;
-}
 
 footer {
   color: var(--bk-tcolor);
@@ -501,6 +464,69 @@ footer {
   
 }
 
+
+/* Carousel css */
+.top-rated-section {
+  place-items: center;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.top-rated-section h1 {
+  font-size: var(--fs-1000);
+  margin-bottom: 10px;
+}
+
+.slider {
+  width: 100%;
+  max-width: 800px;
+  height: 350px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+}
+
+.slide {
+  width: 100%;
+  max-width: 800px;
+  height: 350px;
+  position: absolute;
+  transition: all 0.5s;
+}
+
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-btn {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border: none;
+  border-radius: 50%;
+  z-index: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  font-size: 18px;
+}
+.carousel-btn:active {
+  transform: scale(1.1);
+}
+.carousel-btn-prev {
+  top: 45%;
+  left: 2%;
+}
+
+.carousel-btn-next {
+  top: 45%;
+  right: 2%;
+}
+
+/* carousel ends */
 
 /* book page css */
 

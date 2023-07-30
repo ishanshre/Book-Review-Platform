@@ -21,7 +21,7 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
-	allBooks, err := m.DB.AllBookDataRandom()
+	allBooks, err := m.DB.AllBookRandomPage(1000, 1)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
