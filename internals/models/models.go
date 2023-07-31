@@ -84,17 +84,24 @@ type Language struct {
 
 // Book struct holds the books table data
 type Book struct {
-	ID            int
-	Title         string
-	Description   string
-	Cover         string
-	Isbn          int64
-	PublishedDate time.Time
-	Paperback     int
-	IsActive      bool
-	AddedAt       time.Time
-	UpdatedAt     time.Time
-	PublisherID   int
+	ID            int       `json:"id,omitempty"`
+	Title         string    `json:"title,omitempty"`
+	Description   string    `json:"description,omitempty"`
+	Cover         string    `json:"cover,omitempty"`
+	Isbn          int64     `json:"isbn,omitempty"`
+	PublishedDate time.Time `json:"published_date,omitempty"`
+	Paperback     int       `json:"paperback,omitempty"`
+	IsActive      bool      `json:"is_active,omitempty"`
+	AddedAt       time.Time `json:"added_at,omitempty"`
+	UpdatedAt     time.Time `json:"updated_at,omitempty"`
+	PublisherID   int       `json:"publisher_id,omitempty"`
+}
+
+type BookApiFilter struct {
+	Total    int     `json:"total"`
+	Page     int     `json:"page"`
+	LastPage int     `json:"last_page"`
+	Books    []*Book `json:"books"`
 }
 
 // BookAuthor struct holds the immediate table between book and author

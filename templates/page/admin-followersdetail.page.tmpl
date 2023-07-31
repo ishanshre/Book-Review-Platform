@@ -50,14 +50,18 @@
             </div>
             <p><strong>Followed At: </strong>{{TimeSince $follower.FollowedAt}}</p>
             <input type="submit" value="Update">
-            <button type="button" id="delete-{{$author.ID}}-{{$user.ID}}" onclick="showDeleteForm(this,'{{$author.ID}}-{{$user.ID}}')">Delete</button>
+            <button type="button" onclick="openModal('delete-{{$author.ID}}-{{$user.ID}}')">Delete</button>
         </form>
-        <form action="/admin/followers/detail/{{$author.ID}}/{{$user.ID}}/delete" method="post" id="{{$author.ID}}-{{$user.ID}}" class="no-display"> 
-            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-            <p>Do you want to delete this relationship?</p>
-            <input type="submit" value="Delete">
-            <button type="button" onclick="removeForm('{{$author.ID}}-{{$user.ID}}')">No</button>
-        </form>
+        <div id="delete-{{$author.ID}}-{{$user.ID}}"  class="jw-modal">
+            <div class="jw-modal-body">
+                <form action="/admin/followers/detail/{{$author.ID}}/{{$user.ID}}/delete" method="post"> 
+                    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                    <p>Do you want to delete this relationship?</p>
+                    <input type="submit" value="Delete">
+                    <button type="button" onclick="closeModal()">No</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 {{end}}

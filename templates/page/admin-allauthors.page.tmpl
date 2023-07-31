@@ -33,13 +33,17 @@
                     <td>{{.CountryOfOrigin}}</td>
                     <td>
                         <button><a href="/admin/authors/detail/{{.ID}}">Detail</a></button>
-                        <button id="delete-{{.ID}}" onclick="showDeleteForm(this, '{{.ID}}')">Delete</button>
-                        <form action="/admin/authors/detail/{{.ID}}/delete" method="post" class="no-display" id="{{.ID}}">
-                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-                            <p>Do you want to delete author @{{.FirstName}}?</p>
-                            <input type="submit" value="Delete">
-                            <button type="button" onclick="removeForm('{{.ID}}')">No</button>
-                        </form>
+                        <button onclick="openModal('delete-{{.ID}}')">Delete</button>
+                        <div class="jw-modal" id="delete-{{.ID}}">
+                            <div class="jw-modal-body">
+                                <form action="/admin/authors/detail/{{.ID}}/delete" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                    <p>Do you want to delete author @{{.FirstName}}?</p>
+                                    <input type="submit" value="Delete">
+                                    <button type="button" onclick="closeModal()">No</button>
+                                </form>
+                            </div>
+                        </div>
                     </td>
                 </tr>
                 {{end}}

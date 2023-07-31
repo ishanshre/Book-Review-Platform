@@ -7,52 +7,58 @@
     <section>
         <div class="search-section">
             <div class="container d-grid">
-              <p class="title-heading">
-                BookWorm
-              </p>
-              <p class="title-paragraph">
-                Welcome to Booktopia, where bookworms and literature enthusiasts unite! Dive into the world of endless literary adventures, thought-provoking reviews, and exhilarating recommendations.
-              </p>
-              <div class="home-search">
+                <p class="title-heading">
+                    BookWorm
+                </p>
+                <p class="title-paragraph">
+                    Welcome to Booktopia, where bookworms and literature enthusiasts unite! Dive into the world of
+                    endless literary adventures, thought-provoking reviews, and exhilarating recommendations.
+                </p>
+                <div class="home-search">
                     <form class="search" method="post">
                         <input type="search" name="search" id="search" placeholder="Search...">
                         <button type="submit">
-                        <i class="fa-solid fa-magnifying-glass"></i>
+                            <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
                     </form>
-              </div>
+                </div>
             </div>
-          </div>
+        </div>
     </section>
     <section class="top-rated-section">
-        <div class="container">             
+        <div class="container">
             <section aria-label="Top 10 Random Rated Books">
-                <div class="carousel" data-carousel>
-                    <button class="carousel-button prev" data-carousel-button="prev">&#8656</button>
-                    <button class="carousel-button next" data-carousel-button="next">&#8658</button>
-                    <ul data-slides>
-                        {{$topRatedBooks := index .Data "topRatedBooks"}}
+                <h1 class="text-center text-white">Top Rated Books</h1>
+                <!-- slider container -->
+                <div class="slider">
+                    {{$topRatedBooks := index .Data "topRatedBooks"}}
                         {{range $topID, $topRated := $topRatedBooks}}
-                        <li class="slide d-flex d-center" data-active>
-                            <img src="{{$topRated.Book.Cover}}" alt="Img1">
-                            <div>                        
-                                <a href="/books/{{$topRated.Book.Isbn}}">
-                                    <h1>{{$topRated.Book.Title}}</h1>
-                                    <p><strong>Author: </strong>
-                                        {{range $i, $author := $topRated.Authors}}
+                    <!-- slide 4 -->
+                    <a href="/books/{{$topRated.Book.Isbn}}">
+                        <div class="slide d-flex d-flex-row d-gap">
+                            <img src="{{$topRated.Book.Cover}}"
+                                alt="Img1" width="250px" heigth="350px">
+                            <div>
+                                <h1>{{$topRated.Book.Title}}</h1>
+                                <p><strong>Author: </strong>
+                                    {{range $i, $author := $topRated.Authors}}
                                             {{$author.FirstName}} {{$author.LastName}}{{if ne $i $topRated.LenAuthors}},{{end}}                                        
-                                        {{end}}
-                                    </p>
-                                    <p><strong>Description: </strong>
-                                        {{$topRated.Book.Description}}
-                                    </p>
-                                    <p><strong>Published Date: </strong>2022-01-01</p>
-                                    <p><strong>Rating: </strong>5</p>
-                                </a>
+                                    {{end}}
+                                </p>
+                                <p><strong>Description: </strong>
+                                    {{$topRated.Book.Description}}
+                                </p>
+                                <p><strong>Published Date: </strong>{{$topRated.Book.PublishedDate}}</p>
+                                <p><strong>Rating: </strong>{{$topRated.AverageRating}}</p>
                             </div>
-                        </li>  
-                        {{end}}                      
-                    </ul>
+                        </div>
+                    </a>
+                    {{end}}
+
+                    <!-- Control buttons -->
+                    <button class="carousel-btn carousel-btn-next">&#8658</button>
+                    <button class="carousel-btn carousel-btn-prev">
+                        &#8656
                 </div>
             </section>
         </div>
@@ -61,5 +67,5 @@
 {{end}}
 
 {{define "js"}}
-    <script src="/static/js/public_home.js"></script>
+<script src="/static/js/public_home.js"></script>
 {{end}}

@@ -2,10 +2,13 @@ package handler
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-faker/faker/v4"
 	"github.com/ishanshre/Book-Review-Platform/internals/helpers"
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
 	"github.com/ishanshre/Book-Review-Platform/internals/render"
@@ -18,7 +21,7 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
-	allBooks, err := m.DB.AllBookDataRandom()
+	allBooks, err := m.DB.AllBookRandomPage(1000, 1)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -171,4 +174,69 @@ func (m *Repository) BookDetailByISBN(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "public_book_detail.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
+}
+
+func (m *Repository) AllBooksFilterApi(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		limit = 10
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		page = 1
+	}
+	searchKey := r.URL.Query().Get("search")
+	sort := r.URL.Query().Get("sort")
+	if sort == "" {
+		sort = "asc"
+	}
+	filteredBooks, err := m.DB.AllBooksFilter(limit, page, searchKey, sort)
+	if err != nil {
+		helpers.ServerError(w, err)
+		helpers.StatusInternalServerError(w, err.Error())
+		return
+	}
+	helpers.StatusOkData(w, filteredBooks)
+}
+
+func (m *Repository) PopulateFakeData(w http.ResponseWriter, r *http.Request) {
+	for i := 3; i < 50; i++ {
+		publisher := &models.Publisher{
+			Name:            faker.Word(),
+			Description:     faker.Paragraph(),
+			Pic:             "public/publisher/pic-publisher-2222.jpg",
+			Address:         faker.Word(),
+			Phone:           helpers.RandomPhone(10),
+			Email:           faker.Email(),
+			Website:         fmt.Sprintf("www.%s.com", faker.Word()),
+			EstablishedDate: int(helpers.RandomInt(int64(1800), int64(2023))),
+			Latitude:        "71.121212",
+			Longitude:       "98.12121",
+		}
+		if err := m.DB.InsertPublisher(publisher); err != nil {
+			helpers.StatusInternalServerError(w, err.Error())
+			helpers.ServerError(w, err)
+			return
+		}
+	}
+	for i := 0; i < 150; i++ {
+		book := &models.Book{
+			Title:         faker.Word(),
+			Description:   faker.Paragraph(),
+			Cover:         "public/book/cover-book-1234565432123.jpeg",
+			Isbn:          helpers.RandomInt(int64(1000000000000), int64(9999999999999)),
+			PublishedDate: time.Now(),
+			Paperback:     int(helpers.RandomInt(int64(100), int64(100000))),
+			IsActive:      true,
+			AddedAt:       time.Now(),
+			UpdatedAt:     time.Now(),
+			PublisherID:   30,
+		}
+		if err := m.DB.InsertBook(book); err != nil {
+			helpers.StatusInternalServerError(w, err.Error())
+			helpers.ServerError(w, err)
+			return
+		}
+	}
+	helpers.StatusOk(w, "success in populating data")
 }

@@ -72,6 +72,10 @@ type DatabaseRepo interface {
 	BookIsbnExists(isbn int64) (bool, error)
 	UpdateBook(u *models.Book) error
 	GetBookTitleByID(id int) (*models.Book, error)
+	TotalBooks() (int, error)
+	AllBooksFilter(limit, page int, searchKey, sort string) (*models.BookApiFilter, error)
+
+	CalculateLastPage(limit, total int) int
 
 	// book author interface
 	AllBookAuthor() ([]*models.BookAuthor, error)

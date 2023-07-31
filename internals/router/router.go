@@ -39,6 +39,8 @@ func Router(app *config.AppConfig) http.Handler {
 
 	// Api for clearing the messages
 	mux.Post("/api/clear/{type}", handler.Repo.ClearSessionMessage)
+	mux.Get("/api/books", handler.Repo.AllBooksFilterApi)
+	mux.Get("/api/populateData", handler.Repo.PopulateFakeData)
 
 	// Login routes
 	mux.Get("/user/login", handler.Repo.Login)
