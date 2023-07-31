@@ -293,6 +293,10 @@ header {
   justify-content: var(--jc, center);
 }
 
+.d-inline-block {
+  display: inline-block;
+}
+
 .d-none {
   display: none;
 }

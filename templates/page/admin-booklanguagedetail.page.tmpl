@@ -48,14 +48,20 @@
                 {{end}}
             </div>
             <input type="submit" value="Update">
-            <button type="button" id="delete-{{$book.ID}}-{{$language.ID}}" onclick="showDeleteForm(this,'{{$book.ID}}-{{$language.ID}}')">Delete</button>
+            <button type="button" onclick="openModal('delete-{{$book.ID}}-{{$language.ID}}')">Delete</button>
         </form>
-        <form action="/admin/bookLanguages/detail/{{$book.ID}}/{{$language.ID}}/delete" method="post" id="{{$book.ID}}-{{$language.ID}}" class="no-display"> 
-            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-            <p>Do you want to delete this relationship?</p>
-            <input type="submit" value="Delete">
-            <button type="button" onclick="removeForm('{{$book.ID}}-{{$language.ID}}')">No</button>
-        </form>
+
+        <div id="delete-{{$book.ID}}-{{$language.ID}}" class="jw-modal">
+            <div class="jw-modal-body">
+
+                <form action="/admin/bookLanguages/detail/{{$book.ID}}/{{$language.ID}}/delete" method="post"> 
+                    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                    <p>Do you want to delete this relationship?</p>
+                    <input type="submit" value="Delete">
+                    <button type="button" onclick="closeModal()">No</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 {{end}}

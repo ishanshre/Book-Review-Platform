@@ -31,13 +31,17 @@
                     <td>{{.EstablishedDate}}</td>
                     <td>
                         <button><a href="/admin/publishers/detail/{{.ID}}">Detail</a></button>
-                        <button type="button" id="delete-{{.ID}}" onclick="showDeleteForm(this, '{{.ID}}')">Delete</button>
-                        <form action="/admin/publishers/detail/{{.ID}}/delete" method="post" class="no-display" id="{{.ID}}">
-                            <h2>Delete this publisher @{{.Name}}?</h2>
-                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-                            <input type="submit" value="Delete">
-                            <button type="button" onclick="removeForm('{{.ID}}')">No</button>
-                        </form>
+                        <button type="button" onclick="openModal('delete-{{.ID}}')">Delete</button>
+                        <div class="jw-modal" id="delete-{{.ID}}">
+                            <div class="jw-modal-body">
+                                <form action="/admin/publishers/detail/{{.ID}}/delete" method="post">
+                                    <h2>Delete this publisher @{{.Name}}?</h2>
+                                    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                    <input type="submit" value="Delete">
+                                    <button type="button" onclick="closeModal()">No</button>
+                                </form>
+                            </div>
+                        </div>
                     </td>
                 </tr>
                 {{end}}
