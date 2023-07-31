@@ -5,9 +5,21 @@
 
 {{define "content"}}
 <main>
-    <section class="container">
-        <div class="search-books">
-            <input type="search" id="search-books-input" placeholder="Search Book...">
+    <section class="container d-flex-col">
+        <div class="d-flex justify-center d-gap search-all-books">
+            <input type="search" class="search-all-books-input" id="search-book" placeholder="Search Book..." onkeyup="displayBooks()">
+            <select id="order" onchange="displayBooks()">
+                <option value="asc">Ascending Order</option>
+                <option value="desc" >Descending Order</option>
+            </select>
+            <select id="limit" onchange="displayBooks()">
+                <option value="10">10</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <div class="d-flex justify-center">
+            
         </div>
     </section>
     <section class="container d-flex-col text-orange">
@@ -15,24 +27,15 @@
             <span>Books</span>
         </div>
         {{$books := index .Data "books"}}
-        <div class="d-flex d-wrap justify-center">
-            {{range $id, $book := $books}}
-            <!-- Start the card box -->
-            <div class="card-box">
-                <a href="/books/{{$book.Isbn}}">
-                    <div class="card-img">
-                        <img src="/{{$book.Cover}}" alt="img-{{$book.Title}}">
-                    </div>
-
-                    <div class="card-text">
-                        <span>{{$book.Title}}</span>
-                    </div>
-                </a>
-            </div>
-            {{end}}
+        <div class="card-box-container" id="books-display">
+            
         </div>
 
     </section>
     </section>
 </main>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/all-books.js"></script>
 {{end}}

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,100;1,300;1,400;1,500&display=swap');
+
 /* Box sizing rules*/
 *,
 *::before,
@@ -9,6 +11,7 @@
 * {
   margin: 0;
   padding: 0;
+  font-family: 'Roboto', sans-serif;
 }
 
 /* Avoid text overflows */
@@ -75,7 +78,7 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeSpeed;
   line-height: 1.5;
-  
+
 }
 
 /* Remove list styles on ul, ol elements with a class attribute */
@@ -161,7 +164,7 @@ header {
   position: relative;
   padding: 0 2rem;
   background: var(--bk-primary-dark);
-  backdrop-filter: blur(6px); 
+  backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
 
@@ -256,16 +259,18 @@ header {
   justify-content: center;
 }
 
-.d-flex{
+.d-flex {
   display: flex;
 }
 
 .d-flex-row {
   flex-direction: row;
 }
+
 .d-flex-col {
   flex-direction: column;
 }
+
 .d-wrap {
   flex-wrap: wrap;
 }
@@ -278,9 +283,18 @@ header {
   justify-content: center;
 }
 
+.justify-flex-start {
+  justify-content: flex-start;
+}
+
+.justify-flex-end {
+  justify-content: flex-end;
+}
+
 .d-gap {
   gap: 20px;
 }
+
 .w-75 {
   width: 100%;
 }
@@ -299,6 +313,10 @@ header {
 
 .d-none {
   display: none;
+}
+
+.b-radius {
+  border-radius: 25px;
 }
 
 .text-white {
@@ -386,6 +404,7 @@ header {
   .title-heading {
     font-size: var(--fs-800);
   }
+
   .title-paragraph {
     font-size: var(--fs-600);
   }
@@ -465,7 +484,7 @@ footer {
   padding-block: 30px;
   width: 100%;
   text-align: center;
-  
+
 }
 
 
@@ -517,9 +536,11 @@ footer {
   background-color: #fff;
   font-size: 18px;
 }
+
 .carousel-btn:active {
   transform: scale(1.1);
 }
+
 .carousel-btn-prev {
   top: 45%;
   left: 2%;
@@ -534,6 +555,14 @@ footer {
 
 /* book page css */
 
+.card-box-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 5px;
+}
+
+
 .card-box {
   width: 200px;
   height: 300px;
@@ -542,6 +571,7 @@ footer {
   border-radius: 5px;
   margin: 20px;
 }
+
 
 .card-box:hover {
   border: 2px solid red;
@@ -579,11 +609,7 @@ footer {
   font-weight: var(--fw-700);
 }
 
-@media(max-width:1250px) {
-  .card-box {
-    width: 150px;
-  }
-}
+
 
 
 /* review in book detail */
@@ -733,3 +759,60 @@ footer {
   width: 200px;
   height: 200px;
 }
+
+/* All Books */
+
+.search-all-books {
+  margin: 10px auto;
+  width: 75%;
+}
+
+.search-all-books-input {
+  width: 15rem;
+  height: 40px;
+  transition: width 0.4s ease-in-out;
+  border: 1px solid gray;
+  border-radius: 25px;
+  text-indent: 20px;
+
+}
+
+.search-all-books-input:hover {
+  border: 2px solid gray;
+}
+
+.search-all-books-input:focus {
+  border: 3px solid gray;
+  width: 35rem;
+  border-color: gray;
+  box-shadow: 0 0 5px rgba(94, 154, 212, 0.5);
+}
+
+select {
+  border: 2px solid gray;
+  border-radius: 25px;
+  box-shadow: 0 2px 4px rgba(128, 128, 128, 0.1);
+  padding: 10px;
+  font-size: 14px;
+  height: 40px;
+  max-width: 200px;
+}
+
+select:hover {
+  cursor: pointer;
+}
+
+select option {
+  background-color: #f9f9f9;
+  color: #333;
+  border-radius: 25px;
+  width: 150px;
+}
+
+select:focus {
+  /* Adjust border and box-shadow on focus */
+  border-color: #5e9ad4;
+  box-shadow: 0 0 5px rgba(94, 154, 212, 0.5);
+}
+
+/* End all books   */
