@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	chi_middlewares "github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/handler"
 	"github.com/ishanshre/Book-Review-Platform/internals/middleware"
@@ -18,7 +19,14 @@ import (
 // Returns an http.Handler interface that represents the application router.
 func Router(app *config.AppConfig) http.Handler {
 	mux := chi.NewRouter()
-
+	mux.Use(cors.Handler((cors.Options{
+		AllowedOrigins:   []string{"http://*", "https://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	})))
 	mux.Use(middleware.SessionLoad) // load the session middleware
 	mux.Use(middleware.NoSurf)      // csrf middleware
 	mux.Use(chi_middlewares.Logger)

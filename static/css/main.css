@@ -242,7 +242,7 @@ header {
 }
 
 .dropdown_menu.open {
-  height: 240px;
+  height: 275px;
   ;
 }
 
@@ -497,8 +497,26 @@ footer {
 }
 
 .top-rated-section h1 {
-  font-size: var(--fs-1000);
+  font-size: var(--fs-1200);
   margin-bottom: 10px;
+}
+
+@media (max-width: 900px) {
+  .top-rated-section h1 {
+    font-size: var(--fs-1000);
+  }
+}
+
+@media (max-width: 680px) {
+  .top-rated-section h1 {
+    font-size: var(--fs-800);
+  }
+}
+
+@media (max-width: 430px) {
+  .top-rated-section h1 {
+    font-size: var(--fs-400);
+  }
 }
 
 .slider {
@@ -767,6 +785,7 @@ footer {
   width: 75%;
 }
 
+
 .search-all-books-input {
   width: 15rem;
   height: 40px;
@@ -787,6 +806,18 @@ footer {
   border-color: gray;
   box-shadow: 0 0 5px rgba(94, 154, 212, 0.5);
 }
+
+@media (max-width: 500px) {
+  .search-all-books {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .search-all-books-input:focus {
+    width: 20rem;
+  }
+}
+
 
 select {
   border: 2px solid gray;
