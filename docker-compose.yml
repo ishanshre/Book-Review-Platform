@@ -18,7 +18,7 @@ services:
     volumes:
       - /tmp/redis_data:/var/lib/redis/data
   
-  web:
+  web1:
     build:
       context: .
       dockerfile: Dockerfile
@@ -36,7 +36,62 @@ services:
     entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]
     command: ["/app/web"]
     restart: always
-
+  
+  web2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8001:8000
+    environment:
+      - postgres=${postgres}
+      - test=${test}
+      - DB_URL=postgresql://${m_db_username}:${m_db_password}@postgres:5432/${m_db_dbname}?sslmode=disable
+      - TEST_DB_URL=postgresql://${m_db_username}:${m_db_password}@postgres:5432/${m_test_db_dbname}?sslmode=disable
+      - REDIS_URL=redis:6379
+    depends_on:
+      - postgres
+      - redis
+    entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]
+    command: ["/app/web"]
+    restart: always
+  
+  web3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8002:8000
+    environment:
+      - postgres=${postgres}
+      - test=${test}
+      - DB_URL=postgresql://${m_db_username}:${m_db_password}@postgres:5432/${m_db_dbname}?sslmode=disable
+      - TEST_DB_URL=postgresql://${m_db_username}:${m_db_password}@postgres:5432/${m_test_db_dbname}?sslmode=disable
+      - REDIS_URL=redis:6379
+    depends_on:
+      - postgres
+      - redis
+    entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]
+    command: ["/app/web"]
+    restart: always
+  
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    depends_on:
+      - web1
+      - web2
+      - web3
+  pgadmin:
+    image: dpage/pgadmin4
+    ports: 
+      - 5050:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=a@a.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    expose:
+      - 5050
 volumes:
   postgres_data:
   redis_data:
