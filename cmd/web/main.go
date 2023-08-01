@@ -25,7 +25,7 @@ import (
 
 var app config.AppConfig // global config
 var session *scs.SessionManager
-var host string = "127.0.0.1:6379"
+var host string = "redis:6379"
 var database string = "postgres"
 var connString string
 
@@ -79,7 +79,7 @@ func main() {
 }
 
 func Run() (*driver.DB, error) {
-
+	log.Println("working")
 	// create a logger with log.New()
 	infoLog = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime)
 	errorLog = log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
@@ -128,7 +128,6 @@ func Run() (*driver.DB, error) {
 		infoLog.Println(err)
 		return nil, err
 	}
-
 	// store the templates into global app config
 	app.TemplateCache = tc
 	app.UseCache = false

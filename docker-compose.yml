@@ -1,0 +1,42 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${m_db_username}
+      - POSTGRES_PASSWORD=${m_db_password}
+      - POSTGRES_DB=${m_db_dbname}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - /tmp/redis_data:/var/lib/redis/data
+  
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    environment:
+      - postgres=${postgres}
+      - test=${test}
+      - DB_URL=postgresql://${m_db_username}:${m_db_password}@postgres:5432/${m_db_dbname}?sslmode=disable
+      - TEST_DB_URL=postgresql://${m_db_username}:${m_db_password}@postgres:5432/${m_test_db_dbname}?sslmode=disable
+      - REDIS_URL=redis:6379
+    depends_on:
+      - postgres
+      - redis
+    entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]
+    command: ["/app/web"]
+    restart: always
+
+volumes:
+  postgres_data:
+  redis_data:

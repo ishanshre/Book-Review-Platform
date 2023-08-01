@@ -18,7 +18,7 @@ import (
 // app store the pointer to global app config
 var app *config.AppConfig
 
-var pathToTemplate = "templates"
+var pathToTemplate = "./templates"
 
 // This functions assign global app config to app in render package from main package
 func NewRenderer(a *config.AppConfig) {
