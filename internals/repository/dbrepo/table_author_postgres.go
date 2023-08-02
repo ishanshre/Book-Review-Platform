@@ -2,6 +2,7 @@ package dbrepo
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
@@ -130,4 +131,62 @@ func (m *postgresDBRepo) GetAuthorFullNameByID(id int) (*models.Author, error) {
 		return nil, err
 	}
 	return author, nil
+}
+
+func (m *postgresDBRepo) TotalAuthors() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := "SELECT COUNT(*) FROM authors"
+	var count int
+	if err := m.DB.QueryRowContext(ctx, query).Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (m *postgresDBRepo) AllAuthorsFilter(limit, page int, search, sort string) (*models.AuthorApiFilter, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+	sql := "SELECT id, first_name, last_name, avatar FROM authors"
+	if search != "" {
+		sql = fmt.Sprintf("%s where first_name LIKE '%%%s%%' OR last_name LIKE '%%%s%%'", sql, search, search)
+	}
+	if sort != "" {
+		sql = fmt.Sprintf("%s ORDER BY first_name %s", sql, sort)
+	}
+	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
+	res, err := m.DB.QueryContext(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	authors := []*models.Author{}
+	for res.Next() {
+		author := &models.Author{}
+		if err := res.Scan(
+			&author.ID,
+			&author.FirstName,
+			&author.LastName,
+			&author.Avatar,
+		); err != nil {
+			return nil, err
+		}
+		authors = append(authors, author)
+	}
+	count, _ := m.TotalBooks()
+	lastPage := m.CalculateLastPage(limit, count)
+	return &models.AuthorApiFilter{
+		Total:    count,
+		Page:     page,
+		LastPage: lastPage,
+		Authors:  authors,
+	}, nil
 }

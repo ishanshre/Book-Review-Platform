@@ -34,6 +34,10 @@ func Router(app *config.AppConfig) http.Handler {
 	// Get route for Home page
 	mux.Get("/", handler.Repo.Home)
 
+	mux.Route("/authors", func(mux chi.Router) {
+		mux.Get("/", handler.Repo.AllAuthors)
+		mux.Get("/{id}", handler.Repo.PublicGetAuthorByID)
+	})
 	mux.Route("/books", func(mux chi.Router) {
 		mux.Get("/", handler.Repo.AllBooks)
 		mux.Get("/{isbn}", handler.Repo.BookDetailByISBN)
@@ -49,6 +53,7 @@ func Router(app *config.AppConfig) http.Handler {
 	mux.Post("/api/clear/{type}", handler.Repo.ClearSessionMessage)
 	mux.Get("/api/books", handler.Repo.AllBooksFilterApi)
 	mux.Get("/api/populateData", handler.Repo.PopulateFakeData)
+	mux.Get("/api/authors", handler.Repo.AuthorFiltersApi)
 
 	// Login routes
 	mux.Get("/user/login", handler.Repo.Login)

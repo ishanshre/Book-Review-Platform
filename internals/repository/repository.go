@@ -51,6 +51,8 @@ type DatabaseRepo interface {
 	DeleteAuthor(id int) error
 	GetAuthorByID(id int) (*models.Author, error)
 	GetAuthorFullNameByID(id int) (*models.Author, error)
+	TotalAuthors() (int, error)
+	AllAuthorsFilter(limit, page int, search, order string) (*models.AuthorApiFilter, error)
 
 	// Language interface
 	AllLanguage() ([]*models.Language, error)

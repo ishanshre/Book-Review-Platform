@@ -82,24 +82,22 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 
 // AllBooks return all books in pages
 func (m *Repository) AllBooks(w http.ResponseWriter, r *http.Request) {
-	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
-	if err != nil {
-		limit = 10
-	}
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
-	if err != nil {
-		page = 1
-	}
-	books, err := m.DB.AllBookData(limit, page)
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	data := make(map[string]interface{})
-	data["books"] = books
-	render.Template(w, r, "public_books.page.tmpl", &models.TemplateData{
-		Data: data,
-	})
+	// limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	// if err != nil {
+	// 	limit = 10
+	// }
+	// page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	// if err != nil {
+	// 	page = 1
+	// }
+	// books, err := m.DB.AllBookData(limit, page)
+	// if err != nil {
+	// 	helpers.ServerError(w, err)
+	// 	return
+	// }
+	// data := make(map[string]interface{})
+	// data["books"] = books
+	render.Template(w, r, "public_books.page.tmpl", &models.TemplateData{})
 }
 
 // BookDetailByISBN returns the detail of the book using ISBN
@@ -196,7 +194,7 @@ func (m *Repository) AllBooksFilterApi(w http.ResponseWriter, r *http.Request) {
 		helpers.StatusInternalServerError(w, err.Error())
 		return
 	}
-	helpers.StatusOkData(w, filteredBooks)
+	helpers.ApiStatusOkData(w, filteredBooks)
 }
 
 func (m *Repository) PopulateFakeData(w http.ResponseWriter, r *http.Request) {
@@ -238,5 +236,5 @@ func (m *Repository) PopulateFakeData(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	helpers.StatusOk(w, "success in populating data")
+	helpers.ApiStatusOk(w, "success in populating data")
 }

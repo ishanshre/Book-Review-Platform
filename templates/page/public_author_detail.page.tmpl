@@ -1,0 +1,23 @@
+{{template "base" .}}
+
+{{define "title"}}{{$author := index .Data "author"}}{{$author.FirstName}}{{$author.LastName}}{{end}}
+
+
+{{define "content"}}
+    {{$author := index .Data "author"}}
+    <section>
+        <div class="container">
+            <div class="d-flex text-orange d-gap">
+                <img src="/{{$author.Avatar}}" class="profile_img" alt="{{$author.FirstName}}" width="200px" height="300px">
+                <div class="d-flex-col d-left"> 
+                    <h1>{{$author.FirstName}} {{$author.LastName}}</h1>
+                    <p><strong>Bio:</strong></p>
+                    <p>{{$author.Bio}}</p>
+                    <p><Strong>Date Of Birth: </Strong>{{$author.DateOfBirth}}</p>
+                    <p><strong>Email: </strong>{{$author.Email}}</p>
+                    <p><strong>Country of Origin: </strong>{{$author.CountryOfOrigin}}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+{{end}}
