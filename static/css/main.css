@@ -292,6 +292,10 @@ header {
   justify-content: flex-end;
 }
 
+.align-center {
+  align-items: center;
+}
+
 .d-gap {
   gap: 20px;
 }
