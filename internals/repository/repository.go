@@ -53,6 +53,7 @@ type DatabaseRepo interface {
 	GetAuthorFullNameByID(id int) (*models.Author, error)
 	TotalAuthors() (int, error)
 	AllAuthorsFilter(limit, page int, search, order string) (*models.AuthorApiFilter, error)
+	GetAuthorWithBooks(id int) (*models.AuthorBookData, error)
 
 	// Language interface
 	AllLanguage() ([]*models.Language, error)

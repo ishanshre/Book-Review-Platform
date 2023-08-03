@@ -8,6 +8,11 @@ type BookAuthorData struct {
 	AuthorData *Author
 }
 
+type AuthorBookData struct {
+	Author *Author
+	Books  []*Book
+}
+
 // Embed the book and genre data for BookGenre
 type BookGenreData struct {
 	BookData  *Book

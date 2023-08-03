@@ -190,3 +190,63 @@ func (m *postgresDBRepo) AllAuthorsFilter(limit, page int, search, sort string) 
 		Authors:  authors,
 	}, nil
 }
+
+func (m *postgresDBRepo) GetAuthorWithBooks(id int) (*models.AuthorBookData, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT 
+			a.id,
+			a.first_name,
+			a.last_name,
+			a.bio,
+			a.date_of_birth,
+			a.email,
+			a.country_of_origin,
+			a.avatar,
+			COALESCE(b.id,0) as book_id,
+			COALESCE(b.title,''),
+			COALESCE(b.isbn,0),
+			COALESCE(b.cover,''),
+			COALESCE(b.published_date, NOW())
+		FROM 
+			authors AS a
+		LEFT JOIN
+			book_authors AS ba ON a.id = ba.author_id
+		LEFT JOIN
+			books AS b ON ba.book_id = b.id
+		WHERE
+			a.id = $1
+	`
+	author := &models.Author{}
+	books := []*models.Book{}
+	rows, err := m.DB.QueryContext(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		book := &models.Book{}
+		if err := rows.Scan(
+			&author.ID,
+			&author.FirstName,
+			&author.LastName,
+			&author.Bio,
+			&author.DateOfBirth,
+			&author.Email,
+			&author.CountryOfOrigin,
+			&author.Avatar,
+			&book.ID,
+			&book.Title,
+			&book.Isbn,
+			&book.Cover,
+			&book.PublishedDate,
+		); err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+	authorWithBooks := &models.AuthorBookData{}
+	authorWithBooks.Author = author
+	authorWithBooks.Books = books
+	return authorWithBooks, nil
+}

@@ -175,7 +175,8 @@ func (m *Repository) PostAdminInsertPublisher(w http.ResponseWriter, r *http.Req
 	if err != nil {
 		form.Errors.Add("established_date", "Invalid established date")
 	}
-	pic_path, err := helpers.AdminPublicUploadImage(r, "pic", "publisher", establishedDate)
+	idString := fmt.Sprintf("%d%s", establishedDate, helpers.RandomAlphaNum(8))
+	pic_path, err := helpers.AdminPublicUploadImage(r, "pic", "publisher", idString)
 	if err != nil {
 		form.Errors.Add("pic", "No picture was choosen")
 	}
