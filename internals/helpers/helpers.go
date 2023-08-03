@@ -28,6 +28,13 @@ func WriteJson(w http.ResponseWriter, status int, data any) {
 	json.NewEncoder(w).Encode(data)
 }
 
+func ApiStatusNoContent(w http.ResponseWriter, message string) {
+	WriteJson(w, http.StatusNoContent, Message{
+		Status:  "error",
+		Message: message,
+	})
+}
+
 func ApiStatusOk(w http.ResponseWriter, message string) {
 	WriteJson(w, http.StatusOK, Message{
 		Status:  "success",

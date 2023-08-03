@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -51,8 +50,6 @@ func (h *Repository) PublicGetAuthorByID(w http.ResponseWriter, r *http.Request)
 	data := make(map[string]interface{})
 	data["author"] = authorWithBooks.Author
 	data["books"] = authorWithBooks.Books
-	log.Println(authorWithBooks.Author)
-	log.Println(authorWithBooks.Books)
 	render.Template(w, r, "public_author_detail.page.tmpl", &models.TemplateData{
 		Data: data,
 	})

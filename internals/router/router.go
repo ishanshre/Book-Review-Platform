@@ -57,6 +57,9 @@ func Router(app *config.AppConfig) http.Handler {
 
 	mux.Group(func(mux chi.Router) {
 		mux.Use(middleware.Auth)
+		mux.Get("/api/authors/{id}/exists", handler.Repo.FollowExistsApi)
+		mux.Post("/api/authors/{id}/follow", handler.Repo.FollowApi)
+		mux.Delete("/api/authors/{id}/unfollow", handler.Repo.UnFollowApi)
 		mux.Get("/user/logout", handler.Repo.Logout)
 	})
 	mux.Group(func(mux chi.Router) {

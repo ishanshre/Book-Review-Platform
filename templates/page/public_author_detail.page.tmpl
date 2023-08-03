@@ -4,11 +4,22 @@
 
 
 {{define "content"}}
+{{if eq .IsAuthenticated 1}}
+    <input type="hidden" id="user_id" value="{{.UserID}}">
+    {{else}}
+    <input type="hidden" id="user_id" value='0'>
+{{end}}
     {{$author := index .Data "author"}}
+    <input type="hidden" id="author_id" value="{{$author.ID}}">
+    
     <section>
         <div class="container text-white">
             <div class="d-flex d-gap">
-                <img src="/{{$author.Avatar}}" class="profile_img" alt="{{$author.FirstName}}" width="200px" height="300px">
+                <div>
+                    <img src="/{{$author.Avatar}}" class="profile_img" alt="{{$author.FirstName}}" width="200px" height="300px">
+                    <button type="button" class="btn" id="follow">Follow</button>
+                    <button type="button" class="btn" id="unfollow">UnFollow</button>
+                </div>
                 <div class="d-flex-col d-left"> 
                     <h1>{{$author.FirstName}} {{$author.LastName}}</h1>
                     <p><strong>Bio:</strong></p>
@@ -41,4 +52,8 @@
             </div>
         </div>
     </section>
+{{end}}
+
+{{define "js"}}
+    <script src="/static/js/follower.js"></script>
 {{end}}
