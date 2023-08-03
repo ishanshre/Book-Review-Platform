@@ -55,19 +55,26 @@ func Router(app *config.AppConfig) http.Handler {
 	mux.Get("/api/populateData", handler.Repo.PopulateFakeData)
 	mux.Get("/api/authors", handler.Repo.AuthorFiltersApi)
 
+	mux.Group(func(mux chi.Router) {
+		mux.Use(middleware.Auth)
+		mux.Get("/user/logout", handler.Repo.Logout)
+	})
+	mux.Group(func(mux chi.Router) {
+		mux.Use(middleware.AuthRedirect)
+		mux.Get("/user/login", handler.Repo.Login)
+		mux.Post("/user/login", handler.Repo.PostLogin)
+
+		mux.Get("/user/reset-password", handler.Repo.ResetPassword)
+		mux.Post("/user/reset-password", handler.Repo.PostResetPassword)
+		mux.Get("/user/reset", handler.Repo.ResetPasswordChange)
+		mux.Post("/user/reset", handler.Repo.PostResetPasswordChange)
+
+		// Register routes
+		mux.Get("/user/register", handler.Repo.Register)
+		mux.Post("/user/register", handler.Repo.PostRegister)
+	})
+
 	// Login routes
-	mux.Get("/user/login", handler.Repo.Login)
-	mux.Post("/user/login", handler.Repo.PostLogin)
-	mux.Get("/user/logout", handler.Repo.Logout)
-
-	mux.Get("/user/reset-password", handler.Repo.ResetPassword)
-	mux.Post("/user/reset-password", handler.Repo.PostResetPassword)
-	mux.Get("/user/reset", handler.Repo.ResetPasswordChange)
-	mux.Post("/user/reset", handler.Repo.PostResetPasswordChange)
-
-	// Register routes
-	mux.Get("/user/register", handler.Repo.Register)
-	mux.Post("/user/register", handler.Repo.PostRegister)
 
 	// create a file server with golang path implementation
 	fileServer := http.FileServer(http.Dir("./static/"))
