@@ -15,7 +15,7 @@
                         {{$authors := index .Data "authors"}}
                         {{$lastIndexAuthors := index .Data "lastIndexAuthors"}}
                         {{range $id, $author := $authors}}
-                            {{$author.FirstName}} {{$author.LastName}}{{if ne $id $lastIndexAuthors}},{{end}}
+                            <a href="/authors/{{$author.ID}}">{{$author.FirstName}} {{$author.LastName}}</a>{{if ne $id $lastIndexAuthors}},{{end}}
                         {{end}}
                     </strong></p>
                     <p>{{$book.Description}}</p>

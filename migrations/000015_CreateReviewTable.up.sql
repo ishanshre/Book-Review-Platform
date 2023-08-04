@@ -8,5 +8,5 @@ CREATE TABLE "reviews" (
     created_at TIMESTAMPTZ,
     updated_at TIMESTAMPTZ,
     CONSTRAINT fk_review_book FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE, 
-    CONSTRAINT fk_review_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    CONSTRAINT fk_review_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
 );

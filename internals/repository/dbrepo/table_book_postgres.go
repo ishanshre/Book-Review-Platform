@@ -363,3 +363,71 @@ func (m *postgresDBRepo) CalculateLastPage(limit, total int) int {
 	}
 	return lastPage
 }
+
+func (m *postgresDBRepo) BookDetailWithAuthorPublisherWithIsbn(isbn int64) (*models.BookInfoData, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT
+			b.id,
+			b.title,
+			b.description,
+			b.cover,
+			b.isbn,
+			b.published_date,
+			b.paperback,
+			b.is_active,
+			b.added_at,
+			b.updated_at,
+			COALESCE(a.id,0) as author_id,
+			COALESCE(a.first_name, ''),
+			COALESCE(a.last_name, ''),
+			p.id AS publisher_id,
+			p.name
+		FROM
+			books AS b
+		LEFT JOIN
+			book_authors AS ba ON b.id = ba.book_id
+		LEFT JOIN
+			authors AS a ON ba.author_id = a.id
+		JOIN
+			publishers AS p ON p.id = b.publisher_id
+		WHERE
+			b.isbn = $1;
+	`
+	rows, err := m.DB.QueryContext(ctx, query, isbn)
+	if err != nil {
+		return nil, err
+	}
+	bookInfo := &models.BookInfoData{}
+	authors := []*models.Author{}
+	book := &models.BookWithPublisher{}
+	publisher := &models.Publisher{}
+	for rows.Next() {
+		author := &models.Author{}
+		if err := rows.Scan(
+			&book.ID,
+			&book.Title,
+			&book.Description,
+			&book.Cover,
+			&book.Isbn,
+			&book.PublishedDate,
+			&book.Paperback,
+			&book.IsActive,
+			&book.AddedAt,
+			&book.UpdatedAt,
+			&author.ID,
+			&author.FirstName,
+			&author.LastName,
+			&publisher.ID,
+			&publisher.Name,
+		); err != nil {
+			return nil, err
+		}
+		authors = append(authors, author)
+	}
+	book.Publisher = publisher
+	bookInfo.BookWithPublisherData = book
+	bookInfo.AuthorsData = authors
+	return bookInfo, nil
+}

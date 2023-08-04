@@ -107,7 +107,7 @@ func (m *Repository) BookDetailByISBN(w http.ResponseWriter, r *http.Request) {
 		helpers.PageNotFound(w, err)
 		return
 	}
-	book, err := m.DB.GetBookByISBN(isbn)
+	book, err := m.DB.BookDetailWithAuthorPublisherWithIsbn(isbn)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			helpers.PageNotFound(w, err)
@@ -116,27 +116,10 @@ func (m *Repository) BookDetailByISBN(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
-	bookAuthors, err := m.DB.GetBookAuthorByBookID(book.ID)
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	authors := []*models.Author{}
-	for _, bookAuthor := range bookAuthors {
-		author, err := m.DB.GetAuthorByID(bookAuthor.AuthorID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		authors = append(authors, author)
-	}
+	authors := book.AuthorsData
+	publisher := book.BookWithPublisherData.Publisher
 
-	publisher, err := m.DB.GetPublisherByID(book.PublisherID)
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	reviews, err := m.DB.GetReviewsByBookID(book.ID)
+	reviews, err := m.DB.GetReviewsByBookID(book.BookWithPublisherData.ID)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -163,7 +146,7 @@ func (m *Repository) BookDetailByISBN(w http.ResponseWriter, r *http.Request) {
 		averageRating = totalRatings / float64(numReviews)
 	}
 	data := make(map[string]interface{})
-	data["book"] = book
+	data["book"] = book.BookWithPublisherData
 	data["authors"] = authors
 	data["publisher"] = publisher
 	data["reviewDatas"] = reviewDatas
