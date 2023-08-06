@@ -11,12 +11,6 @@ import (
 
 // Login Handles the get method of the login
 func (m *Repository) Login(w http.ResponseWriter, r *http.Request) {
-	// Check if user is authenticated or not.
-	// If authenticated then redirects to home page
-	if helpers.IsAuthenticated(r) {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
 	var emptyLogin models.User
 	data := make(map[string]interface{})
 	data["user"] = emptyLogin
@@ -32,12 +26,6 @@ func (m *Repository) Login(w http.ResponseWriter, r *http.Request) {
 // If the authentication is successful, it redirects the user to the home page.
 // If the authentication fails, it renders the login page with appropriate error messages.
 func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
-	// Check if user is authenticated or not.
-	// If authenticated then redirects to home page
-	if helpers.IsAuthenticated(r) {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
 	// Renew session token for user login
 	_ = m.App.Session.RenewToken(r.Context())
 
@@ -88,11 +76,15 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 		return
 	}
+	m.UpdateSession(w, r, id, access_level, user.Username)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (m *Repository) UpdateSession(w http.ResponseWriter, r *http.Request, id, access_level int, username string) {
 	m.App.Session.Put(r.Context(), "user_id", id)
-	m.App.Session.Put(r.Context(), "username", user.Username)
+	m.App.Session.Put(r.Context(), "username", username)
 	m.App.Session.Put(r.Context(), "access_level", access_level)
 	m.App.Session.Put(r.Context(), "flash", "Login Successfull")
-	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 // Register handles the get method of the register.

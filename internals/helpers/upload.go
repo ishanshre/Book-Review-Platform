@@ -43,7 +43,7 @@ func MediaPicUpload(r *http.Request, field, username string) (string, error) {
 }
 
 // AdminPublicUploadImage uploads single file
-func AdminPublicUploadImage(r *http.Request, field, table string, id int) (string, error) {
+func AdminPublicUploadImage(r *http.Request, field, table string, id string) (string, error) {
 	file, handler, err := r.FormFile(field)
 	if err != nil {
 		return "", fmt.Errorf("error in getting file: %s", err)
@@ -60,7 +60,7 @@ func AdminPublicUploadImage(r *http.Request, field, table string, id int) (strin
 		return "", fmt.Errorf("error in creating directory: %s", err)
 	}
 
-	newFileName := fmt.Sprintf("%s-%s-%d%s", field, table, id, ext)
+	newFileName := fmt.Sprintf("%s-%s-%s%s", field, table, id, ext)
 	relativePath := filepath.Join(path, newFileName)
 
 	new, err := os.Create(relativePath)

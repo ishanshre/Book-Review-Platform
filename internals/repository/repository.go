@@ -51,6 +51,9 @@ type DatabaseRepo interface {
 	DeleteAuthor(id int) error
 	GetAuthorByID(id int) (*models.Author, error)
 	GetAuthorFullNameByID(id int) (*models.Author, error)
+	TotalAuthors() (int, error)
+	AllAuthorsFilter(limit, page int, search, order string) (*models.AuthorApiFilter, error)
+	GetAuthorWithBooks(id int) (*models.AuthorBookData, error)
 
 	// Language interface
 	AllLanguage() ([]*models.Language, error)
@@ -74,6 +77,7 @@ type DatabaseRepo interface {
 	GetBookTitleByID(id int) (*models.Book, error)
 	TotalBooks() (int, error)
 	AllBooksFilter(limit, page int, searchKey, sort string) (*models.BookApiFilter, error)
+	BookDetailWithAuthorPublisherWithIsbn(isbn int64) (*models.BookInfoData, error)
 
 	CalculateLastPage(limit, total int) int
 

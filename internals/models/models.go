@@ -66,14 +66,14 @@ type Publisher struct {
 
 // Author struct holds the authors table data
 type Author struct {
-	ID              int
-	FirstName       string
-	LastName        string
-	Bio             string
-	DateOfBirth     int
-	Email           string
-	CountryOfOrigin string
-	Avatar          string
+	ID              int    `json:"id,omitempty"`
+	FirstName       string `json:"first_name,omitempty"`
+	LastName        string `json:"last_name,omitempty"`
+	Bio             string `json:"bio,omitempty"`
+	DateOfBirth     int    `json:"dob,omitempty"`
+	Email           string `json:"email,omitempty"`
+	CountryOfOrigin string `json:"coo,omitempty"`
+	Avatar          string `json:"avatar,omitempty"`
 }
 
 // Language struct holds the language table model
@@ -102,6 +102,13 @@ type BookApiFilter struct {
 	Page     int     `json:"page"`
 	LastPage int     `json:"last_page"`
 	Books    []*Book `json:"books"`
+}
+
+type AuthorApiFilter struct {
+	Total    int       `json:"total"`
+	Page     int       `json:"page"`
+	LastPage int       `json:"last_page"`
+	Authors  []*Author `json:"authors"`
 }
 
 // BookAuthor struct holds the immediate table between book and author

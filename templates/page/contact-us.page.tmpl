@@ -3,58 +3,56 @@
 {{define "title"}}Contact Us{{end}}
 
 {{define "content"}}
-    <div class="d-flex container text-orange">
-        <div class="d-flex-col d-center">
-            <div>
-                <h1>Contact Us</h1>
-            </div>
-            <div>
+    <div class="d-flex">
+        <div class="container d-flex-col text-orange">
+            <div class="container-box">
                 {{$c := index .Data "contact"}}
-                <form action="/contact-us" method="post">
+                <form action="/contact-us" method="post" class="form-group">
+                    <h1>Contact Us</h1>
                     <input type="hidden" name="csrf_token" value={{.CSRFToken}}>
-                    <div>
+                    <div class="form-container">
                         <label for="first_name">First Name: </label>
                         {{with .Form.Errors.Get "first_name"}}
                             <label>{{.}}</label>
                         {{end}}
-                        <input type="text" name="first_name" id="first_name" value="{{$c.FirstName}}">
+                        <input type="text" name="first_name" id="first_name" value="{{$c.FirstName}}" class="form-control">
                     </div>
-                    <div>
+                    <div class="form-container">
                         <label for="last_name">Last Name: </label>
                         {{with .Form.Errors.Get "last_name"}}
                             <label>{{.}}</label>
                         {{end}}
-                        <input type="text" name="last_name" id="last_name" value="{{$c.LastName}}">
+                        <input type="text" name="last_name" id="last_name" value="{{$c.LastName}}" class="form-control">
                     </div>
-                    <div>
+                    <div class="form-container">
                         <label for="email">Email: </label>
                         {{with .Form.Errors.Get "email"}}
                             <label>{{.}}</label>
                         {{end}}
-                        <input type="text" name="email" id="email" value="{{$c.Email}}">
+                        <input type="text" name="email" id="email" value="{{$c.Email}}" class="form-control">
                     </div>
-                    <div>
+                    <div class="form-container">
                         <label for="phone">Phone: </label>
                         {{with .Form.Errors.Get "phone"}}
                             <label>{{.}}</label>
                         {{end}}
-                        <input type="text" name="phone" id="phone" value="{{$c.Phone}}">
+                        <input type="text" name="phone" id="phone" value="{{$c.Phone}}" class="form-control">
                     </div>
-                    <div>
+                    <div class="form-container">
                         <label for="subject">Subject: </label>
                         {{with .Form.Errors.Get "subject"}}
                             <label>{{.}}</label>
                         {{end}}
-                        <input type="text" name="subject" id="subject" value="{{$c.Subject}}">
+                        <input type="text" name="subject" id="subject" value="{{$c.Subject}}" class="form-control">
                     </div>
-                    <div>
+                    <div class="form-container">
                         <label for="message">Message: </label>
                         {{with .Form.Errors.Get "message"}}
                             <label>{{.}}</label>
                         {{end}}
-                        <input type="text" name="message" id="message" value="{{$c.Message}}">
+                        <input type="text" name="message" id="message" value="{{$c.Message}}" class="form-control">
                     </div>
-                    <input type="submit" value="Send">
+                    <div class="d-flex justify-center"><input type="submit" value="Send" class="addBtn"></div>
                 </form>
             </div>
         </div>

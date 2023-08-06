@@ -2,6 +2,7 @@ package handler
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -82,24 +83,22 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 
 // AllBooks return all books in pages
 func (m *Repository) AllBooks(w http.ResponseWriter, r *http.Request) {
-	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
-	if err != nil {
-		limit = 10
-	}
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
-	if err != nil {
-		page = 1
-	}
-	books, err := m.DB.AllBookData(limit, page)
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	data := make(map[string]interface{})
-	data["books"] = books
-	render.Template(w, r, "public_books.page.tmpl", &models.TemplateData{
-		Data: data,
-	})
+	// limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	// if err != nil {
+	// 	limit = 10
+	// }
+	// page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	// if err != nil {
+	// 	page = 1
+	// }
+	// books, err := m.DB.AllBookData(limit, page)
+	// if err != nil {
+	// 	helpers.ServerError(w, err)
+	// 	return
+	// }
+	// data := make(map[string]interface{})
+	// data["books"] = books
+	render.Template(w, r, "public_books.page.tmpl", &models.TemplateData{})
 }
 
 // BookDetailByISBN returns the detail of the book using ISBN
@@ -109,7 +108,7 @@ func (m *Repository) BookDetailByISBN(w http.ResponseWriter, r *http.Request) {
 		helpers.PageNotFound(w, err)
 		return
 	}
-	book, err := m.DB.GetBookByISBN(isbn)
+	book, err := m.DB.BookDetailWithAuthorPublisherWithIsbn(isbn)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			helpers.PageNotFound(w, err)
@@ -118,27 +117,10 @@ func (m *Repository) BookDetailByISBN(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
-	bookAuthors, err := m.DB.GetBookAuthorByBookID(book.ID)
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	authors := []*models.Author{}
-	for _, bookAuthor := range bookAuthors {
-		author, err := m.DB.GetAuthorByID(bookAuthor.AuthorID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		authors = append(authors, author)
-	}
+	authors := book.AuthorsData
+	publisher := book.BookWithPublisherData.Publisher
 
-	publisher, err := m.DB.GetPublisherByID(book.PublisherID)
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	reviews, err := m.DB.GetReviewsByBookID(book.ID)
+	reviews, err := m.DB.GetReviewsByBookID(book.BookWithPublisherData.ID)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -165,7 +147,7 @@ func (m *Repository) BookDetailByISBN(w http.ResponseWriter, r *http.Request) {
 		averageRating = totalRatings / float64(numReviews)
 	}
 	data := make(map[string]interface{})
-	data["book"] = book
+	data["book"] = book.BookWithPublisherData
 	data["authors"] = authors
 	data["publisher"] = publisher
 	data["reviewDatas"] = reviewDatas
@@ -196,7 +178,7 @@ func (m *Repository) AllBooksFilterApi(w http.ResponseWriter, r *http.Request) {
 		helpers.StatusInternalServerError(w, err.Error())
 		return
 	}
-	helpers.StatusOkData(w, filteredBooks)
+	helpers.ApiStatusOkData(w, filteredBooks)
 }
 
 func (m *Repository) PopulateFakeData(w http.ResponseWriter, r *http.Request) {
@@ -238,5 +220,153 @@ func (m *Repository) PopulateFakeData(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	helpers.StatusOk(w, "success in populating data")
+	helpers.ApiStatusOk(w, "success in populating data")
+}
+
+func (m *Repository) BookReadListExistsApi(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	exists, err := m.DB.ReadListExists(user_id, book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if !exists {
+		helpers.WriteJson(w, http.StatusOK, map[string]bool{
+			"exists": false,
+		})
+		return
+	}
+	helpers.WriteJson(w, http.StatusOK, map[string]bool{
+		"exists": true,
+	})
+}
+
+func (m *Repository) BookBuyListExistsApi(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	exists, err := m.DB.BuyListExists(user_id, book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if !exists {
+		helpers.WriteJson(w, http.StatusOK, map[string]bool{
+			"exists": false,
+		})
+		return
+	}
+	helpers.WriteJson(w, http.StatusOK, map[string]bool{
+		"exists": true,
+	})
+}
+
+func (m *Repository) AddtoReadListApi(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	exists, err := m.DB.ReadListExists(user_id, book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		helpers.ServerError(w, errors.New("book already in read list"))
+		return
+	}
+	readList := &models.ReadList{
+		BookID:    book_id,
+		UserID:    user_id,
+		CreatedAt: time.Now(),
+	}
+	if err := m.DB.InsertReadList(readList); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	helpers.ApiStatusOk(w, "add to read list success")
+}
+
+func (m *Repository) RemoveFromReadListApi(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	exists, err := m.DB.ReadListExists(user_id, book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if !exists {
+		helpers.ServerError(w, errors.New("book does not exists in read list"))
+		return
+	}
+	if err := m.DB.DeleteReadList(user_id, book_id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	helpers.ApiStatusOk(w, "Removed from read list")
+}
+
+func (m *Repository) AddtoBuyListApi(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	exists, err := m.DB.BuyListExists(user_id, book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		helpers.ServerError(w, errors.New("book already in buy list"))
+		return
+	}
+	buyList := &models.BuyList{
+		BookID:    book_id,
+		UserID:    user_id,
+		CreatedAt: time.Now(),
+	}
+	if err := m.DB.InsertBuyList(buyList); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	helpers.ApiStatusOk(w, "add to buy list success")
+}
+
+func (m *Repository) RemoveFromBuyListApi(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	exists, err := m.DB.BuyListExists(user_id, book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if !exists {
+		helpers.ServerError(w, errors.New("book does not exists in buy list"))
+		return
+	}
+	if err := m.DB.DeleteBuyList(user_id, book_id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	helpers.ApiStatusOk(w, "Removed from buy list")
 }
