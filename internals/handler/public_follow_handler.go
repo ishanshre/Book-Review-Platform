@@ -52,6 +52,15 @@ func (h *Repository) FollowApi(w http.ResponseWriter, r *http.Request) {
 		UserID:     user_id,
 		FollowedAt: time.Now(),
 	}
+	exists, err := h.DB.FollowerExists(follower)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		helpers.ServerError(w, errors.New("already exists"))
+		return
+	}
 	if err := h.DB.InsertFollower(follower); err != nil {
 		helpers.ServerError(w, err)
 		return

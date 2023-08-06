@@ -17,12 +17,12 @@
             <div class="d-flex d-gap">
                 <div class="d-flex d-flex-col d-gap align-center" style="width: 50%;">
                     <img src="/{{$author.Avatar}}" class="profile_img" alt="{{$author.FirstName}}" width="200px" height="300px">
-                <div class="d-flex d-flex-col">
-                    {{ if eq .IsAuthenticated 1}}
-                    <button type="button" class="btn" id="follow">Follow</button>
-                    <button type="button" class="btn" id="unfollow">UnFollow</button>
-                    {{end}}
-                </div>
+                    <div class="d-flex d-flex-col">
+                        {{ if eq .IsAuthenticated 1}}
+                        <button type="button" class="btn" id="follow">Follow</button>
+                        <button type="button" class="btn" id="unfollow">UnFollow</button>
+                        {{end}}
+                    </div>
                 </div>
                 <div class="d-flex-col d-left"> 
                     <h1>{{$author.FirstName}} {{$author.LastName}}</h1>

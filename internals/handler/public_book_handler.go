@@ -2,6 +2,7 @@ package handler
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -220,4 +221,152 @@ func (m *Repository) PopulateFakeData(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	helpers.ApiStatusOk(w, "success in populating data")
+}
+
+func (m *Repository) BookReadListExistsApi(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	exists, err := m.DB.ReadListExists(user_id, book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if !exists {
+		helpers.WriteJson(w, http.StatusOK, map[string]bool{
+			"exists": false,
+		})
+		return
+	}
+	helpers.WriteJson(w, http.StatusOK, map[string]bool{
+		"exists": true,
+	})
+}
+
+func (m *Repository) BookBuyListExistsApi(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	exists, err := m.DB.BuyListExists(user_id, book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if !exists {
+		helpers.WriteJson(w, http.StatusOK, map[string]bool{
+			"exists": false,
+		})
+		return
+	}
+	helpers.WriteJson(w, http.StatusOK, map[string]bool{
+		"exists": true,
+	})
+}
+
+func (m *Repository) AddtoReadListApi(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	exists, err := m.DB.ReadListExists(user_id, book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		helpers.ServerError(w, errors.New("book already in read list"))
+		return
+	}
+	readList := &models.ReadList{
+		BookID:    book_id,
+		UserID:    user_id,
+		CreatedAt: time.Now(),
+	}
+	if err := m.DB.InsertReadList(readList); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	helpers.ApiStatusOk(w, "add to read list success")
+}
+
+func (m *Repository) RemoveFromReadListApi(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	exists, err := m.DB.ReadListExists(user_id, book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if !exists {
+		helpers.ServerError(w, errors.New("book does not exists in read list"))
+		return
+	}
+	if err := m.DB.DeleteReadList(user_id, book_id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	helpers.ApiStatusOk(w, "Removed from read list")
+}
+
+func (m *Repository) AddtoBuyListApi(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	exists, err := m.DB.BuyListExists(user_id, book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		helpers.ServerError(w, errors.New("book already in buy list"))
+		return
+	}
+	buyList := &models.BuyList{
+		BookID:    book_id,
+		UserID:    user_id,
+		CreatedAt: time.Now(),
+	}
+	if err := m.DB.InsertBuyList(buyList); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	helpers.ApiStatusOk(w, "add to buy list success")
+}
+
+func (m *Repository) RemoveFromBuyListApi(w http.ResponseWriter, r *http.Request) {
+	book_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	exists, err := m.DB.BuyListExists(user_id, book_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if !exists {
+		helpers.ServerError(w, errors.New("book does not exists in buy list"))
+		return
+	}
+	if err := m.DB.DeleteBuyList(user_id, book_id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	helpers.ApiStatusOk(w, "Removed from buy list")
 }

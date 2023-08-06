@@ -60,6 +60,12 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/api/authors/{id}/exists", handler.Repo.FollowExistsApi)
 		mux.Post("/api/authors/{id}/follow", handler.Repo.FollowApi)
 		mux.Delete("/api/authors/{id}/unfollow", handler.Repo.UnFollowApi)
+		mux.Get("/api/books/{id}/read", handler.Repo.BookReadListExistsApi)
+		mux.Post("/api/books/{id}/read", handler.Repo.AddtoReadListApi)
+		mux.Delete("/api/books/{id}/read", handler.Repo.RemoveFromReadListApi)
+		mux.Get("/api/books/{id}/buy", handler.Repo.BookBuyListExistsApi)
+		mux.Post("/api/books/{id}/buy", handler.Repo.AddtoBuyListApi)
+		mux.Delete("/api/books/{id}/buy", handler.Repo.RemoveFromBuyListApi)
 		mux.Get("/user/logout", handler.Repo.Logout)
 	})
 	mux.Group(func(mux chi.Router) {
