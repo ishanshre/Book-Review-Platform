@@ -6,12 +6,20 @@ import (
 
 // User is a type struct which holds users table data
 type User struct {
+	ID          int       `json:"id"`
+	Username    string    `json:"username"`
+	Email       string    `json:"email"`
+	Password    string    `json:"password"`
+	AccessLevel int       `json:"access_level"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	LastLogin   time.Time `json:"last_login"`
+}
+type Kyc struct {
 	ID             int       `json:"id"`
+	UserID         int       `json:"user_id"`
 	FirstName      string    `json:"first_name"`
 	LastName       string    `json:"last_name"`
-	Username       string    `json:"username"`
-	Email          string    `json:"email"`
-	Password       string    `json:"password"`
 	Gender         string    `json:"gender"`
 	Address        string    `json:"address"`
 	Phone          string    `json:"phone"`
@@ -21,11 +29,8 @@ type User struct {
 	DocumentNumber string    `json:"document_number"`
 	DocumentFront  string    `json:"document_front"`
 	DocumentBack   string    `json:"document_back"`
-	AccessLevel    int       `json:"access_level"`
 	IsValidated    bool      `json:"is_validated"`
-	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
-	LastLogin      time.Time `json:"last_login"`
 }
 
 // MailData holds the email message

@@ -65,13 +65,13 @@ func (m *Repository) AdminGetUserDetailByID(w http.ResponseWriter, r *http.Reque
 		helpers.ServerError(w, err)
 		return
 	}
-	user, err := m.DB.GetUserByID(id)
+	userKyc, err := m.DB.GetUserWithKyc(id)
 	if err != nil {
 		helpers.ServerError(w, err)
 	}
-	user.ID = id
 	data := make(map[string]interface{})
-	data["user"] = user
+	data["user"] = userKyc.User
+	data["kyc"] = userKyc.Kyc
 	data["base_path"] = base_users_path
 	render.Template(w, r, "admin-userdetail.page.tmpl", &models.TemplateData{
 		Data: data,
@@ -89,39 +89,27 @@ func (m *Repository) AdminUpdateUser(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
-	user, err := m.DB.GetUserByID(id)
+	userKyc, err := m.DB.GetUserWithKyc(id)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
-	email := user.Email
+	email := userKyc.User.Email
 	if err := r.ParseForm(); err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
+	update_user := &models.User{}
 
 	form := forms.New(r.PostForm)
 	access_level, _ := strconv.Atoi(r.Form.Get("access_level"))
-	is_validated, _ := strconv.ParseBool(r.Form.Get("is_validated"))
-	layout := "2006-01-02"
-	dob, err := time.Parse(layout, r.Form.Get("date_of_birth"))
-	if err != nil {
-		form.Errors.Add("date_of_birth", err.Error())
-	}
+	update_user.Email = r.Form.Get("email")
+	update_user.AccessLevel = access_level
+	update_user.UpdatedAt = time.Now()
+	update_user.ID = userKyc.Kyc.ID
 
-	user.FirstName = r.Form.Get("first_name")
-	user.LastName = r.Form.Get("last_name")
-	user.Email = r.Form.Get("email")
-	user.Gender = r.Form.Get("gender")
-	user.Phone = r.Form.Get("phone")
-	user.Address = r.Form.Get("address")
-	user.DateOfBirth = dob
-	user.AccessLevel = access_level
-	user.IsValidated = is_validated
-	user.UpdatedAt = time.Now()
-
-	if email != user.Email {
-		exists, err := m.DB.EmailExists(user.Email)
+	if email != userKyc.User.Email {
+		exists, err := m.DB.EmailExists(userKyc.User.Email)
 		if err != nil {
 			helpers.ServerError(w, err)
 			return
@@ -130,10 +118,10 @@ func (m *Repository) AdminUpdateUser(w http.ResponseWriter, r *http.Request) {
 			form.Errors.Add("email", "email already exists")
 		}
 	}
-	user.ID = id
 	data := make(map[string]interface{})
 	data["base_path"] = base_users_path
-	data["user"] = user
+	data["user"] = userKyc.User
+	data["kyc"] = userKyc.Kyc
 	if !form.Valid() {
 		render.Template(w, r, "admin-userdetail.page.tmpl", &models.TemplateData{
 			Form: form,
@@ -141,7 +129,7 @@ func (m *Repository) AdminUpdateUser(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	if err := m.DB.UpdateUser(user); err != nil {
+	if err := m.DB.UpdateUser(update_user); err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
@@ -289,7 +277,7 @@ func (m *Repository) PostAdminUserAdd(w http.ResponseWriter, r *http.Request) {
 
 	// Call AdminInsertUser interface for inserting new user.
 	// If any error occurs, a server error is returned.
-	if err := m.DB.AdminInsertUser(&register_user); err != nil {
+	if err := m.DB.InsertUser(&register_user); err != nil {
 		helpers.ServerError(w, err)
 		return
 	}

@@ -69,3 +69,8 @@ type ReviewUserData struct {
 	Review *Review
 	User   *User
 }
+
+type UserKycData struct {
+	User *User
+	Kyc  *Kyc
+}

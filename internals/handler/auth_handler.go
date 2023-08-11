@@ -118,21 +118,17 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 	form := forms.New(r.PostForm)
 	register := models.User{}
 	// storing the form value in user model
-	register.FirstName = r.Form.Get("first_name")
-	register.LastName = r.Form.Get("last_name")
 	register.Email = r.Form.Get("email")
 	register.Username = r.Form.Get("username")
 	register.Password = r.Form.Get("password")
-	register.Gender = r.Form.Get("gender")
+	password2 := r.Form.Get("password2")
 
 	// form.Required() for form  field validation
 	form.Required(
-		"first_name",
-		"last_name",
 		"email",
 		"username",
 		"password",
-		"gender",
+		"password2",
 	)
 	form.MinLength("username", 5)
 	form.MinLength("password", 8)
@@ -148,6 +144,10 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 	}
 	if exists {
 		form.Errors.Add("username", "This username already exists")
+	}
+	if register.Password != password2 {
+		form.Errors.Add("password", "Password mismtach")
+		form.Errors.Add("password2", "Password mismtach")
 	}
 	if !form.Valid() {
 		data := make(map[string]interface{})

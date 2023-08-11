@@ -28,6 +28,10 @@ type DatabaseRepo interface {
 
 	ChangePassword(password, email string) error
 
+	// User Kyc
+	GetKycByUserID(user_id int) (*models.Kyc, error)
+	GetUserWithKyc(id int) (*models.UserKycData, error)
+
 	// Genre interface
 	AllGenre() ([]*models.Genre, error)
 	InsertGenre(u *models.Genre) error
