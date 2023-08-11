@@ -5,6 +5,9 @@
 {{define "meta"}}
 {{end}}
 
+{{define "css"}}
+<link rel="stylesheet" href="/static/css/modal.css">
+{{end}}
 
 {{define "title"}}Profile{{end}}
 
@@ -24,7 +27,7 @@
                 <p><strong>Joined At: </strong>{{TimeSince $res.CreatedAt}}</p>
                 <p><strong>Updated At: </strong>{{TimeSince $res.UpdatedAt}}</p>
                 <p><strong>Last Login: </strong>{{TimeSince $res.LastLogin}}</p>
-                <p><strong>Author Following: </strong>{{$following}}</p>
+                <p onclick="openModal('following')"><strong>Author Following: </strong>{{$following}}</p>
                 <p><strong>Books in read list: </strong>{{$read_list_count}}</p>
                 <p><strong>Books in buy list: </strong>{{$buy_list_count}}</p>
             </div>
@@ -158,6 +161,15 @@
         </div>
     </div>
 </div>
+
+<div class="jw-modal" id="following">
+    <div class="jw-modal-body">
+        <h1>Author Followings</h1>
+        <div id="following-display">
+
+        </div>
+    </div>
+</div>
 {{end}}
 
 
@@ -165,4 +177,5 @@
 
 {{define "js"}}
 <script src="/static/js/profile.js"></script>
+<script src="/static/js/modal.js"></script>
 {{end}}

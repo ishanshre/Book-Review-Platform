@@ -94,3 +94,13 @@ func (h *Repository) UnFollowApi(w http.ResponseWriter, r *http.Request) {
 	}
 	helpers.ApiStatusOk(w, "unfollow success")
 }
+
+func (h *Repository) GetFollowingsListByUserIdApi(w http.ResponseWriter, r *http.Request) {
+	user_id := h.App.Session.GetInt(r.Context(), "user_id")
+	authors, err := h.DB.GetAllFollowingsByUserId(user_id)
+	if err != nil {
+		helpers.StatusInternalServerError(w, err.Error())
+		return
+	}
+	helpers.ApiStatusOkData(w, authors)
+}

@@ -841,6 +841,10 @@ footer {
   margin-top: 5px;
 }
 
+.m-5 {
+  margin: 5px;
+}
+
 .m-t5r {
   margin-top: 5rem;
 }

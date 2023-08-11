@@ -74,3 +74,7 @@ type UserKycData struct {
 	User *User
 	Kyc  *Kyc
 }
+
+type AuthorFollowerData struct {
+	Author []*Author
+}

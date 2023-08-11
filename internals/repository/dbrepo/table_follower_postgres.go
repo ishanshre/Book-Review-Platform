@@ -188,3 +188,33 @@ func (m *postgresDBRepo) FollowerCount(user_id int) (int, error) {
 	}
 	return count, nil
 }
+
+func (m *postgresDBRepo) GetAllFollowingsByUserId(user_id int) ([]*models.Author, error) {
+	// create a timeout of 3 second with context
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		SELECT a.id, a.first_name, a.last_name
+		FROM followers as f
+		JOIN authors AS a ON a.id = f.author_id
+		WHERE f.user_id = $1
+	`
+	rows, err := m.DB.QueryContext(ctx, query, user_id)
+	if err != nil {
+		return nil, err
+	}
+	authors := []*models.Author{}
+	for rows.Next() {
+		author := &models.Author{}
+		if err := rows.Scan(
+			&author.ID,
+			&author.FirstName,
+			&author.LastName,
+		); err != nil {
+			return nil, err
+		}
+		authors = append(authors, author)
+	}
+	return authors, nil
+}

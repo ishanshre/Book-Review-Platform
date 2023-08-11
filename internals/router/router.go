@@ -105,6 +105,7 @@ func Router(app *config.AppConfig) http.Handler {
 	mux.Route("/profile", func(mux chi.Router) {
 		mux.Use(middleware.Auth)
 		mux.Get("/", handler.Repo.PersonalProfile)
+		mux.Get("/followings", handler.Repo.GetFollowingsListByUserIdApi)
 		mux.Post("/kyc", handler.Repo.PublicUpdateKYC)
 	})
 
