@@ -174,3 +174,16 @@ func (m *postgresDBRepo) UpdateReadList(u *models.ReadList, book_id, user_id int
 	}
 	return nil
 }
+
+func (m *postgresDBRepo) ReadListCount(user_id int) (int, error) {
+	// create a timeout of 3 second with context
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var count int
+	query := `SELECT COUNT(*) FROM read_lists WHERE user_id = $1`
+	if err := m.DB.QueryRowContext(ctx, query, user_id).Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}

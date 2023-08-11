@@ -174,3 +174,17 @@ func (m *postgresDBRepo) UpdateFollower(u *models.Follower, user_id, author_id i
 	}
 	return nil
 }
+
+func (m *postgresDBRepo) FollowerCount(user_id int) (int, error) {
+	// create a timeout of 3 second with context
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var count int
+
+	query := `SELECT COUNT(*) FROM followers WHERE user_id = $1`
+	if err := m.DB.QueryRowContext(ctx, query, user_id).Scan(&count); err != nil {
+		return 0, nil
+	}
+	return count, nil
+}

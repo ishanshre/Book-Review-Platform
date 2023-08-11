@@ -206,9 +206,27 @@ func (m *Repository) PersonalProfile(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	following, err := m.DB.FollowerCount(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	read_list_count, err := m.DB.ReadListCount(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	buy_list_count, err := m.DB.BuyListCount(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
 	data := make(map[string]interface{})
 	data["user"] = userKyc.User
 	data["kyc"] = userKyc.Kyc
+	data["following"] = following
+	data["read_list_count"] = read_list_count
+	data["buy_list_count"] = buy_list_count
 	render.Template(w, r, "profile.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
@@ -225,6 +243,21 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 	form := forms.New(r.PostForm)
 
 	userKyc, err := m.DB.GetUserWithKyc(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	following, err := m.DB.FollowerCount(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	read_list_count, err := m.DB.ReadListCount(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	buy_list_count, err := m.DB.BuyListCount(id)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -260,7 +293,9 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 	data["base_path"] = base_users_path
 	data["user"] = userKyc.User
 	data["kyc"] = userKyc.Kyc
-
+	data["following"] = following
+	data["read_list_count"] = read_list_count
+	data["buy_list_count"] = buy_list_count
 	if !form.Valid() {
 		log.Println("inside")
 		render.Template(w, r, "profile.page.tmpl", &models.TemplateData{

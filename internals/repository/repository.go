@@ -120,6 +120,7 @@ type DatabaseRepo interface {
 	GetReadListByID(user_id, book_id int) (*models.ReadList, error)
 	DeleteReadList(user_id, book_id int) error
 	UpdateReadList(u *models.ReadList, book_id, user_id int) error
+	ReadListCount(user_id int) (int, error)
 
 	// BuyList interface
 	AllBuyList() ([]*models.BuyList, error)
@@ -128,6 +129,7 @@ type DatabaseRepo interface {
 	GetBuyListByID(user_id, book_id int) (*models.BuyList, error)
 	DeleteBuyList(user_id, book_id int) error
 	UpdateBuyList(u *models.BuyList, book_id, user_id int) error
+	BuyListCount(user_id int) (int, error)
 
 	// Follower Interface
 	AllFollowers() ([]*models.Follower, error)
@@ -136,6 +138,7 @@ type DatabaseRepo interface {
 	GetFollowerByID(user_id, author_id int) (*models.Follower, error)
 	DeleteFollower(user_id, author_id int) error
 	UpdateFollower(u *models.Follower, user_id, author_id int) error
+	FollowerCount(user_id int) (int, error)
 
 	// Review interface
 	AllReviews() ([]*models.Review, error)
