@@ -244,12 +244,23 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 	update_kyc.DocumentNumber = r.Form.Get("document_number")
 	update_kyc.UpdatedAt = time.Now()
 	update_kyc.ID = id
+	document_front, err := helpers.MediaPicUpload(r, "document_front", userKyc.User.Username)
+	if err != nil {
+		form.Errors.Add("document_front", "Document Required!")
+	}
+	document_back, err := helpers.MediaPicUpload(r, "document_back", userKyc.User.Username)
+	if err != nil {
+		form.Errors.Add("document_back", "Document Required!")
+	}
+	update_kyc.DocumentFront = document_front
+	update_kyc.DocumentBack = document_back
 	form.Required("first_name", "last_name", "gender", "phone", "address", "date_of_birth", "document_type", "document_number")
 	form.MaxLength("phone", 10)
 	data := make(map[string]interface{})
 	data["base_path"] = base_users_path
 	data["user"] = userKyc.User
-	data["kyc"] = update_kyc
+	data["kyc"] = userKyc.Kyc
+
 	if !form.Valid() {
 		log.Println("inside")
 		render.Template(w, r, "profile.page.tmpl", &models.TemplateData{

@@ -115,7 +115,7 @@ func (m *postgresDBRepo) PublicKycUpdate(update *models.Kyc) error {
 	defer cancel()
 	stmt := `
 		UPDATE kycs 
-		SET first_name = $2, last_name = $3, gender = $4, phone = $5, address = $6, dob = $7, document_type = $8, document_number = $9, updated_at = $10
+		SET first_name = $2, last_name = $3, gender = $4, phone = $5, address = $6, dob = $7, document_type = $8, document_number = $9, document_front = $10, document_back = $11, updated_at = $12
 		WHERE id=$1`
 	res, err := m.DB.ExecContext(
 		ctx,
@@ -129,6 +129,8 @@ func (m *postgresDBRepo) PublicKycUpdate(update *models.Kyc) error {
 		update.DateOfBirth,
 		update.DocumentType,
 		update.DocumentNumber,
+		update.DocumentFront,
+		update.DocumentBack,
 		update.UpdatedAt,
 	)
 	if err != nil {

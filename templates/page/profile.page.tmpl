@@ -10,11 +10,11 @@
 
 {{define "content"}}
 <div class="container">
-    <div>
+    <div class="d-flex d-flex-col">
         <div class="d-flex">
             {{$res := index .Data "user"}}
             {{$kyc := index .Data "kyc"}}
-            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r align-center">
+            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r align-center b-radius">
                 <img src="/{{$kyc.ProfilePic}}" alt="{{$res.Username}}" width="300px" height="auto" class="profile_img">
                 <p><strong>Username: </strong>@{{$res.Username}}</p>
                 <p><strong>Email: </strong>{{$res.Email}}</p>
@@ -22,9 +22,9 @@
                 <p><strong>Updated At: </strong>{{TimeSince $res.UpdatedAt}}</p>
                 <p><strong>Last Login: </strong>{{TimeSince $res.LastLogin}}</p>
             </div>
-            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r" style="width: 48rem;">
+            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r b-radius" style="width: 48rem;">
                 <h1 class="text-center">Update KYC</h1>
-                <form action="/profile/kyc" method="post" class="d-flex d-flex-col d-gap">
+                <form action="/profile/kyc" method="post" class="d-flex d-flex-col d-gap" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                     <div class="d-flex justify-between">
                         <label for="first_name"><strong>First Name: </strong></label>
@@ -115,6 +115,28 @@
                             <label class="text-danger">{{.}}</label>
                         </div>
                         {{end}}
+                    </div>
+                    <div class="d-flex justify-between">
+                        <label for="document_front"><strong>Document Front Part: </strong></label>
+                        <input type="file" name="document_front" id="document_front" class="form-control-nomargin">
+                        {{with .Form.Errors.Get "document_front"}}
+                        <div class="error-msg">
+                            <label class="text-danger">{{.}}</label>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="d-flex justify-between">
+                        <label for="document_back"><strong>Document Back Part: </strong></label>
+                        <input type="file" name="document_back" id="document_back" class="form-control-nomargin">
+                        {{with .Form.Errors.Get "document_back"}}
+                        <div class="error-msg">
+                            <label class="text-danger">{{.}}</label>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="d-flex d-gap">
+                        <img src="/{{$kyc.DocumentFront}}" alt="document_front" width="200px">
+                        <img src="/{{$kyc.DocumentBack}}" alt="document_back" width="200px">
                     </div>
                     {{if eq $kyc.IsValidated true}}
                     <p><strong>Validatation Status: </strong>Validated</p>
