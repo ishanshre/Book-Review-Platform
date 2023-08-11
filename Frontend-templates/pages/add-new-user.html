@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="Stylesheet" href="admin-style.css">
-    <title>Admin Panel</title>
+    <link rel="Stylesheet" href="../css/add-new-user.css">
+    <title>Add New User</title>
     </head>
-<body>
+    <body>
         <header>
             <nav class="nav-primary d-flex">
                 <span class="logo d-flex">
@@ -15,13 +15,12 @@
                             <i class="fa-solid fa-bars"></i>
                         </div>
                         <a href="#">BookWorm Admin</a>
-                </span>
-                
+                </span>+
                 <div class="nav-links">
                     <ul class="d-flex">
                         <li class="nav-link"><a href="#"><i class="fa-solid fa-house"></i>PUBLIC SITE</a></li>
                         <li class="nav-link"><a href="#"><i class="fa-sharp fa-regular fa-at"></i>ADMIN</a></li>
-                        <li class="nav-link"><a href="#"><i class="fa-solid fa-arrow-right-from-bracket"></i>LOGOUT</a></li>
+                        <li class="nav-link"><a href="login.html"><i class="fa-solid fa-arrow-right-from-bracket"></i>LOGOUT</a></li>
                     </ul>
                 </div>
             </nav>
@@ -30,8 +29,8 @@
             <section class="main d-grid">
                 <nav class="nav-sidebar">
                     <ul>
-                        <li><a href="#">USER</a></li>
-                        <li><a href="#">GENRES</a></li>
+                        <li><a href="admin.html">USER</a></li>
+                        <li><a href="genre.html">GENRES</a></li>
                         <li><a href="#">PUBLISHERS</a></li>
                         <li><a href="#">AUTHORS</a></li>
                         <li><a href="#">LANGUAGES</a> </li>
@@ -46,12 +45,22 @@
                         <li><a href="#">CONTACTS</a></li>
                     </ul>  
                 </nav> 
+                
                 <section class="main-content">
-                    <h1>Admin: Dashboard</h1>
+                    <h1>Create New User</h1>
+                    <!-- Register Form -->
+                    <div class="from-add-user">
+                        <input class="c-attribute username" type="text" placeholder="Username"/>
+                        <input class="c-attribute email" type="email" placeholder="Email"/>
+                        <input class="c-attribute password" type="password" placeholder="Password"/>
+                        <div class="add-form-buttons">
+                            <button class="c-b-attribute register-button" type="submit"> Register </button>
+                            <button class="c-b-attribute cancel-button" type="submit"> Cancel </button>
+                        </div>
+                    </div>
                 </section>
             </section>
         </main>
-
-        <script src="admin.js"></script>
+        <script src="../scripts/admin.js"></script>
     </body>
 </html>

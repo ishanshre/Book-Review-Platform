@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="Stylesheet" href="../css/admin.css ">
+    <title>Admin Panel</title>
+    </head>
+    <body>
+        <header>
+            <nav class="nav-primary d-flex">
+                <span class="logo d-flex">
+                        <div class="sidebar-toggle-btn">
+                            <i class="fa-solid fa-bars"></i>
+                        </div>
+                        <a href="#">BookWorm Admin</a>
+                </span>
+                <div class="nav-links">
+                    <ul class="d-flex">
+                        <li class="nav-link"><a href="#"><i class="fa-solid fa-house"></i>PUBLIC SITE</a></li>
+                        <li class="nav-link"><a href="#"><i class="fa-sharp fa-regular fa-at"></i>ADMIN</a></li>
+                        <li class="nav-link"><a href="login.html"><i class="fa-solid fa-arrow-right-from-bracket"></i>LOGOUT</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <main>
+            <section class="main d-grid">
+                <nav class="nav-sidebar">
+                    <ul>
+                        <li><a href="admin.html">USER</a></li>
+                        <li><a href="genre.html">GENRES</a></li>
+                        <li><a href="#">PUBLISHERS</a></li>
+                        <li><a href="#">AUTHORS</a></li>
+                        <li><a href="#">LANGUAGES</a> </li>
+                        <li><a href="#">BOOKS</a></li>
+                        <li><a href="#">BOOK-AUTHORS</a></li>
+                        <li><a href="#">BOOK-GENRES</a></li>
+                        <li><a href="#">BOOK-LANGUAGES</a></li>
+                        <li><a href="#">READ LIST</a></li>
+                        <li><a href="#">BUY LIST</a></li>
+                        <li><a href="#">FOLLOWERS</a></li>
+                        <li><a href="#">REVIEWS</a></li>
+                        <li><a href="#">CONTACTS</a></li>
+                    </ul>  
+                </nav> 
+                <section class="main-content">
+                    <!-- This is the title section -->
+                    <div class="main-content-title">
+                        <h1>All Users</h1>
+                        <button class="add-button"><a href="add-new-user.html">ADD</a></button>
+                    </div>
+                    <!-- This is the table section -->
+                    <div class="main-content-table">
+                        <table>
+                            <!-- header section -->
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>FULL NAME</th>
+                                    <th>USERNAME</th>
+                                    <th>LEVEL</th>
+                                    <th>VALIDATED</th>
+                                    <th>CREATED</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+                            <!-- body section -->
+                            <tbody>
+                                <!-- first data -->
+                                <tr>
+                                    <td>1</td>
+                                    <td>Aruna Chaulagain</td>
+                                    <td>arunac</td>
+                                    <td>09</td>
+                                    <td>Yes</td>
+                                    <td>1 day ago</td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <button><img src="../images/edit-icon.png" alt="update-icon"/></button>
+                                            <button><img src="../images/profile-icon.png" alt="profile-icon"/></button>
+                                            <button  class="del-button"><img width="19px" height="19px" src="../images/del-icon.png" alt="del-icon"/></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                  <!-- second data -->
+                                <tr>
+                                    <td>1</td>
+                                    <td>Aruna Chaulagain</td>
+                                    <td>arunac</td>
+                                    <td>09</td>
+                                    <td>Yes</td>
+                                    <td>1 day ago</td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <button><img src="../images/edit-icon.png" alt="update-icon"/></button>
+                                            <button><img src="../images/profile-icon.png" alt="profile-icon"/></button>
+                                            <button class="del-button"><img width="19px" height="19px" src="../images/del-icon.png" alt="del-icon"/></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                 <!-- third data -->
+                                 <tr>
+                                    <td>1</td>
+                                    <td>Aruna Chaulagain</td>
+                                    <td>arunac</td>
+                                    <td>09</td>
+                                    <td>Yes</td>
+                                    <td>1 day ago</td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <button><img src="../images/edit-icon.png" alt="update-icon"/></button>
+                                            <button><img src="../images/profile-icon.png" alt="profile-icon"/></button>
+                                            <button class="del-button"><img width="19px" height="19px" src="../images/del-icon.png" alt="del-icon"/></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-section">
+                        <div class="pagination-links">
+                            <a href="#">PREVIOUS</a>
+                            <a href="#">1</a>
+                            <a href="#">2</a>
+                            <a href="#">3</a>
+                            <a href="#">NEXT</a>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </main>
+        <script src="../scripts/admin.js"></script>
+    </body>
+</html>
