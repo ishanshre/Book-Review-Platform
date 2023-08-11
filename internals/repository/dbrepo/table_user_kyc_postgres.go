@@ -109,3 +109,34 @@ func (m *postgresDBRepo) AdminKycUpdate(update *models.Kyc) error {
 	}
 	return nil
 }
+
+func (m *postgresDBRepo) PublicKycUpdate(update *models.Kyc) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `
+		UPDATE kycs 
+		SET first_name = $2, last_name = $3, gender = $4, phone = $5, address = $6, dob = $7, document_type = $8, document_number = $9, updated_at = $10
+		WHERE id=$1`
+	res, err := m.DB.ExecContext(
+		ctx,
+		stmt,
+		update.ID,
+		update.FirstName,
+		update.LastName,
+		update.Gender,
+		update.Phone,
+		update.Address,
+		update.DateOfBirth,
+		update.DocumentType,
+		update.DocumentNumber,
+		update.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+	affected, _ := res.RowsAffected()
+	if affected == 0 {
+		return errors.New("not updateed")
+	}
+	return nil
+}

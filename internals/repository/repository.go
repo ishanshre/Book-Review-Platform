@@ -33,6 +33,7 @@ type DatabaseRepo interface {
 	GetUserWithKyc(id int) (*models.UserKycData, error)
 	UpdateDocument(front_path, back_path string, id int) error
 	AdminKycUpdate(update *models.Kyc) error
+	PublicKycUpdate(update *models.Kyc) error
 
 	// Genre interface
 	AllGenre() ([]*models.Genre, error)
