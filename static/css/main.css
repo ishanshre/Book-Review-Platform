@@ -280,6 +280,10 @@ header {
   justify-content: space-between;
 }
 
+.justify-around {
+  justify-content: space-around;
+}
+
 .justify-center {
   justify-content: center;
 }
@@ -302,6 +306,10 @@ header {
 
 .w-75 {
   width: 100%;
+}
+
+.d-dark {
+  background-color: var(--bk-primary-dark);
 }
 
 
@@ -727,6 +735,23 @@ footer {
 .form-control:focus {
   border: 4px solid orange;
 }
+.form-control-nomargin {
+  width: 50%;
+  height: 45px;
+  background: hsla(0, 0%, 100%, 0.644);
+  outline: none;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  font-size: 20px;
+}
+
+.form-control-nomargin:hover {
+  border: 1px solid orange;
+}
+
+.form-control-nomargin:focus {
+  border: 4px solid orange;
+}
 
 .btn-div {
   width: 100%;
@@ -823,11 +848,19 @@ footer {
   margin-bottom: 5px;
 }
 
+.m-2r {
+  margin: 2rem;
+}
+
 .p-5 {
   padding: 5px;
 }
 .p-10 {
   padding: 10px;
+}
+
+.pr-2 {
+  padding: 2rem;
 }
 
 .textArea {

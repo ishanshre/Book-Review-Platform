@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/ishanshre/Book-Review-Platform/internals/forms"
 	"github.com/ishanshre/Book-Review-Platform/internals/helpers"
@@ -198,15 +200,68 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 // creates a data map containing the encoded images and user profile information for rendering the template,
 // and renders the personal profile page.
 func (m *Repository) PersonalProfile(w http.ResponseWriter, r *http.Request) {
-	id := m.App.Session.Get(r.Context(), "user_id")
-	user, err := m.DB.GetProfilePersonal(id.(int))
+	id := m.App.Session.GetInt(r.Context(), "user_id")
+	userKyc, err := m.DB.GetUserWithKyc(id)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
 	data := make(map[string]interface{})
-	data["user_profile"] = user
+	data["user"] = userKyc.User
+	data["kyc"] = userKyc.Kyc
 	render.Template(w, r, "profile.page.tmpl", &models.TemplateData{
 		Data: data,
+		Form: forms.New(nil),
 	})
+}
+
+func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	id := m.App.Session.GetInt(r.Context(), "user_id")
+	update_kyc := &models.Kyc{}
+	form := forms.New(r.PostForm)
+
+	userKyc, err := m.DB.GetUserWithKyc(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	layout := "2006-01-02"
+	dob, err := time.Parse(layout, r.Form.Get("date_of_birth"))
+	if err != nil {
+		form.Errors.Add("date_of_birth", err.Error())
+	}
+	update_kyc.FirstName = r.Form.Get("first_name")
+	update_kyc.LastName = r.Form.Get("last_name")
+	update_kyc.Gender = r.Form.Get("gender")
+	update_kyc.Phone = r.Form.Get("phone")
+	update_kyc.Address = r.Form.Get("address")
+	update_kyc.DateOfBirth = dob
+	update_kyc.DocumentType = r.Form.Get("document_type")
+	update_kyc.DocumentNumber = r.Form.Get("document_number")
+	update_kyc.UpdatedAt = time.Now()
+	update_kyc.ID = id
+	form.Required("first_name", "last_name", "gender", "phone", "address", "date_of_birth", "document_type", "document_number")
+	form.MaxLength("phone", 10)
+	data := make(map[string]interface{})
+	data["base_path"] = base_users_path
+	data["user"] = userKyc.User
+	data["kyc"] = update_kyc
+	if !form.Valid() {
+		log.Println("inside")
+		render.Template(w, r, "profile.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.PublicKycUpdate(update_kyc); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	m.App.Session.Put(r.Context(), "flash", "KYC Updated! Please wait for admin to verify")
+	http.Redirect(w, r, "/profile", http.StatusSeeOther)
 }
