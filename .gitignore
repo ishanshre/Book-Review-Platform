@@ -11,9 +11,11 @@ media/
 # Test binary, built with `go test -c`
 *.test
 public/
+media/
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
-
+./media/
+./public/
 # Dependency directories (remove the comment below to include it)
 # vendor/
 

@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/asaskevich/govalidator"
 )
 
 // From type holds the data from forms and errors
@@ -161,6 +163,12 @@ func (f *Form) HasSpecialCharacter(fields ...string) {
 		if len(u) == 0 {
 			f.Errors.Add(field, "This field must have at least special characters")
 		}
+	}
+}
+
+func (f *Form) IsEmail(field string) {
+	if !govalidator.IsEmail(f.Get(field)) {
+		f.Errors.Add(field, "Invalid email address")
 	}
 }
 

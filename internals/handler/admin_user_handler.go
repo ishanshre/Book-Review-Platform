@@ -2,10 +2,12 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
+	"time"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/ishanshre/Book-Review-Platform/internals/forms"
 	"github.com/ishanshre/Book-Review-Platform/internals/helpers"
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
@@ -64,13 +66,13 @@ func (m *Repository) AdminGetUserDetailByID(w http.ResponseWriter, r *http.Reque
 		helpers.ServerError(w, err)
 		return
 	}
-	user, err := m.DB.GetUserByID(id)
+	userKyc, err := m.DB.GetUserWithKyc(id)
 	if err != nil {
 		helpers.ServerError(w, err)
 	}
-	user.ID = id
 	data := make(map[string]interface{})
-	data["user"] = user
+	data["user"] = userKyc.User
+	data["kyc"] = userKyc.Kyc
 	data["base_path"] = base_users_path
 	render.Template(w, r, "admin-userdetail.page.tmpl", &models.TemplateData{
 		Data: data,
@@ -88,22 +90,39 @@ func (m *Repository) AdminUpdateUser(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	userKyc, err := m.DB.GetUserWithKyc(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	email := userKyc.User.Email
 	if err := r.ParseForm(); err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
+	update_user := &models.User{}
+
 	form := forms.New(r.PostForm)
-	user := &models.User{
-		FirstName: r.Form.Get("first_name"),
-		LastName:  r.Form.Get("last_name"),
-		Gender:    r.Form.Get("gender"),
-		Phone:     r.Form.Get("phone"),
-		Address:   r.Form.Get("address"),
+	access_level, _ := strconv.Atoi(r.Form.Get("access_level"))
+	update_user.Email = r.Form.Get("email")
+	update_user.AccessLevel = access_level
+	update_user.UpdatedAt = time.Now()
+	update_user.ID = userKyc.Kyc.ID
+
+	if email != userKyc.User.Email {
+		exists, err := m.DB.EmailExists(userKyc.User.Email)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+		if exists {
+			form.Errors.Add("email", "email already exists")
+		}
 	}
-	user.ID = id
 	data := make(map[string]interface{})
 	data["base_path"] = base_users_path
-	data["user"] = user
+	data["user"] = userKyc.User
+	data["kyc"] = userKyc.Kyc
 	if !form.Valid() {
 		render.Template(w, r, "admin-userdetail.page.tmpl", &models.TemplateData{
 			Form: form,
@@ -111,7 +130,7 @@ func (m *Repository) AdminUpdateUser(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	if err := m.DB.UpdateUser(user); err != nil {
+	if err := m.DB.UpdateUser(update_user); err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
@@ -128,7 +147,7 @@ func (m *Repository) PostAdminUserProfileUpdate(w http.ResponseWriter, r *http.R
 		helpers.ServerError(w, err)
 	}
 	username := m.App.Session.Get(r.Context(), "username")
-	path, err := helpers.UserRegitserFileUpload(r, "profile_pic", username.(string))
+	path, err := helpers.MediaPicUpload(r, "profile_pic", username.(string))
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -138,6 +157,30 @@ func (m *Repository) PostAdminUserProfileUpdate(w http.ResponseWriter, r *http.R
 		return
 	}
 	m.App.Session.Put(r.Context(), "flash", "Profile Picture Updated")
+	http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
+}
+
+func (m *Repository) PostAdminUserDocumentUpdate(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	username := m.App.Session.Get(r.Context(), "username")
+	front_path, err := helpers.MediaPicUpload(r, "document_front", username.(string))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	back_path, err := helpers.MediaPicUpload(r, "document_back", username.(string))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := m.DB.UpdateDocument(front_path, back_path, id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	m.App.Session.Put(r.Context(), "flash", "Document Updated")
 	http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
 }
 
@@ -201,7 +244,7 @@ func (m *Repository) PostAdminUserAdd(w http.ResponseWriter, r *http.Request) {
 	form := forms.New(r.PostForm)
 
 	// Add form field validations
-	form.Required("username", "email", "password", "citizenship_number")
+	form.Required("username", "email", "password")
 	form.MinLength("username", 5)
 	form.MinLength("password", 8)
 	form.HasLowerCase("password")
@@ -211,10 +254,9 @@ func (m *Repository) PostAdminUserAdd(w http.ResponseWriter, r *http.Request) {
 
 	// Store the data from post form to register_user.
 	register_user := models.User{
-		Username:          r.Form.Get("username"),
-		Email:             r.Form.Get("email"),
-		Password:          r.Form.Get("password"),
-		CitizenshipNumber: r.Form.Get("citizenship_number"),
+		Username: r.Form.Get("username"),
+		Email:    r.Form.Get("email"),
+		Password: r.Form.Get("password"),
 	}
 
 	// UsernameExists interface is called to check if username already exists.
@@ -260,7 +302,7 @@ func (m *Repository) PostAdminUserAdd(w http.ResponseWriter, r *http.Request) {
 
 	// Call AdminInsertUser interface for inserting new user.
 	// If any error occurs, a server error is returned.
-	if err := m.DB.AdminInsertUser(&register_user); err != nil {
+	if err := m.DB.InsertUser(&register_user); err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
@@ -270,4 +312,62 @@ func (m *Repository) PostAdminUserAdd(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect the admin to all users page.
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+}
+
+func (m *Repository) PostAdminKycUpdate(w http.ResponseWriter, r *http.Request) {
+	// Parse the id from url into integer.
+	// If any error occurs, a server error is returned.
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	update_kyc := &models.Kyc{}
+	form := forms.New(r.PostForm)
+	is_validated, _ := strconv.ParseBool(r.Form.Get("is_validated"))
+	layout := "2006-01-02"
+	dob, err := time.Parse(layout, r.Form.Get("date_of_birth"))
+	if err != nil {
+		form.Errors.Add("date_of_birth", err.Error())
+	}
+	update_kyc.FirstName = r.Form.Get("first_name")
+	update_kyc.LastName = r.Form.Get("last_name")
+	update_kyc.Gender = r.Form.Get("gender")
+	update_kyc.Phone = r.Form.Get("phone")
+	update_kyc.Address = r.Form.Get("address")
+	update_kyc.DateOfBirth = dob
+	update_kyc.IsValidated = is_validated
+	update_kyc.DocumentType = r.Form.Get("document_type")
+	update_kyc.DocumentNumber = r.Form.Get("document_number")
+	update_kyc.UpdatedAt = time.Now()
+	update_kyc.ID = id
+	form.Required("first_name", "last_name", "gender", "phone", "address", "date_of_birth", "is_validated", "document_type", "document_number")
+	form.MaxLength("phone", 10)
+	userKyc, err := m.DB.GetUserWithKyc(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["base_path"] = base_users_path
+	data["user"] = userKyc.User
+	data["kyc"] = update_kyc
+	if !form.Valid() {
+		log.Println("inside")
+		render.Template(w, r, "admin-userdetail.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.AdminKycUpdate(update_kyc); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	m.App.Session.Put(r.Context(), "flash", "KYC Updated")
+	http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
 }

@@ -59,6 +59,31 @@ func (m *postgresDBRepo) GetBookAuthorByID(book_id, author_id int) (*models.Book
 	return bookAuthor, nil
 }
 
+func (m *postgresDBRepo) GetBookAuthorByBookID(book_id int) ([]*models.BookAuthor, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT * FROM book_authors
+		WHERE book_id=$1
+	`
+	rows, err := m.DB.QueryContext(ctx, query, book_id)
+	if err != nil {
+		return nil, err
+	}
+	bookAuthors := []*models.BookAuthor{}
+	for rows.Next() {
+		bookAuthor := &models.BookAuthor{}
+		if err := rows.Scan(
+			&bookAuthor.BookID,
+			&bookAuthor.AuthorID,
+		); err != nil {
+			return nil, err
+		}
+		bookAuthors = append(bookAuthors, bookAuthor)
+	}
+	return bookAuthors, nil
+}
+
 // BookAuthorExists return true if book author relation exists else return false
 func (m *postgresDBRepo) BookAuthorExists(book_id, author_id int) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

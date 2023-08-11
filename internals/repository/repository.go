@@ -10,6 +10,7 @@ type DatabaseRepo interface {
 
 	GetUserByID(id int) (*models.User, error)
 	GetGlobalUserByID(id int) (*models.User, error)
+	GetGlobalUserByIDAny(id int) (*models.User, error)
 
 	DeleteUser(id int) error
 	UpdateUser(u *models.User) error
@@ -26,6 +27,13 @@ type DatabaseRepo interface {
 	EmailExists(email string) (bool, error)
 
 	ChangePassword(password, email string) error
+
+	// User Kyc
+	GetKycByUserID(user_id int) (*models.Kyc, error)
+	GetUserWithKyc(id int) (*models.UserKycData, error)
+	UpdateDocument(front_path, back_path string, id int) error
+	AdminKycUpdate(update *models.Kyc) error
+	PublicKycUpdate(update *models.Kyc) error
 
 	// Genre interface
 	AllGenre() ([]*models.Genre, error)
@@ -50,6 +58,9 @@ type DatabaseRepo interface {
 	DeleteAuthor(id int) error
 	GetAuthorByID(id int) (*models.Author, error)
 	GetAuthorFullNameByID(id int) (*models.Author, error)
+	TotalAuthors() (int, error)
+	AllAuthorsFilter(limit, page int, search, order string) (*models.AuthorApiFilter, error)
+	GetAuthorWithBooks(id int) (*models.AuthorBookData, error)
 
 	// Language interface
 	AllLanguage() ([]*models.Language, error)
@@ -61,17 +72,27 @@ type DatabaseRepo interface {
 
 	// book interface
 	AllBook() ([]*models.Book, error)
+	AllBookData(limit, page int) ([]*models.Book, error)
+	AllBookDataRandom() ([]*models.Book, error)
+	AllBookRandomPage(limit, page int) ([]*models.Book, error)
 	DeleteBook(id int) error
 	InsertBook(u *models.Book) error
 	GetBookByID(id int) (*models.Book, error)
+	GetBookByISBN(isbn int64) (*models.Book, error)
 	BookIsbnExists(isbn int64) (bool, error)
 	UpdateBook(u *models.Book) error
 	GetBookTitleByID(id int) (*models.Book, error)
+	TotalBooks() (int, error)
+	AllBooksFilter(limit, page int, searchKey, sort string) (*models.BookApiFilter, error)
+	BookDetailWithAuthorPublisherWithIsbn(isbn int64) (*models.BookInfoData, error)
+
+	CalculateLastPage(limit, total int) int
 
 	// book author interface
 	AllBookAuthor() ([]*models.BookAuthor, error)
 	DeleteBookAuthor(book_id, author_id int) error
 	GetBookAuthorByID(book_id, author_id int) (*models.BookAuthor, error)
+	GetBookAuthorByBookID(book_id int) ([]*models.BookAuthor, error)
 	BookAuthorExists(book_id, author_id int) (bool, error)
 	UpdateBookAuthor(u *models.BookAuthor, book_id, author_id int) error
 	InsertBookAuthor(u *models.BookAuthor) error
@@ -121,10 +142,10 @@ type DatabaseRepo interface {
 	ReviewExists(u *models.Review) (bool, error)
 	InsertReview(u *models.Review) error
 	GetReviewByID(id int) (*models.Review, error)
-	GetReviewByBookID(id int) (*models.Review, error)
 	GetReviewByUserID(id int) (*models.Review, error)
 	DeleteReview(id int) error
 	UpdateReview(u *models.Review) error
+	GetReviewsByBookID(bookID int) ([]*models.Review, error)
 
 	// Contact interface
 	AllContacts() ([]*models.Contact, error)

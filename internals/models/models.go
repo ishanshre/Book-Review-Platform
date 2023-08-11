@@ -6,24 +6,31 @@ import (
 
 // User is a type struct which holds users table data
 type User struct {
-	ID                int       `json:"id"`
-	FirstName         string    `json:"first_name"`
-	LastName          string    `json:"last_name"`
-	Username          string    `json:"username"`
-	Email             string    `json:"email"`
-	Password          string    `json:"password"`
-	Gender            string    `json:"gender"`
-	Address           string    `json:"address"`
-	Phone             string    `json:"phone"`
-	ProfilePic        string    `json:"profile_pic"`
-	CitizenshipNumber string    `json:"citizenship_number"`
-	CitizenshipFront  string    `json:"citizenship_front"`
-	CitizenshipBack   string    `json:"citizenship_back"`
-	AccessLevel       int       `json:"access_level"`
-	IsValidated       bool      `json:"is_validated"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at"`
-	LastLogin         time.Time `json:"last_login"`
+	ID          int       `json:"id"`
+	Username    string    `json:"username"`
+	Email       string    `json:"email"`
+	Password    string    `json:"password"`
+	AccessLevel int       `json:"access_level"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	LastLogin   time.Time `json:"last_login"`
+}
+type Kyc struct {
+	ID             int       `json:"id"`
+	UserID         int       `json:"user_id"`
+	FirstName      string    `json:"first_name"`
+	LastName       string    `json:"last_name"`
+	Gender         string    `json:"gender"`
+	Address        string    `json:"address"`
+	Phone          string    `json:"phone"`
+	ProfilePic     string    `json:"profile_pic"`
+	DateOfBirth    time.Time `json:"dob"`
+	DocumentType   string    `json:"document_type"`
+	DocumentNumber string    `json:"document_number"`
+	DocumentFront  string    `json:"document_front"`
+	DocumentBack   string    `json:"document_back"`
+	IsValidated    bool      `json:"is_validated"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 // MailData holds the email message
@@ -64,14 +71,14 @@ type Publisher struct {
 
 // Author struct holds the authors table data
 type Author struct {
-	ID              int
-	FirstName       string
-	LastName        string
-	Bio             string
-	DateOfBirth     int
-	Email           string
-	CountryOfOrigin string
-	Avatar          string
+	ID              int    `json:"id,omitempty"`
+	FirstName       string `json:"first_name,omitempty"`
+	LastName        string `json:"last_name,omitempty"`
+	Bio             string `json:"bio,omitempty"`
+	DateOfBirth     int    `json:"dob,omitempty"`
+	Email           string `json:"email,omitempty"`
+	CountryOfOrigin string `json:"coo,omitempty"`
+	Avatar          string `json:"avatar,omitempty"`
 }
 
 // Language struct holds the language table model
@@ -82,17 +89,31 @@ type Language struct {
 
 // Book struct holds the books table data
 type Book struct {
-	ID            int
-	Title         string
-	Description   string
-	Cover         string
-	Isbn          int64
-	PublishedDate time.Time
-	Paperback     int
-	IsActive      bool
-	AddedAt       time.Time
-	UpdatedAt     time.Time
-	PublisherID   int
+	ID            int       `json:"id,omitempty"`
+	Title         string    `json:"title,omitempty"`
+	Description   string    `json:"description,omitempty"`
+	Cover         string    `json:"cover,omitempty"`
+	Isbn          int64     `json:"isbn,omitempty"`
+	PublishedDate time.Time `json:"published_date,omitempty"`
+	Paperback     int       `json:"paperback,omitempty"`
+	IsActive      bool      `json:"is_active,omitempty"`
+	AddedAt       time.Time `json:"added_at,omitempty"`
+	UpdatedAt     time.Time `json:"updated_at,omitempty"`
+	PublisherID   int       `json:"publisher_id,omitempty"`
+}
+
+type BookApiFilter struct {
+	Total    int     `json:"total"`
+	Page     int     `json:"page"`
+	LastPage int     `json:"last_page"`
+	Books    []*Book `json:"books"`
+}
+
+type AuthorApiFilter struct {
+	Total    int       `json:"total"`
+	Page     int       `json:"page"`
+	LastPage int       `json:"last_page"`
+	Authors  []*Author `json:"authors"`
 }
 
 // BookAuthor struct holds the immediate table between book and author

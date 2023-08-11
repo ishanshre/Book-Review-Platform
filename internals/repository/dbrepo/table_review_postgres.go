@@ -152,45 +152,6 @@ func (m *postgresDBRepo) GetReviewByID(id int) (*models.Review, error) {
 	return review, nil
 }
 
-// GetReviewByBookID returns the Review detail from database using book id.
-// It takes book id as parameters.
-// Returns a Review struct instance.
-func (m *postgresDBRepo) GetReviewByBookID(id int) (*models.Review, error) {
-
-	// Create timeout of 3 secod with context.
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	// Preparing the query statement
-	query := `
-		SELECT * FROM reviews
-		WHERE book_id=$1
-	`
-
-	// Execting the query using row context and returns a row
-	row := m.DB.QueryRowContext(ctx, query, id)
-
-	// Initializing a Review struct instance
-	review := &models.Review{}
-
-	// Scannin the row and storing the result in Review Intance.
-	if err := row.Scan(
-		&review.ID,
-		&review.Rating,
-		&review.Body,
-		&review.BookID,
-		&review.UserID,
-		&review.IsActive,
-		&review.CreatedAt,
-		&review.UpdatedAt,
-	); err != nil {
-		return nil, err
-	}
-
-	// Return a Review Instance and nil
-	return review, nil
-}
-
 // GetReviewByUserID returns the Review detail from database using user id.
 // It takes user id as parameters.
 // Returns a Review struct instance.
@@ -279,4 +240,33 @@ func (m *postgresDBRepo) UpdateReview(u *models.Review) error {
 		return err
 	}
 	return nil
+}
+
+func (m *postgresDBRepo) GetReviewsByBookID(bookID int) ([]*models.Review, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := "SELECT * FROM reviews WHERE book_id=$1 ORDER BY id"
+	rows, err := m.DB.QueryContext(ctx, query, bookID)
+	if err != nil {
+		return nil, err
+	}
+	reviews := []*models.Review{}
+	for rows.Next() {
+		review := &models.Review{}
+		if err := rows.Scan(
+			&review.ID,
+			&review.Rating,
+			&review.Body,
+			&review.BookID,
+			&review.UserID,
+			&review.IsActive,
+			&review.CreatedAt,
+			&review.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		reviews = append(reviews, review)
+	}
+	return reviews, nil
 }

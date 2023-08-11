@@ -12,6 +12,9 @@
         <h1>Publisher Detail</h1>
     </div><hr>
     <div>
+        <img src="/{{$res.Pic}}" alt="publisher_pic" width=300px height="200px">
+    </div>
+    <div>
         <form action="/admin/publishers/detail/{{$res.ID}}/update" method="post">
             <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
             <div>

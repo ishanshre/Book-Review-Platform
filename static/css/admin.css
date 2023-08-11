@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,100;1,300;1,400;1,500&display=swap');
+
 /* Box sizing rules*/
 *,
 *::before,
@@ -9,6 +11,7 @@
 * {
   margin: 0;
   padding: 0;
+  font-family: 'Roboto', sans-serif;
 }
 
 /* Avoid text overflows */
@@ -138,6 +141,31 @@ a {
     justify-content: var(--jc, center);
 }
 
+.d-flex-row {
+  flex-direction: row;
+}
+.d-flex-col {
+  flex-direction: column;
+}
+.d-wrap {
+  flex-wrap: wrap;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.d-gap {
+  gap: 20px;
+}
+.w-75 {
+  width: 100%;
+}
+
 .nav-primary {
     --jc:space-between;
     padding: 1.5rem 2rem;
@@ -218,7 +246,12 @@ a {
 }
 
 .main-content {
-    margin-block: 1.5rem;
+  max-width: 1200px;
+  width: 800px;
+  /* Set a maximum width for the container */
+  margin: 10px;
+  /* Center the container horizontally */
+  padding: 20px;
 }
 
 /* Add a media query for screens with a maximum width of 768px */
@@ -272,4 +305,11 @@ a {
 
 .no-display {
     display: none;
+}
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  width: 50rem;
+  text-align: center;
 }
