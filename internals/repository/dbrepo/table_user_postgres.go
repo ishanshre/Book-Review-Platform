@@ -195,18 +195,6 @@ func (m *postgresDBRepo) UpdateUser(u *models.User) error {
 	return nil
 }
 
-// UpdateProfilePic updates user profile pic
-func (m *postgresDBRepo) UpdateProfilePic(path string, id int) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	stmt := `UPDATE kycs SET profile_pic=$2 WHERE id=$1`
-	_, err := m.DB.ExecContext(ctx, stmt, id, path)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // InsertUser insert new user into database.
 // This method is used for new user sign up
 func (m *postgresDBRepo) InsertUser(u *models.User) error {

@@ -71,10 +71,104 @@
             </form>
         </div>
         <div>
-            <p><strong>Document Type: </strong>{{$kyc.DocumentType}}</p>
-            <p><strong>Document number: </strong>{{$kyc.DocumentNumber}}</p>
-            <p><strong>Document front: </strong>{{$kyc.DocumentFront}}</p>
-            <p><strong>Document back: </strong>{{$kyc.DocumentBack}}</p>
+            <form action="/admin/users/detail/{{$res.ID}}/kyc" method="post">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                <div>
+                    <label for="first_name">First Name: </label>
+                    {{with .Form.Errors.Get "first_name"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="first_name" id="first_name" value="{{$kyc.FirstName}}">
+                </div>
+                <div>
+                    <label for="last_name">Last Name: </label>
+                    {{with .Form.Errors.Get "last_name"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="last_name" id="last_name" value="{{$kyc.LastName}}">
+                </div>
+                <div>
+                    <label for="gender">Gender: </label>
+                    <select name="gender" id="gender">
+                        <option value="Unknown" {{if eq $kyc.Gender "Unknown" }} selected {{end}}>Unknown</option>
+                        <option value="Male" {{if eq $kyc.Gender "Male" }} selected {{end}}>Male</option>
+                        <option value="Female" {{if eq $kyc.Gender "Female" }} selected {{end}}>Female</option>
+                        <option value="Others" {{if eq $kyc.Gender "Others" }} selected {{end}}>Others</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="phone">Phone: </label>
+                    {{with .Form.Errors.Get "phone"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="phone" id="phone" value="{{$kyc.Phone}}">
+                </div>
+                <div>
+                    <label for="address">Address: </label>
+                    {{with .Form.Errors.Get "address"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="address" id="address" value="{{$kyc.Address}}">
+                </div>
+                <div>
+                    <label for="date_of_birth">Date Of Birth: </label>
+                    {{with .Form.Errors.Get "date_of_birth"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="date" name="date_of_birth" id="date_of_birth" value="{{DateOnly $kyc.DateOfBirth}}">
+                </div>
+                <div>
+                    <label for="is_validated">Validated: </label>
+                    {{with .Form.Errors.Get "is_validated"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <select name="is_validated" id="is_validated">
+                        <option value="true" {{if eq $kyc.IsValidated true}} selected {{end}}>Verified</option>
+                        <option value="false" {{if eq $kyc.IsValidated false}} selected {{end}}>Unverified</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="document_type">Document Type: </label>
+                    <select name="document_type" id="document_type">
+                        <option value="Citizenship" {{if eq $kyc.DocumentType "Citizenship" }} selected {{end}}>
+                            Citizenship</option>
+                        <option value="Passport" {{if eq $kyc.DocumentType "Passport" }} selected {{end}}>Passport
+                        </option>
+                        <option value="Driving License" {{if eq $kyc.DocumentType "Driving License" }} selected {{end}}>
+                            Driving License</option>
+                        <option value="National ID" {{if eq $kyc.DocumentType "National ID" }} selected {{end}}>National
+                            ID</option>
+                        <option value="Pan Card" {{if eq $kyc.DocumentType "Pan Card" }} selected {{end}}>Pan Card
+                        </option>
+                    </select>
+                </div>
+                <div>
+                    <label for="document_number">Document ID: </label>
+                    {{with .Form.Errors.Get "document_number"}}
+                    <label>{{.}}</label>
+                    {{end}}
+                    <input type="text" name="document_number" id="document_number" value="{{$kyc.DocumentNumber}}">
+                </div>
+                <input type="submit" value="Update KYC">
+            </form>
+            <div>
+                <form action="/admin/users/detail/{{$res.ID}}/document" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <div>
+                        <label for="document_front">Document Front</label>
+                        <input type="file" name="document_front" id="document_front" accept="image/png, image/jpeg">
+                    </div>
+                    <div>
+                        <label for="document_back">Document Front</label>
+                        <input type="file" name="document_back" id="document_back" accept="image/png, image/jpeg">
+                    </div>
+                    <input type="submit" value="Upload">
+                </form>
+            </div>
+            <div class="d-flex">
+                <img src="/{{$kyc.DocumentFront}}" alt="document Front" width="300px">
+                <img src="/{{$kyc.DocumentBack}}" alt="document Back" width="300px">
+            </div>
         </div>
     </div>
 

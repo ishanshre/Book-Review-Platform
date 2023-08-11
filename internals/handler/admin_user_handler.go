@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -159,6 +160,30 @@ func (m *Repository) PostAdminUserProfileUpdate(w http.ResponseWriter, r *http.R
 	http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
 }
 
+func (m *Repository) PostAdminUserDocumentUpdate(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	username := m.App.Session.Get(r.Context(), "username")
+	front_path, err := helpers.MediaPicUpload(r, "document_front", username.(string))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	back_path, err := helpers.MediaPicUpload(r, "document_back", username.(string))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := m.DB.UpdateDocument(front_path, back_path, id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	m.App.Session.Put(r.Context(), "flash", "Document Updated")
+	http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
+}
+
 // PostAdminUserDeleteByID renders a confim page to delete users.
 // It takes HTTP response writer and request as parameters.
 // It parse the id from url, check if auth user id and id from url mathches or not, delete the user if not match.
@@ -287,4 +312,62 @@ func (m *Repository) PostAdminUserAdd(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect the admin to all users page.
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+}
+
+func (m *Repository) PostAdminKycUpdate(w http.ResponseWriter, r *http.Request) {
+	// Parse the id from url into integer.
+	// If any error occurs, a server error is returned.
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	update_kyc := &models.Kyc{}
+	form := forms.New(r.PostForm)
+	is_validated, _ := strconv.ParseBool(r.Form.Get("is_validated"))
+	layout := "2006-01-02"
+	dob, err := time.Parse(layout, r.Form.Get("date_of_birth"))
+	if err != nil {
+		form.Errors.Add("date_of_birth", err.Error())
+	}
+	update_kyc.FirstName = r.Form.Get("first_name")
+	update_kyc.LastName = r.Form.Get("last_name")
+	update_kyc.Gender = r.Form.Get("gender")
+	update_kyc.Phone = r.Form.Get("phone")
+	update_kyc.Address = r.Form.Get("address")
+	update_kyc.DateOfBirth = dob
+	update_kyc.IsValidated = is_validated
+	update_kyc.DocumentType = r.Form.Get("document_type")
+	update_kyc.DocumentNumber = r.Form.Get("document_number")
+	update_kyc.UpdatedAt = time.Now()
+	update_kyc.ID = id
+	form.Required("first_name", "last_name", "gender", "phone", "address", "date_of_birth", "is_validated", "document_type", "document_number")
+	form.MaxLength("phone", 10)
+	userKyc, err := m.DB.GetUserWithKyc(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["base_path"] = base_users_path
+	data["user"] = userKyc.User
+	data["kyc"] = update_kyc
+	if !form.Valid() {
+		log.Println("inside")
+		render.Template(w, r, "admin-userdetail.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.AdminKycUpdate(update_kyc); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	m.App.Session.Put(r.Context(), "flash", "KYC Updated")
+	http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
 }

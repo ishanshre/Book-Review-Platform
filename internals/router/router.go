@@ -115,6 +115,8 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/users/detail/{id}", handler.Repo.AdminGetUserDetailByID)
 		mux.Post("/users/detail/{id}", handler.Repo.AdminUpdateUser)
 		mux.Post("/users/detail/{id}/profile", handler.Repo.PostAdminUserProfileUpdate)
+		mux.Post("/users/detail/{id}/document", handler.Repo.PostAdminUserDocumentUpdate)
+		mux.Post("/users/detail/{id}/kyc", handler.Repo.PostAdminKycUpdate)
 
 		mux.Get("/users/create", handler.Repo.AdminUserAdd)
 		mux.Post("/users/create", handler.Repo.PostAdminUserAdd)
