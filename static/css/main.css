@@ -36,7 +36,7 @@ h6 {
   --xl: 80em;
   /* 1440px */
   --xxl: 90em;
-  --fs-1600: 8rem;
+  --fs-1400: 8rem;
   --fs-1200: 6rem;
   --fs-1000: 4rem;
   --fs-800: 2rem;
@@ -56,6 +56,7 @@ h6 {
   --fw-1000: 1000;
   --bk-primary: #585b70;
   --bk-primary-dark: #505368;
+  --bk-primary-darker: #4a4c5e;
   --bk-secondary: #F8F9FA;
   --bk-accent: #FF6C00;
   --bk-action: #33CC33;
@@ -308,8 +309,28 @@ header {
   width: 100%;
 }
 
+.w-50r {
+  width: 50rem;
+}
+
+.w-20r {
+  width: 20rem;
+}
+
+.h-fit {
+  height: fit-content;
+}
+
 .d-dark {
   background-color: var(--bk-primary-dark);
+}
+
+.d-darker {
+  background-color: var(--bk-primary-darker);
+}
+
+.d-primary {
+  background-color: var(--bk-primary);
 }
 
 
@@ -394,7 +415,7 @@ header {
 .title-heading {
   font-style: normal;
   color: var(--bk-tcolor);
-  font-size: var(--fs-1600);
+  font-size: var(--fs-1400);
   font-weight: var(--fw-900);
   line-height: 1.1em;
   text-align: center;
@@ -689,7 +710,7 @@ footer {
 .review-box {
   border: 1px solid orange;
   border-radius: 10px;
-  padding: 4px;
+  padding: 10px;
 }
 
 /* Login form */

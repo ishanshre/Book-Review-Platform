@@ -20,7 +20,7 @@
             {{$following := index .Data "following"}}
             {{$read_list_count := index .Data "read_list_count"}}
             {{$buy_list_count := index .Data "buy_list_count"}}
-            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r align-center b-radius">
+            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r align-center b-radius h-fit">
                 <img src="/{{$kyc.ProfilePic}}" alt="{{$res.Username}}" width="300px" height="auto" class="profile_img">
                 <p><strong>Username: </strong>@{{$res.Username}}</p>
                 <p><strong>Email: </strong>{{$res.Email}}</p>

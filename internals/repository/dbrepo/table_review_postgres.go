@@ -2,6 +2,7 @@ package dbrepo
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -269,4 +270,33 @@ func (m *postgresDBRepo) GetReviewsByBookID(bookID int) ([]*models.Review, error
 		reviews = append(reviews, review)
 	}
 	return reviews, nil
+}
+
+func (m *postgresDBRepo) UpdateReviewBook(update *models.Review) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		UPDATE reviews
+		SET rating = $4, body = $5, updated_at = $6
+		WHERE id = $1 AND book_id = $2 AND user_id = $3
+	`
+	res, err := m.DB.ExecContext(
+		ctx,
+		query,
+		update.ID,
+		update.BookID,
+		update.UserID,
+		update.Rating,
+		update.Body,
+		update.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+	affected, _ := res.RowsAffected()
+	if affected == 0 {
+		return errors.New("row not updated")
+	}
+	return nil
 }

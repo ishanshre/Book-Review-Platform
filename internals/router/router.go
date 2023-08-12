@@ -46,6 +46,8 @@ func Router(app *config.AppConfig) http.Handler {
 			mux.Get("/{isbn}/create-review", handler.Repo.PublicCreateReview)
 			mux.Post("/{isbn}/create-review", handler.Repo.PostPublicCreateReview)
 			mux.Post("/{isbn}/reviews/{review_id}/delete", handler.Repo.PostPublicDeleteReview)
+			mux.Get("/{isbn}/reviews/{review_id}/update", handler.Repo.PublicUpdateReview)
+			mux.Post("/{isbn}/reviews/{review_id}/update", handler.Repo.PostPublicUpdateReview)
 		})
 	})
 

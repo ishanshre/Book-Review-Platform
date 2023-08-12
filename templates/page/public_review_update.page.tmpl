@@ -15,7 +15,7 @@
             </div>
             <div class="d-flex-col container text-orange">
                 <div>
-                    <h1>Create Add review for {{$book.Title}} </h1>
+                    <h1>Update review of {{$book.Title}} </h1>
                 </div>
                 <div>
                     <form method="post" class="d-flex d-flex-col align-center d-gap">
@@ -43,7 +43,7 @@
                         {{with .Form.Errors.Get "body"}}
                         <label class="text-danger">{{.}}</label>
                         {{end}}
-                        <div class="btn-div"><input type="submit" value="Add Review" class="btn"></div>
+                        <div class="btn-div"><input type="submit" value="Update Review" class="btn"></div>
                     </form>
                 </div>
 

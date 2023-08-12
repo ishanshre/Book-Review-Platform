@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"runtime/debug"
@@ -73,6 +74,12 @@ func PageNotFound(w http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
 	app.ErrorLog.Println(trace)
 	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+}
+
+func Unauthorized(w http.ResponseWriter) {
+	trace := fmt.Sprintf("%s\n%s", errors.New("user not authorized"), debug.Stack())
+	app.ErrorLog.Println(trace)
+	http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 }
 
 // IsAuthenticated return true if authenticated else false

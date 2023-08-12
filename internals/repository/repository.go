@@ -150,6 +150,7 @@ type DatabaseRepo interface {
 	DeleteReview(id int) error
 	UpdateReview(u *models.Review) error
 	GetReviewsByBookID(bookID int) ([]*models.Review, error)
+	UpdateReviewBook(update *models.Review) error
 
 	// Contact interface
 	AllContacts() ([]*models.Contact, error)
