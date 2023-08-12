@@ -114,3 +114,35 @@ func (m *postgresDBRepo) InsertBookGenre(u *models.BookGenre) error {
 	}
 	return nil
 }
+
+func (m *postgresDBRepo) GetGenresFromBookID(book_id int) ([]*models.Genre, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		SELECT 
+		COALESCE(g.id, 0), COALESCE(g.title, '')
+		FROM
+			book_genres AS bg
+		LEFT JOIN
+			genres AS g ON g.id = bg.genre_id
+		WHERE 
+			book_id = $1
+	`
+	genres := []*models.Genre{}
+	rows, err := m.DB.QueryContext(ctx, query, book_id)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		genre := &models.Genre{}
+		if err := rows.Scan(
+			&genre.ID,
+			&genre.Title,
+		); err != nil {
+			return nil, err
+		}
+		genres = append(genres, genre)
+	}
+	return genres, nil
+}

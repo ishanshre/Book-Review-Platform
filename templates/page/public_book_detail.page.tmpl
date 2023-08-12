@@ -34,6 +34,22 @@
                         $lastIndexAuthors}},{{end}}
                         {{end}}
                     </strong></p>
+                <p><strong>Genres:
+                        {{$genres := index .Data "genres"}}
+                        {{$lastIndexGenres := index .Data "lastIndexGenres"}}
+                        {{range $id, $genre := $genres}}
+                        <a href="#">{{$genre.Title}}</a>{{if ne $id
+                        $lastIndexGenres}},{{end}}
+                        {{end}}
+                    </strong></p>
+                <p><strong>Languages Avaliable:
+                        {{$languages := index .Data "languages"}}
+                        {{$lastIndexLanguages := index .Data "lastIndexLanguages"}}
+                        {{range $id, $language := $languages}}
+                        <a href="#">{{$language.Language}}</a>{{if ne $id
+                        $lastIndexLanguages}},{{end}}
+                        {{end}}
+                    </strong></p>
                 <p><strong>Description:</strong></p>
                 <p>{{$book.Description}}</p>
                 <p><strong>ISBN: </strong>{{$book.Isbn}}</p>

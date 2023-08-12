@@ -178,3 +178,35 @@ func (m *postgresDBRepo) InsertBookLanguage(u *models.BookLanguage) error {
 	}
 	return nil
 }
+
+func (m *postgresDBRepo) GetLanguagesFromBookID(book_id int) ([]*models.Language, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		SELECT 
+		COALESCE(l.id, 0), COALESCE(l.language, '')
+		FROM
+			book_languages AS bl
+		LEFT JOIN
+			languages AS l ON l.id = bl.language_id
+		WHERE 
+			book_id = $1
+	`
+	languages := []*models.Language{}
+	rows, err := m.DB.QueryContext(ctx, query, book_id)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		language := &models.Language{}
+		if err := rows.Scan(
+			&language.ID,
+			&language.Language,
+		); err != nil {
+			return nil, err
+		}
+		languages = append(languages, language)
+	}
+	return languages, nil
+}

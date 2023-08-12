@@ -146,13 +146,27 @@ func (m *Repository) BookDetailByISBN(w http.ResponseWriter, r *http.Request) {
 	if numReviews > 0 {
 		averageRating = totalRatings / float64(numReviews)
 	}
+	genres, err := m.DB.GetGenresFromBookID(book.BookWithPublisherData.ID)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	languages, err := m.DB.GetLanguagesFromBookID(book.BookWithPublisherData.ID)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
 	data := make(map[string]interface{})
 	data["book"] = book.BookWithPublisherData
 	data["authors"] = authors
 	data["publisher"] = publisher
+	data["genres"] = genres
+	data["languages"] = languages
 	data["reviewDatas"] = reviewDatas
 	data["averageRating"] = averageRating
 	data["lastIndexAuthors"] = len(authors) - 1
+	data["lastIndexGenres"] = len(genres) - 1
+	data["lastIndexLanguages"] = len(languages) - 1
 	render.Template(w, r, "public_book_detail.page.tmpl", &models.TemplateData{
 		Data: data,
 	})

@@ -39,6 +39,7 @@ h6 {
   --fs-1400: 8rem;
   --fs-1200: 6rem;
   --fs-1000: 4rem;
+  --fs-900: 3rem;
   --fs-800: 2rem;
   --fs-400: 1rem;
   --fs-300: 0.875rem;
@@ -403,7 +404,7 @@ header {
 }
 
 .search-section {
-  margin-top: 100px;
+  margin-top: var(--fs-800);
 }
 
 .search-section,
@@ -415,7 +416,7 @@ header {
 .title-heading {
   font-style: normal;
   color: var(--bk-tcolor);
-  font-size: var(--fs-1400);
+  font-size: var(--fs-1200);
   font-weight: var(--fw-900);
   line-height: 1.1em;
   text-align: center;
@@ -435,23 +436,26 @@ header {
 
 @media (max-width: 900px) {
   .title-heading {
-    font-size: var(--fs-1200);
+    font-size: var(--fs-1000);
   }
 }
 
 @media (max-width: 680px) {
   .title-heading {
-    font-size: var(--fs-1000);
+    font-size: var(--fs-800);
+  }
+  .title-paragraph {
+    font-size: var(--fs-400);
   }
 }
 
 @media (max-width: 430px) {
   .title-heading {
-    font-size: var(--fs-800);
+    font-size: var(--fs-400);
   }
 
   .title-paragraph {
-    font-size: var(--fs-600);
+    font-size: var(--fs-300);
   }
 }
 
@@ -543,26 +547,8 @@ footer {
 }
 
 .top-rated-section h1 {
-  font-size: var(--fs-1200);
+  font-size: var(--fs-900);
   margin-bottom: 10px;
-}
-
-@media (max-width: 900px) {
-  .top-rated-section h1 {
-    font-size: var(--fs-1000);
-  }
-}
-
-@media (max-width: 680px) {
-  .top-rated-section h1 {
-    font-size: var(--fs-800);
-  }
-}
-
-@media (max-width: 430px) {
-  .top-rated-section h1 {
-    font-size: var(--fs-400);
-  }
 }
 
 .slider {
@@ -572,6 +558,10 @@ footer {
   position: relative;
   overflow: hidden;
   border-radius: 15px;
+}
+
+.slider h1 {
+  font-size: var(--fs-800);
 }
 
 .slide {
@@ -614,6 +604,30 @@ footer {
   top: 45%;
   right: 2%;
 }
+@media (max-width: 900px) {
+  .top-rated-section h1 {
+    font-size: var(--fs-800);
+  }
+}
+
+@media (max-width: 680px) {
+  .top-rated-section h1 {
+    font-size: var(--fs-300);
+  }
+  .slider h1 {
+    font-size: var(--fs-400);
+  }
+}
+
+@media (max-width: 430px) {
+  .top-rated-section h1 {
+    font-size: var(--fs-200);
+  }
+  .slider h1 {
+    font-size: var(--fs-300);
+  }
+}
+
 
 /* carousel ends */
 
@@ -631,7 +645,7 @@ footer {
   width: 200px;
   height: 350px;
   background-color: var(--bk-primary-dark);
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 5px;
   margin: 20px;
 }
@@ -649,7 +663,7 @@ footer {
   border-radius: 5px;
   margin: 20px;
   background-color: var(--bk-primary-dark);
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 
