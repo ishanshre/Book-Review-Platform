@@ -523,6 +523,7 @@ form.search button[type=submit]:hover {
 
 footer {
   color: var(--bk-tcolor);
+  background-color: var(--bk-primary-dark);
   left: 0;
   bottom: 0;
   margin-block: 50px;

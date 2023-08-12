@@ -78,3 +78,8 @@ type UserKycData struct {
 type AuthorFollowerData struct {
 	Author []*Author
 }
+
+type PublisherWithBooksData struct {
+	Publisher *Publisher
+	Books     []*Book
+}

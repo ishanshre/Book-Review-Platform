@@ -51,6 +51,8 @@ func Router(app *config.AppConfig) http.Handler {
 		})
 	})
 
+	mux.Get("/publishers/{id}", handler.Repo.PublisherWithBooksDetailByID)
+
 	// Api for clearing the messages
 	mux.Post("/api/clear/{type}", handler.Repo.ClearSessionMessage)
 	mux.Get("/api/books", handler.Repo.AllBooksFilterApi)

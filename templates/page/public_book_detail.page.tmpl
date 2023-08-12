@@ -41,7 +41,7 @@
                 <p><strong>Published Date: </strong>{{DateOnly $book.PublishedDate}}</p>
                 <p><strong>Published By: </strong>
                     {{$publisher := index .Data "publisher"}}
-                    {{$publisher.Name}}
+                    <a href="/publishers/{{$publisher.ID}}">{{$publisher.Name}}</a>
                 </p>
                 {{$averageRating := index .Data "averageRating"}}
                 <p><strong>Average Rating: </strong>{{$averageRating}}</p>

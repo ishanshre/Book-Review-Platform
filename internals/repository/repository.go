@@ -50,6 +50,8 @@ type DatabaseRepo interface {
 	DeletePublisher(id int) error
 	GetPublisherByID(id int) (*models.Publisher, error)
 	PublisherExists(name string) (bool, error)
+	PublisherExistsID(id int) (bool, error)
+	GetPublisherWithBookByID(publisher_id int) (*models.PublisherWithBooksData, error)
 
 	// Author interface
 	AllAuthor() ([]*models.Author, error)
