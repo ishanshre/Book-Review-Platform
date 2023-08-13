@@ -107,6 +107,7 @@ type DatabaseRepo interface {
 	UpdateBookGenre(u *models.BookGenre, book_id, genre_id int) error
 	InsertBookGenre(u *models.BookGenre) error
 	GetGenresFromBookID(book_id int) ([]*models.Genre, error)
+	GetAllBooksByGenre(limit, page int, searchKey, sort, genre string) (*models.BookApiFilter, error)
 
 	// Book Language interface
 	AllBookLanguage() ([]*models.BookLanguage, error)

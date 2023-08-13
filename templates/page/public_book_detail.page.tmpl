@@ -38,7 +38,7 @@
                         {{$genres := index .Data "genres"}}
                         {{$lastIndexGenres := index .Data "lastIndexGenres"}}
                         {{range $id, $genre := $genres}}
-                        <a href="#">{{$genre.Title}}</a>{{if ne $id
+                        <a href="/genres/{{$genre.Title}}">{{$genre.Title}}</a>{{if ne $id
                         $lastIndexGenres}},{{end}}
                         {{end}}
                     </strong></p>

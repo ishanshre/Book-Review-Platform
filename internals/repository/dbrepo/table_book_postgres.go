@@ -315,12 +315,18 @@ func (m *postgresDBRepo) AllBooksFilter(limit, page int, searchKey, sort string)
 	offset := (page - 1) * limit
 
 	sql := "SELECT id, title, description, cover, isbn, published_date FROM books"
+	countSql := "SELECT COUNT(*) FROM books"
 	if searchKey != "" {
-		sql = fmt.Sprintf("%s WHERE title LIKE '%%%s%%' OR description LIKE '%%%s%%'", sql, searchKey, searchKey)
+		sql = fmt.Sprintf("%s WHERE title LIKE '%%%s%%' OR description LIKE '%%%s%%' OR CAST(isbn AS TEXT) LIKE '%%%s%%'", sql, searchKey, searchKey, searchKey)
+		countSql = fmt.Sprintf("%s WHERE title LIKE '%%%s%%' OR description LIKE '%%%s%%' OR CAST(isbn AS TEXT) LIKE '%%%s%%'", countSql, searchKey, searchKey, searchKey)
 	}
 
 	if sort != "" {
 		sql = fmt.Sprintf("%s ORDER BY title %s", sql, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countSql).Scan(&count); err != nil {
+		return nil, err
 	}
 	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
 
@@ -343,7 +349,6 @@ func (m *postgresDBRepo) AllBooksFilter(limit, page int, searchKey, sort string)
 		}
 		books = append(books, book)
 	}
-	count, _ := m.TotalBooks()
 	lastPage := m.CalculateLastPage(limit, count)
 	return &models.BookApiFilter{
 		Total:    count,
