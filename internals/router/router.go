@@ -43,6 +43,7 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/{isbn}", handler.Repo.BookDetailByISBN)
 		mux.Route("/", func(mux chi.Router) {
 			mux.Use(middleware.Auth)
+			mux.Use(middleware.KycValidated)
 			mux.Get("/{isbn}/create-review", handler.Repo.PublicCreateReview)
 			mux.Post("/{isbn}/create-review", handler.Repo.PostPublicCreateReview)
 			mux.Post("/{isbn}/reviews/{review_id}/delete", handler.Repo.PostPublicDeleteReview)

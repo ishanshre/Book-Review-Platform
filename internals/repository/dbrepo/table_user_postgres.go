@@ -313,25 +313,32 @@ func (m *postgresDBRepo) UpdateLastLogin(id int) error {
 // Authenticate retrives password and id using username.
 // It compares the hash of retrived and password provided.
 // Returns id, hashed password and error.
-func (m *postgresDBRepo) Authenticate(username, testPassword string) (int, int, error) {
+func (m *postgresDBRepo) Authenticate(username, testPassword string) (int, int, bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	var id int
 	var access_level int
 	var hashedPassword string
-	query := `SELECT id, password, access_level FROM users WHERE username=$1`
+	var is_validated bool
+	query := `
+		SELECT u.id, u.password, u.access_level, k.is_validated 
+		FROM users AS u
+		JOIN
+			kycs AS k ON u.id = k.user_id
+		WHERE u.username=$1
+	`
 	row := m.DB.QueryRowContext(ctx, query, username)
-	if err := row.Scan(&id, &hashedPassword, &access_level); err != nil {
-		return id, 2, err
+	if err := row.Scan(&id, &hashedPassword, &access_level, &is_validated); err != nil {
+		return id, 2, false, err
 	}
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(testPassword))
 	if err == bcrypt.ErrMismatchedHashAndPassword {
-		return 0, 2, fmt.Errorf("incorrect password: %s", bcrypt.ErrMismatchedHashAndPassword)
+		return 0, 2, false, fmt.Errorf("incorrect password: %s", bcrypt.ErrMismatchedHashAndPassword)
 	} else if err != nil {
-		return 0, 2, err
+		return 0, 2, false, err
 	}
-	return id, access_level, nil
+	return id, access_level, is_validated, nil
 }
 
 // Get information for personal profile page

@@ -88,6 +88,10 @@ func IsAuthenticated(r *http.Request) bool {
 	return exists
 }
 
+func IsValidated(r *http.Request) bool {
+	return app.Session.GetBool(r.Context(), "is_validated")
+}
+
 // IsAdmin returns true if authenticated user is admin else return false
 func IsAdmin(r *http.Request) bool {
 	access_level := app.Session.GetInt(r.Context(), "access_level")

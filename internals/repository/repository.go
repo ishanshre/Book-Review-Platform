@@ -17,7 +17,7 @@ type DatabaseRepo interface {
 	UpdateProfilePic(path string, id int) error
 
 	UpdateLastLogin(id int) error
-	Authenticate(username, testPassword string) (int, int, error)
+	Authenticate(username, testPassword string) (int, int, bool, error)
 	InsertUser(*models.User) error
 	AdminInsertUser(*models.User) error
 

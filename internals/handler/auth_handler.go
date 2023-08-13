@@ -63,8 +63,9 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	id, access_level, err := m.DB.Authenticate(user.Username, user.Password)
+	id, access_level, is_validated, err := m.DB.Authenticate(user.Username, user.Password)
 	if err != nil {
+		log.Println(err)
 		form.Errors.Add("username", "Invalid username/password")
 		form.Errors.Add("password", "Invalid username/password")
 		render.Template(w, r, "login.page.tmpl", &models.TemplateData{
@@ -78,14 +79,16 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 		return
 	}
-	m.UpdateSession(w, r, id, access_level, user.Username)
+	log.Println(user)
+	m.UpdateSession(w, r, id, access_level, user.Username, is_validated)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (m *Repository) UpdateSession(w http.ResponseWriter, r *http.Request, id, access_level int, username string) {
+func (m *Repository) UpdateSession(w http.ResponseWriter, r *http.Request, id, access_level int, username string, is_validated bool) {
 	m.App.Session.Put(r.Context(), "user_id", id)
 	m.App.Session.Put(r.Context(), "username", username)
 	m.App.Session.Put(r.Context(), "access_level", access_level)
+	m.App.Session.Put(r.Context(), "is_validated", is_validated)
 	m.App.Session.Put(r.Context(), "flash", "Login Successfull")
 }
 
