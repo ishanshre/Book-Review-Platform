@@ -27,6 +27,11 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	recentBooks, err := m.DB.AllRecentBooks(8, 1)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
 
 	topRatedBooks := []models.BookWithAverageRating{}
 	for _, book := range allBooks {
@@ -73,8 +78,9 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := make(map[string]interface{})
-	data["allGenre"] = allGenres
+	data["allGenres"] = allGenres
 	data["allBooks"] = allBooks
+	data["recentBooks"] = recentBooks
 	data["topRatedBooks"] = topRatedBooks
 	render.Template(w, r, "public_home.page.tmpl", &models.TemplateData{
 		Data: data,
@@ -196,11 +202,11 @@ func (m *Repository) AllBooksFilterApi(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) PopulateFakeData(w http.ResponseWriter, r *http.Request) {
-	for i := 3; i < 50; i++ {
+	for i := 3; i < 31; i++ {
 		publisher := &models.Publisher{
 			Name:            faker.Word(),
 			Description:     faker.Paragraph(),
-			Pic:             "public/publisher/pic-publisher-2222.jpg",
+			Pic:             "public/publisher/pic-publisher-2015fbr9axdq.png",
 			Address:         faker.Word(),
 			Phone:           helpers.RandomPhone(10),
 			Email:           faker.Email(),
@@ -215,11 +221,11 @@ func (m *Repository) PopulateFakeData(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	for i := 0; i < 150; i++ {
+	for i := 0; i < 15; i++ {
 		book := &models.Book{
 			Title:         faker.Word(),
 			Description:   faker.Paragraph(),
-			Cover:         "public/book/cover-book-1234565432123.jpeg",
+			Cover:         "public/book/cover-book-9874563210321.jpg",
 			Isbn:          helpers.RandomInt(int64(1000000000000), int64(9999999999999)),
 			PublishedDate: time.Now(),
 			Paperback:     int(helpers.RandomInt(int64(100), int64(100000))),

@@ -157,11 +157,17 @@ func (m *postgresDBRepo) AllAuthorsFilter(limit, page int, search, sort string) 
 	}
 	offset := (page - 1) * limit
 	sql := "SELECT id, first_name, last_name, avatar FROM authors"
+	countSql := "SELECT COUNT(*) avatar FROM authors"
 	if search != "" {
 		sql = fmt.Sprintf("%s where first_name LIKE '%%%s%%' OR last_name LIKE '%%%s%%'", sql, search, search)
+		countSql = fmt.Sprintf("%s where first_name LIKE '%%%s%%' OR last_name LIKE '%%%s%%'", countSql, search, search)
 	}
 	if sort != "" {
 		sql = fmt.Sprintf("%s ORDER BY first_name %s", sql, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countSql).Scan(&count); err != nil {
+		return nil, err
 	}
 	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
 	res, err := m.DB.QueryContext(ctx, sql)
@@ -181,7 +187,6 @@ func (m *postgresDBRepo) AllAuthorsFilter(limit, page int, search, sort string) 
 		}
 		authors = append(authors, author)
 	}
-	count, _ := m.TotalBooks()
 	lastPage := m.CalculateLastPage(limit, count)
 	return &models.AuthorApiFilter{
 		Total:    count,

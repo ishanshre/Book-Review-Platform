@@ -604,6 +604,17 @@ footer {
   top: 45%;
   right: 2%;
 }
+
+.genre-section h1 {
+  font-size: var(--fs-900);
+  margin-bottom: 10px;
+}
+
+.recent-books-section h1 {
+  font-size: var(--fs-900);
+  margin-bottom: 10px;
+}
+
 @media (max-width: 900px) {
   .top-rated-section h1 {
     font-size: var(--fs-800);
@@ -902,6 +913,22 @@ footer {
 
 .pr-2 {
   padding: 2rem;
+}
+
+.m-i5 {
+  margin-inline: 5px;
+}
+
+.m-b5 {
+  margin-block: 5px;
+}
+
+.m-ir2 {
+  margin-inline: 2rem;
+}
+
+.m-br2 {
+  margin-block: 2rem;
 }
 
 .textArea {

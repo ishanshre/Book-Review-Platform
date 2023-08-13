@@ -87,6 +87,7 @@ type DatabaseRepo interface {
 	TotalBooks() (int, error)
 	AllBooksFilter(limit, page int, searchKey, sort string) (*models.BookApiFilter, error)
 	BookDetailWithAuthorPublisherWithIsbn(isbn int64) (*models.BookInfoData, error)
+	AllRecentBooks(limit, page int) ([]*models.Book, error)
 
 	CalculateLastPage(limit, total int) int
 
