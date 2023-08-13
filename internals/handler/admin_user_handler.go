@@ -146,8 +146,11 @@ func (m *Repository) PostAdminUserProfileUpdate(w http.ResponseWriter, r *http.R
 	if err != nil {
 		helpers.ServerError(w, err)
 	}
-	username := m.App.Session.Get(r.Context(), "username")
-	path, err := helpers.MediaPicUpload(r, "profile_pic", username.(string))
+	user, err := m.DB.GetUserByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	path, err := helpers.MediaPicUpload(r, "profile_pic", user.Username)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -165,13 +168,16 @@ func (m *Repository) PostAdminUserDocumentUpdate(w http.ResponseWriter, r *http.
 	if err != nil {
 		helpers.ServerError(w, err)
 	}
-	username := m.App.Session.Get(r.Context(), "username")
-	front_path, err := helpers.MediaPicUpload(r, "document_front", username.(string))
+	user, err := m.DB.GetUserByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	front_path, err := helpers.MediaPicUpload(r, "document_front", user.Username)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
-	back_path, err := helpers.MediaPicUpload(r, "document_back", username.(string))
+	back_path, err := helpers.MediaPicUpload(r, "document_back", user.Username)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return

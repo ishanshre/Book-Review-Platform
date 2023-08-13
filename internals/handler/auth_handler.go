@@ -314,3 +314,19 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 	m.App.Session.Put(r.Context(), "flash", "KYC Updated! Please wait for admin to verify")
 	http.Redirect(w, r, "/profile", http.StatusSeeOther)
 }
+
+func (m *Repository) PostUserProfilePicUpdate(w http.ResponseWriter, r *http.Request) {
+	username := m.App.Session.GetString(r.Context(), "username")
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	path, err := helpers.MediaPicUpload(r, "profile_pic", username)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := m.DB.UpdateProfilePic(path, user_id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	m.App.Session.Put(r.Context(), "flash", "Profile Picture Updated")
+	http.Redirect(w, r, "/profile", http.StatusFound)
+}

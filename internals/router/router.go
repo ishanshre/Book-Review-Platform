@@ -115,6 +115,7 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/", handler.Repo.PersonalProfile)
 		mux.Get("/followings", handler.Repo.GetFollowingsListByUserIdApi)
 		mux.Post("/kyc", handler.Repo.PublicUpdateKYC)
+		mux.Post("/pic", handler.Repo.PostUserProfilePicUpdate)
 	})
 
 	mux.Route("/admin", func(mux chi.Router) {
