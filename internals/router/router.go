@@ -77,6 +77,11 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Post("/api/books/{id}/buy", handler.Repo.AddtoBuyListApi)
 		mux.Delete("/api/books/{id}/buy", handler.Repo.RemoveFromBuyListApi)
 		mux.Get("/user/logout", handler.Repo.Logout)
+		mux.Get("/read-list", handler.Repo.AllBooksFilterFromReadList)
+		mux.Get("/api/read-list", handler.Repo.AllBooksFilterFromReadListApi)
+		mux.Get("/buy-list", handler.Repo.AllBooksFilterFromBuyList)
+		mux.Get("/api/buy-list", handler.Repo.AllBooksFilterFromBuyListApi)
+
 	})
 	mux.Group(func(mux chi.Router) {
 		mux.Use(middleware.AuthRedirect)

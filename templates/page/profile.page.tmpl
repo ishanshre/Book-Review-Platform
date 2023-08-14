@@ -20,7 +20,7 @@
             {{$following := index .Data "following"}}
             {{$read_list_count := index .Data "read_list_count"}}
             {{$buy_list_count := index .Data "buy_list_count"}}
-            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r align-center b-radius h-fit">
+            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r b-radius h-fit">
                 <img src="/{{$kyc.ProfilePic}}" alt="{{$res.Username}}" width="300px" height="auto" class="profile_img">
                 <p><strong>Username: </strong>@{{$res.Username}}</p>
                 <p><strong>Email: </strong>{{$res.Email}}</p>
@@ -28,8 +28,8 @@
                 <p><strong>Updated At: </strong>{{TimeSince $res.UpdatedAt}}</p>
                 <p><strong>Last Login: </strong>{{TimeSince $res.LastLogin}}</p>
                 <p onclick="openModal('following')"><strong>Author Following: </strong>{{$following}}</p>
-                <p><strong>Books in read list: </strong>{{$read_list_count}}</p>
-                <p><strong>Books in buy list: </strong>{{$buy_list_count}}</p>
+                <p><a href="/read-list"><strong>Books in read list: </strong>{{$read_list_count}}</a></p>
+                <p><a href="/buy-list"><strong>Books in buy list: </strong>{{$buy_list_count}}</a></p>
             </div>
             <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r b-radius" style="width: 48rem;">
                 <h1 class="text-center">Update KYC</h1>

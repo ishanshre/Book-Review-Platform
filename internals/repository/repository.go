@@ -128,6 +128,7 @@ type DatabaseRepo interface {
 	DeleteReadList(user_id, book_id int) error
 	UpdateReadList(u *models.ReadList, book_id, user_id int) error
 	ReadListCount(user_id int) (int, error)
+	GetAllBooksFromReadListByUserId(limit, page, user_id int, searchKey, sort string) (*models.BookApiFilter, error)
 
 	// BuyList interface
 	AllBuyList() ([]*models.BuyList, error)
@@ -137,6 +138,7 @@ type DatabaseRepo interface {
 	DeleteBuyList(user_id, book_id int) error
 	UpdateBuyList(u *models.BuyList, book_id, user_id int) error
 	BuyListCount(user_id int) (int, error)
+	GetAllBooksFromBuyListByUserId(limit, page, user_id int, searchKey, sort string) (*models.BookApiFilter, error)
 
 	// Follower Interface
 	AllFollowers() ([]*models.Follower, error)

@@ -10,6 +10,14 @@ const getData = async (searchType, search, order, limit) => {
         const response = await fetch(`http://${host}/api/languages?search=${search}&sort=${order}&limit=${limit}&page=1&language=${parts[2]}`)
         const content = response.json();
         return content;
+    } else if (parts[1] === "read-list") {
+        const response = await fetch(`http://${host}/api/read-list?search=${search}&sort=${order}&limit=${limit}&page=1`)
+        const content = response.json();
+        return content;
+    } else if (parts[1] === "buy-list") {
+        const response = await fetch(`http://${host}/api/buy-list?search=${search}&sort=${order}&limit=${limit}&page=1`)
+        const content = response.json();
+        return content;
     } else {
         const response = await fetch(`http://${host}/api/${searchType}?search=${search}&sort=${order}&limit=${limit}&page=1`)
         const content = response.json();

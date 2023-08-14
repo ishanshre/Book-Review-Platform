@@ -90,6 +90,9 @@ func (m *Repository) UpdateSession(w http.ResponseWriter, r *http.Request, id, a
 	m.App.Session.Put(r.Context(), "access_level", access_level)
 	m.App.Session.Put(r.Context(), "is_validated", is_validated)
 	m.App.Session.Put(r.Context(), "flash", "Login Successfull")
+	if !is_validated {
+		m.App.Session.Put(r.Context(), "warning", "Please update your KYC to use its features!")
+	}
 }
 
 // Register handles the get method of the register.
@@ -149,6 +152,14 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 	}
 	if exists {
 		form.Errors.Add("username", "This username already exists")
+	}
+	exists, err = m.DB.EmailExists(register.Email)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		form.Errors.Add("email", "This email already exists")
 	}
 	if register.Password != password2 {
 		form.Errors.Add("password", "Password mismtach")
