@@ -1,17 +1,17 @@
-
+const host = window.location.host
 const getData = async (searchType, search, order, limit) => {
     let url = window.location.pathname
     let parts = url.split("/")
     if (parts[1] === "genres") {
-        const response = await fetch(`http://localhost:8000/api/genres?search=${search}&sort=${order}&limit=${limit}&page=1&genre=${parts[2]}`)
+        const response = await fetch(`http://${host}/api/genres?search=${search}&sort=${order}&limit=${limit}&page=1&genre=${parts[2]}`)
         const content = response.json();
         return content;
     } else if (parts[1] === "languages") {
-        const response = await fetch(`http://localhost:8000/api/languages?search=${search}&sort=${order}&limit=${limit}&page=1&language=${parts[2]}`)
+        const response = await fetch(`http://${host}/api/languages?search=${search}&sort=${order}&limit=${limit}&page=1&language=${parts[2]}`)
         const content = response.json();
         return content;
     } else {
-        const response = await fetch(`http://localhost:8000/api/${searchType}?search=${search}&sort=${order}&limit=${limit}&page=1`)
+        const response = await fetch(`http://${host}/api/${searchType}?search=${search}&sort=${order}&limit=${limit}&page=1`)
         const content = response.json();
         return content;
     }
