@@ -44,6 +44,17 @@ func Auth(next http.Handler) http.Handler {
 	})
 }
 
+// AuthRedirect restrict authenticated user to access some page such as login, signup, forget passsword, etc.
+func AuthRedirect(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if helpers.IsAuthenticated(r) {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 // Admin is a middleware function that checks if the user is an admin.
 // If the user is not an admin, it redirects to the home page.
 // It takes a next http.Handler as an argument and returns an http.Handler.

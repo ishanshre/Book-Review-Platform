@@ -3,6 +3,7 @@ package dbrepo
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
@@ -17,7 +18,7 @@ func (m *postgresDBRepo) AllUsers(limit, offset int) ([]*models.User, error) {
 
 	// query stores the sql query statement
 	query := `
-		SELECT id, first_name, last_name, username, access_level, is_validated, created_at
+		SELECT id, username, access_level, created_at
 		FROM users
 		LIMIT $1 OFFSET $2
 	`
@@ -36,11 +37,8 @@ func (m *postgresDBRepo) AllUsers(limit, offset int) ([]*models.User, error) {
 		user := new(models.User)
 		if err := rows.Scan(
 			&user.ID,
-			&user.FirstName,
-			&user.LastName,
 			&user.Username,
 			&user.AccessLevel,
-			&user.IsValidated,
 			&user.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -58,7 +56,7 @@ func (m *postgresDBRepo) AllReaders(limit, offset int) ([]*models.User, error) {
 
 	// query stores sql query statment that retrives list of all users with access level 2
 	query := `
-		SELECT id, first_name, last_name, username, email
+		SELECT id, username, email
 		FROM users
 		WHERE access_level=2;
 		LIMIT=$1 OFFSET=$2
@@ -72,8 +70,6 @@ func (m *postgresDBRepo) AllReaders(limit, offset int) ([]*models.User, error) {
 		user := new(models.User)
 		if err := rows.Scan(
 			&user.ID,
-			&user.FirstName,
-			&user.LastName,
 			&user.Username,
 			&user.Email,
 		); err != nil {
@@ -94,21 +90,11 @@ func (m *postgresDBRepo) GetUserByID(id int) (*models.User, error) {
 	`
 	row := m.DB.QueryRowContext(ctx, query, id)
 	if err := row.Scan(
-		&u.Username,
-		&u.FirstName,
-		&u.LastName,
+		&u.ID,
 		&u.Username,
 		&u.Email,
 		&u.Password,
-		&u.Gender,
-		&u.Address,
-		&u.Phone,
-		&u.ProfilePic,
-		&u.CitizenshipNumber,
-		&u.CitizenshipFront,
-		&u.CitizenshipBack,
 		&u.AccessLevel,
-		&u.IsValidated,
 		&u.CreatedAt,
 		&u.UpdatedAt,
 		&u.LastLogin,
@@ -123,20 +109,40 @@ func (m *postgresDBRepo) GetGlobalUserByID(id int) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	query := `
-		SELECT id, first_name, last_name, gender, address, profile_pic, created_at
+		SELECT id, username, email, created_at, updated_at
 		FROM users
-		WHERE access_level = 2
+		WHERE (access_level = $1 AND id= $1)
 	`
-	row := m.DB.QueryRowContext(ctx, query)
+	row := m.DB.QueryRowContext(ctx, query, id)
 	var u *models.User
 	if err := row.Scan(
 		&u.ID,
-		&u.FirstName,
-		&u.LastName,
-		&u.Gender,
-		&u.Address,
-		&u.ProfilePic,
+		&u.Username,
+		&u.Email,
 		&u.CreatedAt,
+		&u.UpdatedAt,
+	); err != nil {
+		return nil, fmt.Errorf("could not fetch id %d from database: %s", id, err)
+	}
+	return u, nil
+}
+
+// GetGlobalUserByID return user by id
+func (m *postgresDBRepo) GetGlobalUserByIDAny(id int) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT id, username, email, created_at, updated_at
+		FROM users where id = $1
+	`
+	row := m.DB.QueryRowContext(ctx, query, id)
+	u := &models.User{}
+	if err := row.Scan(
+		&u.ID,
+		&u.Username,
+		&u.Email,
+		&u.CreatedAt,
+		&u.UpdatedAt,
 	); err != nil {
 		return nil, fmt.Errorf("could not fetch id %d from database: %s", id, err)
 	}
@@ -172,34 +178,19 @@ func (m *postgresDBRepo) UpdateUser(u *models.User) error {
 	defer cancel()
 	stmt := `
 		UPDATE users
-		SET first_name = $2, last_name = $3, gender = $4, address = $5, phone = $6, updated_at = $7
+		SET email = $2, access_level = $3, updated_at = $4
 		WHERE id = $1
 	`
 	_, err := m.DB.ExecContext(
 		ctx,
 		stmt,
 		u.ID,
-		u.FirstName,
-		u.LastName,
-		u.Gender,
-		u.Address,
-		u.Phone,
-		time.Now(),
+		u.Email,
+		u.AccessLevel,
+		u.UpdatedAt,
 	)
 	if err != nil {
 		return fmt.Errorf("cannot update the user with id %d : %s", u.ID, err)
-	}
-	return nil
-}
-
-// UpdateProfilePic updates user profile pic
-func (m *postgresDBRepo) UpdateProfilePic(path string, id int) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	stmt := `UPDATE users SET profile_pic=$2 WHERE id=$1`
-	_, err := m.DB.ExecContext(ctx, stmt, id, path)
-	if err != nil {
-		return err
 	}
 	return nil
 }
@@ -209,33 +200,66 @@ func (m *postgresDBRepo) UpdateProfilePic(path string, id int) error {
 func (m *postgresDBRepo) InsertUser(u *models.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
+	db, err := m.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			db.Rollback()
+			panic(p)
+		} else if err != nil {
+			db.Rollback()
+		} else {
+			err = db.Commit()
+		}
+	}()
 	stmt := `
-		INSERT INTO users (first_name, last_name, email, username, password,address, gender, phone, profile_pic, citizenship_number, citizenship_front, citizenship_back, created_at, updated_at, last_login)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+		INSERT INTO users (email, username, password, created_at, updated_at, last_login)
+		VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
 	`
-	res, err := m.DB.ExecContext(
+	res := db.QueryRowContext(
 		ctx,
 		stmt,
-		u.FirstName,
-		u.LastName,
 		u.Email,
 		u.Username,
 		u.Password,
-		"",
-		u.Gender,
-		"",
-		"",
-		u.CitizenshipNumber,
-		u.CitizenshipFront,
-		u.CitizenshipBack,
 		time.Now(),
-		time.Time{},
+		time.Now(),
 		time.Time{},
 	)
 	if err != nil {
 		return fmt.Errorf("could not create new user: %s", err)
 	}
-	rows_affected, _ := res.RowsAffected()
+	var id int
+	if err := res.Scan(&id); err != nil {
+		return err
+	}
+
+	log.Println(id)
+	kycquery := `
+		INSERT INTO kycs (user_id, first_name, last_name, gender, address, phone, profile_pic, dob, document_number, document_front, document_back, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+	`
+	kycres, err := db.ExecContext(
+		ctx,
+		kycquery,
+		id,
+		"",
+		"",
+		"Unknown",
+		"",
+		"",
+		"",
+		time.Now().Format(time.DateOnly),
+		"",
+		"",
+		"",
+		time.Now(),
+	)
+	if err != nil {
+		return err
+	}
+	rows_affected, _ := kycres.RowsAffected()
 	if rows_affected == 0 {
 		return fmt.Errorf("no rows affected")
 	}
@@ -247,24 +271,15 @@ func (m *postgresDBRepo) AdminInsertUser(u *models.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	stmt := `
-		INSERT INTO users (first_name, last_name, email, username, password,address, gender, phone, profile_pic, citizenship_number, citizenship_front, citizenship_back, created_at, updated_at, last_login)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+		INSERT INTO users (email, username, password, created_at, updated_at, last_login)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
 	`
 	res, err := m.DB.ExecContext(
 		ctx,
 		stmt,
-		"",
-		"",
 		u.Email,
 		u.Username,
 		u.Password,
-		"",
-		"Male",
-		"",
-		"",
-		u.CitizenshipNumber,
-		"",
-		"",
 		time.Now(),
 		time.Now(),
 		time.Time{},
@@ -324,24 +339,15 @@ func (m *postgresDBRepo) GetProfilePersonal(id int) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	query := `
-		SELECT first_name, last_name, email, username, gender, address, phone, profile_pic, citizenship_number, citizenship_front, citizenship_back, created_at, updated_at, last_login
+		SELECT email, username, dcreated_at, updated_at, last_login
 		FROM users
 		WHERE id = $1
 	`
 	row := m.DB.QueryRowContext(ctx, query, id)
 	u := &models.User{}
 	if err := row.Scan(
-		&u.FirstName,
-		&u.LastName,
 		&u.Email,
 		&u.Username,
-		&u.Gender,
-		&u.Address,
-		&u.Phone,
-		&u.ProfilePic,
-		&u.CitizenshipNumber,
-		&u.CitizenshipFront,
-		&u.CitizenshipBack,
 		&u.CreatedAt,
 		&u.UpdatedAt,
 		&u.LastLogin,

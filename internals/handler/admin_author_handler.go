@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/ishanshre/Book-Review-Platform/internals/forms"
 	"github.com/ishanshre/Book-Review-Platform/internals/helpers"
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
@@ -197,7 +197,8 @@ func (m *Repository) PostAdminInsertAuthor(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		form.Errors.Add("date_of_birth", "Invalid date of birth")
 	}
-	avatar, err := helpers.AdminPublicUploadImage(r, "avatar", "author", dob)
+	idString := fmt.Sprintf("%d%s", dob, helpers.RandomAlphaNum(8))
+	avatar, err := helpers.AdminPublicUploadImage(r, "avatar", "author", idString)
 	if err != nil {
 		form.Errors.Add("avatar", "No picture was choosen")
 	}

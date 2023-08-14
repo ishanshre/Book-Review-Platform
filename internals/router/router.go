@@ -3,7 +3,9 @@ package router
 import (
 	"net/http"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
+	chi_middlewares "github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
 	"github.com/ishanshre/Book-Review-Platform/internals/handler"
 	"github.com/ishanshre/Book-Review-Platform/internals/middleware"
@@ -17,30 +19,71 @@ import (
 // Returns an http.Handler interface that represents the application router.
 func Router(app *config.AppConfig) http.Handler {
 	mux := chi.NewRouter()
-
+	mux.Use(cors.Handler((cors.Options{
+		AllowedOrigins:   []string{"http://*", "https://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	})))
 	mux.Use(middleware.SessionLoad) // load the session middleware
 	mux.Use(middleware.NoSurf)      // csrf middleware
-	mux.Use(middleware.Logger)
+	mux.Use(chi_middlewares.Logger)
 
 	// Get route for Home page
 	mux.Get("/", handler.Repo.Home)
 
+	mux.Route("/authors", func(mux chi.Router) {
+		mux.Get("/", handler.Repo.AllAuthors)
+		mux.Get("/{id}", handler.Repo.PublicGetAuthorByID)
+	})
+	mux.Route("/books", func(mux chi.Router) {
+		mux.Get("/", handler.Repo.AllBooks)
+		mux.Get("/{isbn}", handler.Repo.BookDetailByISBN)
+		mux.Route("/", func(mux chi.Router) {
+			mux.Use(middleware.Auth)
+			mux.Get("/{isbn}/create-review", handler.Repo.PublicCreateReview)
+			mux.Post("/{isbn}/create-review", handler.Repo.PostPublicCreateReview)
+			mux.Post("/{isbn}/reviews/{review_id}/delete", handler.Repo.PostPublicDeleteReview)
+		})
+	})
+
 	// Api for clearing the messages
 	mux.Post("/api/clear/{type}", handler.Repo.ClearSessionMessage)
+	mux.Get("/api/books", handler.Repo.AllBooksFilterApi)
+	mux.Get("/api/populateData", handler.Repo.PopulateFakeData)
+	mux.Get("/api/authors", handler.Repo.AuthorFiltersApi)
+
+	mux.Group(func(mux chi.Router) {
+		mux.Use(middleware.Auth)
+		mux.Get("/api/authors/{id}/exists", handler.Repo.FollowExistsApi)
+		mux.Post("/api/authors/{id}/follow", handler.Repo.FollowApi)
+		mux.Delete("/api/authors/{id}/unfollow", handler.Repo.UnFollowApi)
+		mux.Get("/api/books/{id}/read", handler.Repo.BookReadListExistsApi)
+		mux.Post("/api/books/{id}/read", handler.Repo.AddtoReadListApi)
+		mux.Delete("/api/books/{id}/read", handler.Repo.RemoveFromReadListApi)
+		mux.Get("/api/books/{id}/buy", handler.Repo.BookBuyListExistsApi)
+		mux.Post("/api/books/{id}/buy", handler.Repo.AddtoBuyListApi)
+		mux.Delete("/api/books/{id}/buy", handler.Repo.RemoveFromBuyListApi)
+		mux.Get("/user/logout", handler.Repo.Logout)
+	})
+	mux.Group(func(mux chi.Router) {
+		mux.Use(middleware.AuthRedirect)
+		mux.Get("/user/login", handler.Repo.Login)
+		mux.Post("/user/login", handler.Repo.PostLogin)
+
+		mux.Get("/user/reset-password", handler.Repo.ResetPassword)
+		mux.Post("/user/reset-password", handler.Repo.PostResetPassword)
+		mux.Get("/user/reset", handler.Repo.ResetPasswordChange)
+		mux.Post("/user/reset", handler.Repo.PostResetPasswordChange)
+
+		// Register routes
+		mux.Get("/user/register", handler.Repo.Register)
+		mux.Post("/user/register", handler.Repo.PostRegister)
+	})
 
 	// Login routes
-	mux.Get("/user/login", handler.Repo.Login)
-	mux.Post("/user/login", handler.Repo.PostLogin)
-	mux.Get("/user/logout", handler.Repo.Logout)
-
-	mux.Get("/user/reset-password", handler.Repo.ResetPassword)
-	mux.Post("/user/reset-password", handler.Repo.PostResetPassword)
-	mux.Get("/user/reset", handler.Repo.ResetPasswordChange)
-	mux.Post("/user/reset", handler.Repo.PostResetPasswordChange)
-
-	// Register routes
-	mux.Get("/user/register", handler.Repo.Register)
-	mux.Post("/user/register", handler.Repo.PostRegister)
 
 	// create a file server with golang path implementation
 	fileServer := http.FileServer(http.Dir("./static/"))
@@ -51,6 +94,10 @@ func Router(app *config.AppConfig) http.Handler {
 	fileServerPublic := http.FileServer(http.Dir("./public/"))
 	mux.Handle("/public/*", http.StripPrefix("/public", fileServerPublic))
 
+	// media file server
+	fileServerMedia := http.FileServer(http.Dir("./media/"))
+	mux.Handle("/media/*", http.StripPrefix("/media", fileServerMedia))
+
 	// Contact Us router
 	mux.Get("/contact-us", handler.Repo.ContactUs)
 	mux.Post("/contact-us", handler.Repo.PostContactUs)
@@ -58,6 +105,7 @@ func Router(app *config.AppConfig) http.Handler {
 	mux.Route("/profile", func(mux chi.Router) {
 		mux.Use(middleware.Auth)
 		mux.Get("/", handler.Repo.PersonalProfile)
+		mux.Post("/kyc", handler.Repo.PublicUpdateKYC)
 	})
 
 	mux.Route("/admin", func(mux chi.Router) {
@@ -68,6 +116,8 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/users/detail/{id}", handler.Repo.AdminGetUserDetailByID)
 		mux.Post("/users/detail/{id}", handler.Repo.AdminUpdateUser)
 		mux.Post("/users/detail/{id}/profile", handler.Repo.PostAdminUserProfileUpdate)
+		mux.Post("/users/detail/{id}/document", handler.Repo.PostAdminUserDocumentUpdate)
+		mux.Post("/users/detail/{id}/kyc", handler.Repo.PostAdminKycUpdate)
 
 		mux.Get("/users/create", handler.Repo.AdminUserAdd)
 		mux.Post("/users/create", handler.Repo.PostAdminUserAdd)

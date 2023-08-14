@@ -42,16 +42,20 @@
                         <td>{{.Title}}</td>
                         <td>
                             <button type="button"><a href="/admin/genres/detail/{{.ID}}">Detail</a></button>
-                            <button type="button" id="delete-{{.ID}}"
-                            onclick="showDeleteForm(this, '{{.ID}}')"
+                            <button type="button" onclick="openModal('delete-{{.ID}}')"
                             >Delete</button>
-
-                            <form action="/admin/genres/detail/{{.ID}}/delete" method="post" class="no-display" id="{{.ID}}">
-                                <p>Do you want to delete @{{.Title}}?</p>
-                                <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-                                <input type="submit" value="Delete">
-                                <button type="button" onclick="removeForm('{{.ID}}')">No</button>
-                            </form>
+                            <div id="delete-{{.ID}}" class="jw-modal">
+                                <div class="jw-modal-body">
+                            
+                                    <form action="/admin/genres/detail/{{.ID}}/delete" method="post">
+                                        <p>Do you want to delete @{{.Title}}?</p>
+                                        <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                        <input type="submit" value="Delete">
+                                        <button type="button" onclick="closeModal()">No</button>
+                                    </form>
+                                </div>
+                            
+                            </div>
                         </td>
                     </tr>
                     {{end}}

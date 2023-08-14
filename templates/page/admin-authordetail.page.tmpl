@@ -44,15 +44,17 @@
             <input type="submit" value="update">
         </form>
     <div>
-        <button id="delete-{{$res.ID}}" onclick="showDeleteForm(this, '{{$res.ID}}')">Delete</button>
+        <button onclick="openModal('delete-{{$res.ID}}')">Delete</button>
     </div>
-    <div>
-        <form action="/admin/authors/detail/{{$res.ID}}/delete" method="post" class="no-display" id="{{$res.ID}}">
-            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-            <p>Do you want to delete author @{{$res.FirstName}}?</p>
-            <input type="submit" value="Delete">
-            <button type="button" onclick="removeForm('{{$res.ID}}')">No</button>
-        </form>
+    <div id="delete-{{$res.ID}}" class="jw-modal">
+        <div class="jw-modal-body">
+            <form action="/admin/authors/detail/{{$res.ID}}/delete" method="post">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                <p>Do you want to delete author @{{$res.FirstName}}?</p>
+                <input type="submit" value="Delete">
+                <button type="button" onclick="closeModal()">No</button>
+            </form>
+        </div>
     </div>
 </div>
 {{end}}

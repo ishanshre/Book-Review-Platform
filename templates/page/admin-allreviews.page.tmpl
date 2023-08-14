@@ -40,13 +40,16 @@
                     <td>{{TimeSince .CreatedAt}}</td>
                     <td>
                         <button><a href="/admin/reviews/detail/{{.ID}}">Detail</a></button>
-                        <button id="delete-{{.ID}}" onclick="showDeleteForm(this, '{{.ID}}')">Delete</button>
-                        <form action="/admin/reviews/detail/{{.ID}}/delete" method="post" class="no-display" id="{{.ID}}">
-                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-                            <p>Do you want to delete this review @{{.ID}}?</p>
-                            <input type="submit" value="Delete">
-                            <button onclick="removeForm('{{.ID}}')" type="button">No</button>
-                        </form>
+                        <button  onclick="openModal('delete-{{.ID}}')">Delete</button>
+                        <div id="delete-{{.ID}}" class="jw-modal">
+                            <div class="jw-modal-body">
+                                <form action="/admin/reviews/detail/{{.ID}}/delete" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                    <p>Do you want to delete this review @{{.ID}}?</p>
+                                    <input type="submit" value="Delete">
+                                    <button onclick="closeModal()" type="button">No</button>
+                                </form></div>
+                        </div>
                     </td>
                 </tr>
                 {{end}}

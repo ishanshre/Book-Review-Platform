@@ -33,6 +33,7 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 	if app.Session.Exists(r.Context(), "user_id") {
 		td.IsAuthenticated = 1
 		td.Username = app.Session.GetString(r.Context(), "username")
+		td.UserID = app.Session.Get(r.Context(), "user_id").(int)
 		td.AccessLevel = app.Session.GetInt(r.Context(), "access_level")
 	}
 	td.Flash = app.Session.GetString(r.Context(), "flash")

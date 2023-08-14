@@ -85,7 +85,7 @@ func (m *postgresDBRepo) GetContactByID(id int) (*models.Contact, error) {
 		&contact.Phone,
 		&contact.Subject,
 		&contact.Message,
-		&contact.Subject,
+		&contact.SubmittedAt,
 		&contact.IpAddress,
 		&contact.BrowserInfo,
 		&contact.ReferringPage,
