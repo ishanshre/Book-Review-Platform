@@ -125,6 +125,13 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Post("/pic", handler.Repo.PostUserProfilePicUpdate)
 	})
 
+	mux.Group(func(mux chi.Router) {
+		mux.Use(middleware.Auth)
+		mux.Use(middleware.Admin)
+		mux.Get("/api/admin-users", handler.Repo.AdminAllUsersApi)
+		mux.Get("/api/admin-publishers", handler.Repo.AdminAllPublisherFilterApi)
+	})
+
 	mux.Route("/admin", func(mux chi.Router) {
 		mux.Use(middleware.Auth)
 		mux.Use(middleware.Admin)

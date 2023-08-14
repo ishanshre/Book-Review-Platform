@@ -8,55 +8,62 @@
 
 
 {{define "content"}}
-    <div>
-        <div>
-            <h1>All Users</h1>
+<section class="main-content">
+
+    <section class="container d-flex-col d-dark b-radius m-br2">
+        <div class="d-flex justify-center d-gap search-all-books">
+            <input type="hidden" id="search-type" value="admin-users">
+            <input type="search" class="search-all-books-input" id="search-book" placeholder="Search User..." onkeyup="display()">
+            <select id="order" onchange="display()">
+                <option value="asc">Ascending Order</option>
+                <option value="desc" >Descending Order</option>
+            </select>
+            <select id="limit" onchange="display()">
+                <option value="10">10</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
         </div>
-        <div>
-            <button><a href="/admin/users/create">Add</a></button>
-        </div>
-        <div>
-            {{$users := index .Data "users"}}
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Access Level</th>
-                        <th>CreatedAt</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{range $users}}
-                    <tr>
-                        <td>{{.ID}}</td>
-                        <td>{{.Username}}</td>
-                        <td>{{.AccessLevel}}</td>
-                        <td>{{TimeSince .CreatedAt}}</td>
-                        <td>
-                            <button><a href="/admin/users/detail/{{.ID}}">Detail</a></button>
-                            <button onclick="openModal('delete-{{.ID}}')">Delete</button>
-                            
-                            <div class="jw-modal" id="delete-{{.ID}}">
-                                <div class="jw-modal-body">
-                                    <form action="/admin/users/detail/{{.ID}}/delete" method="post">
-                                        <input type="hidden" name="csrf_token" id="csrf_token" value="{{$.CSRFToken}}">
-                                        <p>Do you want to delete @{{.Username}}?</p>
-                                        <input type="submit" value="Delete Record">
-                                        <button type="button" onclick="closeModal()">No</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    {{end}}
-                </tbody>
-            </table>
-        </div>
+    </section>
+
+    <!-- This is the title section -->
+    <div class="main-content-title">
+        <h1>All Users</h1>
+        <button class="add-button"><a href="/admin/users/create">ADD</a></button>
     </div>
+    
+    <!-- This is the table section -->
+    <div class="main-content-table">
+        <table>
+            <!-- header section -->
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>USERNAME</th>
+                    <th>ACCESS LEVEL</th>
+                    <th>CREATED</th>
+                    <th>VALIDATED</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <!-- body section -->
+            <tbody id="displayDiv">
+                
+            </tbody>
+        </table>
+    </div>
+    <nav class="pagination-container">
+
+        <div id="pagination-numbers">
+
+        </div>
+
+    </nav>
+</section>
+</section>
 {{end}}
 
 {{define "js"}}
 <script src="/static/js/admin.js"></script>
+<script src="/static/js/search.js"></script>
 {{end}}

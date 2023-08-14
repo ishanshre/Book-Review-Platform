@@ -14,24 +14,33 @@ import (
 
 // AdminAllPublisher renders admin all publisher page
 func (m *Repository) AdminAllPublusher(w http.ResponseWriter, r *http.Request) {
-
-	// Retrive all publishers record from database using AllPublishers database
-	publishers, err := m.DB.AllPublishers()
-	if err != nil {
-		// returns a server error if any error occurs
-		helpers.ServerError(w, err)
-		return
-	}
-
-	// create a data map that stores the publishers
 	data := make(map[string]interface{})
-	data["publishers"] = publishers
 	data["base_path"] = base_publishers_path
 	// render the "admin-allpublishers.page.tmpl" with data and new empty form
 	render.Template(w, r, "admin-allpublishers.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
 	})
+}
+
+func (m *Repository) AdminAllPublisherFilterApi(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		limit = 10
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		page = 1
+	}
+	searchKey := r.URL.Query().Get("search")
+	sort := r.URL.Query().Get("sort")
+	filteredPublisher, err := m.DB.AllPublishersFilter(limit, page, searchKey, sort)
+	if err != nil {
+		helpers.ServerError(w, err)
+		helpers.StatusInternalServerError(w, err.Error())
+		return
+	}
+	helpers.ApiStatusOkData(w, filteredPublisher)
 }
 
 // PostAdminDeletePublisher handles the POST request to delete a publisher.

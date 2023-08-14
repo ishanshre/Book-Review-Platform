@@ -415,3 +415,75 @@ func (m *postgresDBRepo) ChangePassword(password, email string) error {
 	}
 	return nil
 }
+
+// UserListFilter
+func (m *postgresDBRepo) UserListFilter(limit, page int, searchKey, sort string) (*models.AdminUserListApi, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+	sql := `
+	SELECT 
+		u.id, 
+		u.username, 
+		u.access_level, 
+		u.created_at, 
+		COALESCE(k.is_validated, false)
+	FROM 
+		users AS u 
+	LEFT JOIN
+		kycs AS k ON k.user_id = u.id
+	`
+	countSql := `
+	SELECT 
+		COUNT(*)
+	FROM 
+		users AS u 
+	LEFT JOIN
+		kycs AS k ON k.user_id = u.id
+	`
+	if searchKey != "" {
+		sql = fmt.Sprintf("%s WHERE u.username LIKE '%%%s%%' OR u.email LIKE '%%%s%%'", sql, searchKey, searchKey)
+		countSql = fmt.Sprintf("%s WHERE u.username LIKE '%%%s%%' OR u.email LIKE '%%%s%%'", countSql, searchKey, searchKey)
+	}
+	if sort != "" {
+		sql = fmt.Sprintf("%s ORDER BY u.username %s", sql, sort)
+		// countSql = fmt.Sprintf("%s ORDER BY u.username %s", countSql, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countSql).Scan(&count); err != nil {
+		return nil, err
+	}
+	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
+	rows, err := m.DB.QueryContext(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	users := []*models.AdminUserList{}
+	for rows.Next() {
+		user := &models.AdminUserList{}
+		if err := rows.Scan(
+			&user.ID,
+			&user.Username,
+			&user.AccessLevel,
+			&user.CreatedAt,
+			&user.IsValidated,
+		); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	lastPage := m.CalculateLastPage(limit, count)
+	return &models.AdminUserListApi{
+		Total:    count,
+		Page:     page,
+		LastPage: lastPage,
+		Users:    users,
+	}, nil
+}

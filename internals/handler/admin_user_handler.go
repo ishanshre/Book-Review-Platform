@@ -24,37 +24,29 @@ func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
 // retrieves the users from the database with the specified limit and offset, creates a data map containing the users
 // for rendering the template, and renders the admin all users page.
 func (m *Repository) AdminAllUsers(w http.ResponseWriter, r *http.Request) {
-
-	// set the default limit and offset values
-	limit := 10
-	offset := 0
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
-	p := true
-	if err != nil {
-		p = false
-	}
-	if p {
-		offset = (page - 1) * limit
-	}
-	filter, err := strconv.Atoi(r.URL.Query().Get("limit"))
-	p = true
-	if err != nil {
-		p = false
-	}
-	if p {
-		limit = filter
-	}
-	users, err := m.DB.AllUsers(limit, offset)
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
 	data := make(map[string]interface{})
 	data["base_path"] = base_users_path
-	data["users"] = users
-	render.Template(w, r, "admin-allusers.page.tmpl", &models.TemplateData{
-		Data: data,
-	})
+	render.Template(w, r, "admin-allusers.page.tmpl", &models.TemplateData{})
+}
+
+func (m *Repository) AdminAllUsersApi(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		limit = 10
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		page = 1
+	}
+	searchKey := r.URL.Query().Get("search")
+	sort := r.URL.Query().Get("sort")
+	filteredUsers, err := m.DB.UserListFilter(limit, page, searchKey, sort)
+	if err != nil {
+		helpers.ServerError(w, err)
+		helpers.StatusInternalServerError(w, err.Error())
+		return
+	}
+	helpers.ApiStatusOkData(w, filteredUsers)
 }
 
 // AdminGetUserDetailByID is a handler that handles the HTTP request for retrieving a user's detail by ID in the admin panel.

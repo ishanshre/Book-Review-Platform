@@ -215,3 +215,53 @@ func (m *postgresDBRepo) GetPublisherWithBookByID(publisher_id int) (*models.Pub
 	}
 	return publisherWithBooks, nil
 }
+
+func (m *postgresDBRepo) AllPublishersFilter(limit, page int, searchKey, sort string) (*models.AdminPublisherListApi, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+
+	query := `SELECT id, name, established_date FROM publishers`
+	countQuery := `SELECT COUNT(*) FROM publishers`
+	if searchKey != "" {
+		query = fmt.Sprintf("%s WHERE name LIKE '%%%s%%' OR address LIKE '%%%s%%' OR email LIKE '%%%s%%' OR website LIKE '%%%s%%'", query, searchKey, searchKey, searchKey, searchKey)
+		countQuery = fmt.Sprintf("%s WHERE name LIKE '%%%s%%' OR address LIKE '%%%s%%' OR email LIKE '%%%s%%' OR website LIKE '%%%s%%'", countQuery, searchKey, searchKey, searchKey, searchKey)
+	}
+	if sort != "" {
+		query = fmt.Sprintf("%s ORDER BY name %s", query, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countQuery).Scan(&count); err != nil {
+		return nil, err
+	}
+	query = fmt.Sprintf("%s LIMIT %d OFFSET %d", query, limit, offset)
+	publishers := []*models.AdminPublisherList{}
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		publisher := &models.AdminPublisherList{}
+		if err := rows.Scan(
+			&publisher.ID,
+			&publisher.Name,
+			&publisher.EstablishedDate,
+		); err != nil {
+			return nil, err
+		}
+		publishers = append(publishers, publisher)
+	}
+	lastPage := m.CalculateLastPage(limit, count)
+	return &models.AdminPublisherListApi{
+		Total:      count,
+		Page:       page,
+		LastPage:   lastPage,
+		Publishers: publishers,
+	}, nil
+}

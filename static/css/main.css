@@ -339,6 +339,10 @@ header {
   background-color: var(--bk-primary);
 }
 
+.b-shadow {
+  box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
 
 .d-grid {
   display: grid;

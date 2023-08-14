@@ -27,6 +27,7 @@ type DatabaseRepo interface {
 	EmailExists(email string) (bool, error)
 
 	ChangePassword(password, email string) error
+	UserListFilter(limit, page int, searchKey, sort string) (*models.AdminUserListApi, error)
 
 	// User Kyc
 	GetKycByUserID(user_id int) (*models.Kyc, error)
@@ -52,6 +53,7 @@ type DatabaseRepo interface {
 	PublisherExists(name string) (bool, error)
 	PublisherExistsID(id int) (bool, error)
 	GetPublisherWithBookByID(publisher_id int) (*models.PublisherWithBooksData, error)
+	AllPublishersFilter(limit, page int, searchKey, sort string) (*models.AdminPublisherListApi, error)
 
 	// Author interface
 	AllAuthor() ([]*models.Author, error)

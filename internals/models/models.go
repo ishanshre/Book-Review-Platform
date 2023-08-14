@@ -33,6 +33,21 @@ type Kyc struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
+type AdminUserList struct {
+	ID          int       `json:"id"`
+	Username    string    `json:"username"`
+	AccessLevel int       `json:"access_level"`
+	CreatedAt   time.Time `json:"created_at"`
+	IsValidated bool      `json:"is_validated"`
+}
+
+type AdminUserListApi struct {
+	Total    int              `json:"total"`
+	Page     int              `json:"page"`
+	LastPage int              `json:"last_page"`
+	Users    []*AdminUserList `json:"users"`
+}
+
 // MailData holds the email message
 type MailData struct {
 	To      string
@@ -67,6 +82,19 @@ type Publisher struct {
 	EstablishedDate int
 	Latitude        string
 	Longitude       string
+}
+
+type AdminPublisherList struct {
+	ID              int    `json:"id"`
+	Name            string `json:"name"`
+	EstablishedDate int    `json:"established_date"`
+}
+
+type AdminPublisherListApi struct {
+	Total      int                   `json:"total"`
+	Page       int                   `json:"page"`
+	LastPage   int                   `json:"last_page"`
+	Publishers []*AdminPublisherList `json:"publishers"`
 }
 
 // Author struct holds the authors table data

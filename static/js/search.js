@@ -1,6 +1,7 @@
 const host = window.location.host
 let lastPage;
 let currentPage = 1;
+const csrfToken = document.querySelector('meta[name="csrf_token"]').getAttribute('content')
 let totalItems;
 const paginationNumbers = document.getElementById("pagination-numbers")
 const nextButton = document.getElementById("next-button")
@@ -82,6 +83,68 @@ const display = async () => {
             `
         }).join("");
         displayDiv.innerHTML = displayItems;
+    } else if (searchType === "admin-users") {
+        let users = data.users;
+        let displayItems = users.map((obj)=> {
+            const { id, username, access_level, created_at, is_validated} = obj
+            return `
+                <tr>
+                    <td>${id}</td>
+                    <td>${username}</td>
+                    <td>${access_level}</td>
+                    <td>${created_at}</td>
+                    <td>${is_validated}</td>
+                    <td>
+                        <div class="action-icons">
+                            <button><a href="/admin/users/detail/${id}"><img src="/static/images/edit-icon.png" alt="update-icon"/></a></button>
+                            <button ><img width="19px" height="19px" src="/static/images/del-icon.png" alt="del-icon" onclick="openModal('delete-${id}')" /></button>
+
+                            <div class="jw-modal" id="delete-${id}">
+                                <div class="jw-modal-body">
+                                    <form action="/admin/users/detail/${id}/delete" method="post">
+                                        <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
+                                        <p>Do you want to delete @${username}?</p>
+                                        <input type="submit" value="Delete Record">
+                                        <button type="button" onclick="closeModal()">No</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `
+        })
+        displayDiv.innerHTML = displayItems
+    } else if (searchType === "admin-publishers") {
+        let publishers = data.publishers;
+        let displayItems = publishers.map((obj)=> {
+            const { id, name, established_date } = obj
+            return `
+                <tr>
+                    <td>${id}</td>
+                    <td>${name}</td>
+                    <td>${established_date}</td>
+                    <td>
+                        <div class="action-icons">
+                            <button><a href="/admin/publishers/detail/${id}"><img src="/static/images/edit-icon.png" alt="update-icon"/></a></button>
+                            <button ><img width="19px" height="19px" src="/static/images/del-icon.png" alt="del-icon" onclick="openModal('delete-${id}')" /></button>
+
+                            <div class="jw-modal" id="delete-${id}">
+                                <div class="jw-modal-body">
+                                    <form action="/admin/publishers/detail/${id}/delete" method="post">
+                                        <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
+                                        <p>Do you want to delete this publisher ${name}?</p>
+                                        <input type="submit" value="Delete Record">
+                                        <button type="button" onclick="closeModal()">No</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `
+        })
+        displayDiv.innerHTML = displayItems
     }
     paginationNumbers.innerHTML = ''
     const getPaginationNumbers = () => {
