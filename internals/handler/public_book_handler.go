@@ -22,6 +22,11 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	allLanguages, err := m.DB.AllLanguage()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
 	allBooks, err := m.DB.AllBookRandomPage(1000, 1)
 	if err != nil {
 		helpers.ServerError(w, err)
@@ -79,6 +84,7 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 
 	data := make(map[string]interface{})
 	data["allGenres"] = allGenres
+	data["allLanguages"] = allLanguages
 	data["allBooks"] = allBooks
 	data["recentBooks"] = recentBooks
 	data["topRatedBooks"] = topRatedBooks

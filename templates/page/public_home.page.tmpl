@@ -27,19 +27,35 @@
     </section>
 
 
-    <section class="genre-section">
-        <div class="container d-dark b-radius m-br2">
-            <div class="d-flex d-flex-col d-gap justify-center align-center">
-                <h1 class="text-white">Browse Books By Genre</h1>
-                <div class="d-flex d-gap">
-                    {{$genres := index .Data "allGenres"}}
-                    {{range $genres}}
-                    <a href="/genres/{{.Title}}"><button class="btn">{{.Title}}</button></a>
-                    {{end}}
+    <div class="container-nopadding browse-book">
+        <section class="genre-section">
+            <div class="d-dark b-radius m-br2">
+                <div class="d-flex d-flex-col d-gap justify-center align-center">
+                    <h1 class="text-white">Browse Books By Genre</h1>
+                    <div class="d-flex d-gap d-wrap pr-2 justify-center">
+                        {{$genres := index .Data "allGenres"}}
+                        {{range $genres}}
+                        <a href="/genres/{{.Title}}"><button class="btn">{{.Title}}</button></a>
+                        {{end}}
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    
+        <section class="language-section">
+            <div class="d-dark b-radius m-br2">
+                <div class="d-flex d-flex-col d-gap justify-center align-center">
+                    <h1 class="text-white">Browse Books By Language</h1>
+                    <div class="d-flex d-gap d-wrap pr-2 justify-center">
+                        {{$languages := index .Data "allLanguages"}}
+                        {{range $languages}}
+                        <a href="/languages/{{.Language}}"><button class="btn">{{.Language}}</button></a>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 
 
     <section class="top-rated-section">

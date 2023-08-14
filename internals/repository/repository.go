@@ -118,6 +118,7 @@ type DatabaseRepo interface {
 	UpdateBookLanguage(u *models.BookLanguage, book_id, language_id int) error
 	InsertBookLanguage(u *models.BookLanguage) error
 	GetLanguagesFromBookID(book_id int) ([]*models.Language, error)
+	GetAllBooksByLanguage(limit, page int, searchKey, sort, language string) (*models.BookApiFilter, error)
 
 	// ReadList interface
 	AllReadList() ([]*models.ReadList, error)

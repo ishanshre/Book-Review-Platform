@@ -46,7 +46,7 @@
                         {{$languages := index .Data "languages"}}
                         {{$lastIndexLanguages := index .Data "lastIndexLanguages"}}
                         {{range $id, $language := $languages}}
-                        <a href="#">{{$language.Language}}</a>{{if ne $id
+                        <a href="/languages/{{$language.Language}}">{{$language.Language}}</a>{{if ne $id
                         $lastIndexLanguages}},{{end}}
                         {{end}}
                     </strong></p>

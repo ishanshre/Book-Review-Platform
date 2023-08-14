@@ -60,8 +60,10 @@ func Router(app *config.AppConfig) http.Handler {
 	mux.Get("/api/populateData", handler.Repo.PopulateFakeData)
 	mux.Get("/api/authors", handler.Repo.AuthorFiltersApi)
 	mux.Get("/api/genres", handler.Repo.AllBooksFilterByGenreApi)
+	mux.Get("/api/languages", handler.Repo.AllBooksFilterByLanguageApi)
 
 	mux.Get("/genres/{genre}", handler.Repo.AllBookFilterByGenre)
+	mux.Get("/languages/{language}", handler.Repo.AllBookFilterByLanguage)
 
 	mux.Group(func(mux chi.Router) {
 		mux.Use(middleware.Auth)
