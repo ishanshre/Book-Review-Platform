@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="Stylesheet" href="../css/register.css">
+    <title>Register Page </title>
+</head>
+<body>
+    <div class="form">
+        <h1>NEW REGISTER</h1>
+        <div class="form-block form-first-last-name">
+            <input class="attribute firstname" type="text" placeholder="First name" required/>
+            <input class="attribute lastname" type="password" placeholder="Last name" required/>
+        </div>
+        <div class="form-block form-email-username">
+            <input class="attribute email" type="email" placeholder="Email" required/>
+            <input class="attribute username" type="text" placeholder="Username" required/>
+        </div>
+        <div class="form-block form-password-gender">
+            <input class="attribute password" type="text" placeholder="Password" required/>
+            <select id="gender-option" class="attribute" required>
+                <option selected disabled>Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+        <div class="form-block cit-number-image">
+            <div>
+                <label for="cit-front">Citizenship Front</label>
+                <input type="file" class="cit-front attribute" accept=".jpg, .png, .pdf" /> 
+            </div>
+            <div>
+                <label for="cit-back">Citizenship Back</label>
+                <input type="file" class="cit-back  attribute" accept=".jpg, .png, .pdf" /> 
+            </div>
+        </div>
+        <input class="attribute citizenship-number" type="text" placeholder="Citizenship Number" required/> 
+        <button class="attribute register_button" type="submit"> <a href="login.html"> Register </a></button>
+        <a href="login.html">Already Have an account?</a>
+    </div>
+</body>
+</html>
