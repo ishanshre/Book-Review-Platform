@@ -23,7 +23,7 @@
             
         </div>
     </section>
-    <section class="container d-flex-col text-orange d-dark b-radius">
+    <section class="container d-flex-col text-orange d-dark b-radius m-br2">
         <div class="card-heading text-center">
         {{$genre := index .Data "genre"}}
             <span>Books Under Genre: {{$genre}}</span>
@@ -33,6 +33,15 @@
         </div>
 
     </section>
+    <nav class="container-nopadding pagination-container d-dark b-radius">
+
+        <div id="pagination-numbers">
+
+        </div>
+
+    
+
+    </nav>
     </section>
 </main>
 {{end}}

@@ -1,25 +1,31 @@
 const host = window.location.host
+let lastPage;
+let currentPage = 1;
+let totalItems;
+const paginationNumbers = document.getElementById("pagination-numbers")
+const nextButton = document.getElementById("next-button")
+const prevButton = document.getElementById("prev-button")
 const getData = async (searchType, search, order, limit) => {
     let url = window.location.pathname
     let parts = url.split("/")
     if (parts[1] === "genres") {
-        const response = await fetch(`http://${host}/api/genres?search=${search}&sort=${order}&limit=${limit}&page=1&genre=${parts[2]}`)
+        const response = await fetch(`http://${host}/api/genres?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}&genre=${parts[2]}`)
         const content = response.json();
         return content;
     } else if (parts[1] === "languages") {
-        const response = await fetch(`http://${host}/api/languages?search=${search}&sort=${order}&limit=${limit}&page=1&language=${parts[2]}`)
+        const response = await fetch(`http://${host}/api/languages?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}&language=${parts[2]}`)
         const content = response.json();
         return content;
     } else if (parts[1] === "read-list") {
-        const response = await fetch(`http://${host}/api/read-list?search=${search}&sort=${order}&limit=${limit}&page=1`)
+        const response = await fetch(`http://${host}/api/read-list?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}`)
         const content = response.json();
         return content;
     } else if (parts[1] === "buy-list") {
-        const response = await fetch(`http://${host}/api/buy-list?search=${search}&sort=${order}&limit=${limit}&page=1`)
+        const response = await fetch(`http://${host}/api/buy-list?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}`)
         const content = response.json();
         return content;
     } else {
-        const response = await fetch(`http://${host}/api/${searchType}?search=${search}&sort=${order}&limit=${limit}&page=1`)
+        const response = await fetch(`http://${host}/api/${searchType}?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}`)
         const content = response.json();
         return content;
     }
@@ -34,6 +40,10 @@ const display = async () => {
     let limit = await document.getElementById("limit").value;
     const payload = await getData(searchType, search, order, limit);
     let data = payload.data;
+    console.log(data)
+    lastPage = data.last_page
+    currentPage = data.page
+    totalItems = data.total
     if (searchType === "books") {
         let books = data.books;
         let displayItems = books.map((obj) => {
@@ -73,7 +83,33 @@ const display = async () => {
         }).join("");
         displayDiv.innerHTML = displayItems;
     }
+    paginationNumbers.innerHTML = ''
+    const getPaginationNumbers = () => {
+        for (let i = 1; i <= lastPage; i++) {
+            appendPageNumber(i, currentPage)
+        }
+    }
+    getPaginationNumbers()    
 }
 display();
 
+const appendPageNumber = (index, current) => {
+    const pageNumber = document.createElement("button")
+    pageNumber.className = "pagination-number";
+    pageNumber.innerHTML = index;
+    pageNumber.setAttribute("page-index", index);
+    pageNumber.setAttribute("aria-label", "Page" + index);
+    pageNumber.onclick = () => {
+        pageClicked(index);
+    }
+    if (index === current) {
+        pageNumber.classList.add('pg-active')
+    }
+    paginationNumbers.appendChild(pageNumber)
+}
 
+const pageClicked = (index) => {
+    console.log("page clicked:", index)
+    currentPage = index
+    display()
+}
