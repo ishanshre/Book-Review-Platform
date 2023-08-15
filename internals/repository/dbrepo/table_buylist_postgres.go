@@ -259,3 +259,72 @@ func (m *postgresDBRepo) GetAllBooksFromBuyListByUserId(limit, page, user_id int
 		Books:    books,
 	}, nil
 }
+
+func (m *postgresDBRepo) BuyListFilter(limit, page int, searchKey, sort string) (*models.BuyListFilterApi, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+	sql := `
+		SELECT u.id, u.username, b.id, b.title, bl.created_at
+		FROM buy_lists as bl
+		JOIN
+			users AS u ON u.id = bl.user_id
+		JOIN
+			books AS b ON b.id = bl.book_id
+	`
+	countSql := `
+	SELECT 
+		COUNT(*)
+		FROM buy_lists as bl
+		JOIN
+			users AS u ON u.id = bl.user_id
+		JOIN
+			books AS b ON b.id = bl.book_id
+	`
+	if searchKey != "" {
+		sql = fmt.Sprintf("%s WHERE b.title LIKE '%%%s%%' OR u.username LIKE '%%%s%%'", sql, searchKey, searchKey)
+		countSql = fmt.Sprintf("%s WHERE b.title LIKE '%%%s%%' OR u.username LIKE '%%%s%%'", countSql, searchKey, searchKey)
+
+	}
+	if sort != "" {
+		sql = fmt.Sprintf("%s ORDER BY bl.created_at %s", sql, sort)
+		// countSql = fmt.Sprintf("%s ORDER BY u.username %s", countSql, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countSql).Scan(&count); err != nil {
+		return nil, err
+	}
+	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
+	rows, err := m.DB.QueryContext(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	buyListFilters := []*models.BuyListFilter{}
+	for rows.Next() {
+		buyListFilter := &models.BuyListFilter{}
+		if err := rows.Scan(
+			&buyListFilter.UserID,
+			&buyListFilter.Username,
+			&buyListFilter.BookID,
+			&buyListFilter.BookTitle,
+			&buyListFilter.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		buyListFilters = append(buyListFilters, buyListFilter)
+	}
+	lastPage := m.CalculateLastPage(limit, count)
+	return &models.BuyListFilterApi{
+		Total:          count,
+		Page:           page,
+		LastPage:       lastPage,
+		BuyListFilters: buyListFilters,
+	}, nil
+}

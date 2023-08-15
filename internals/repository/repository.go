@@ -143,6 +143,7 @@ type DatabaseRepo interface {
 	UpdateBuyList(u *models.BuyList, book_id, user_id int) error
 	BuyListCount(user_id int) (int, error)
 	GetAllBooksFromBuyListByUserId(limit, page, user_id int, searchKey, sort string) (*models.BookApiFilter, error)
+	BuyListFilter(limit, page int, searchKey, sort string) (*models.BuyListFilterApi, error)
 
 	// Follower Interface
 	AllFollowers() ([]*models.Follower, error)

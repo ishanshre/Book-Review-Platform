@@ -134,6 +134,7 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/api/admin-books", handler.Repo.AdminAllBookApi)
 		mux.Get("/api/admin-bookauthors", handler.Repo.AdminAllBookAuthorsApi)
 		mux.Get("/api/admin-readlists", handler.Repo.AdminAllReadListApi)
+		mux.Get("/api/admin-buylists", handler.Repo.AdminAllBuyListApi)
 	})
 
 	mux.Route("/admin", func(mux chi.Router) {

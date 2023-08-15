@@ -206,6 +206,21 @@ type BuyList struct {
 	CreatedAt time.Time
 }
 
+type BuyListFilter struct {
+	UserID    int       `json:"user_id"`
+	Username  string    `json:"username"`
+	BookID    int       `json:"book_id"`
+	BookTitle string    `json:"book_title"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type BuyListFilterApi struct {
+	Total          int              `json:"total"`
+	Page           int              `json:"page"`
+	LastPage       int              `json:"last_page"`
+	BuyListFilters []*BuyListFilter `json:"buy_lists"`
+}
+
 // Follower hold the book and author id for follower relationship
 type Follower struct {
 	UserID     int
