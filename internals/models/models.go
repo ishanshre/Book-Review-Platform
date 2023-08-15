@@ -184,6 +184,21 @@ type ReadList struct {
 	CreatedAt time.Time
 }
 
+type ReadListFilter struct {
+	UserID    int       `json:"user_id"`
+	Username  string    `json:"username"`
+	BookID    int       `json:"book_id"`
+	BookTitle string    `json:"book_title"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type ReadListFilterApi struct {
+	Total           int               `json:"total"`
+	Page            int               `json:"page"`
+	LastPage        int               `json:"last_page"`
+	ReadListFilters []*ReadListFilter `json:"read_lists"`
+}
+
 // BuyList holds the the book id, user id and created at of BuyLists table
 type BuyList struct {
 	UserID    int

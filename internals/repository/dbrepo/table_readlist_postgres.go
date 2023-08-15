@@ -259,3 +259,72 @@ func (m *postgresDBRepo) GetAllBooksFromReadListByUserId(limit, page, user_id in
 		Books:    books,
 	}, nil
 }
+
+func (m *postgresDBRepo) ReadListFilter(limit, page int, searchKey, sort string) (*models.ReadListFilterApi, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+	sql := `
+		SELECT u.id, u.username, b.id, b.title, rl.created_at
+		FROM read_lists as rl
+		JOIN
+			users AS u ON u.id = rl.user_id
+		JOIN
+			books AS b ON b.id = rl.book_id
+	`
+	countSql := `
+	SELECT 
+		COUNT(*)
+		FROM read_lists as rl
+		JOIN
+			users AS u ON u.id = rl.user_id
+		JOIN
+			books AS b ON b.id = rl.book_id
+	`
+	if searchKey != "" {
+		sql = fmt.Sprintf("%s WHERE b.title LIKE '%%%s%%' OR u.username LIKE '%%%s%%'", sql, searchKey, searchKey)
+		countSql = fmt.Sprintf("%s WHERE b.title LIKE '%%%s%%' OR u.username LIKE '%%%s%%'", countSql, searchKey, searchKey)
+
+	}
+	if sort != "" {
+		sql = fmt.Sprintf("%s ORDER BY rl.created_at %s", sql, sort)
+		// countSql = fmt.Sprintf("%s ORDER BY u.username %s", countSql, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countSql).Scan(&count); err != nil {
+		return nil, err
+	}
+	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
+	rows, err := m.DB.QueryContext(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	readListFilters := []*models.ReadListFilter{}
+	for rows.Next() {
+		readListFilter := &models.ReadListFilter{}
+		if err := rows.Scan(
+			&readListFilter.UserID,
+			&readListFilter.Username,
+			&readListFilter.BookID,
+			&readListFilter.BookTitle,
+			&readListFilter.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		readListFilters = append(readListFilters, readListFilter)
+	}
+	lastPage := m.CalculateLastPage(limit, count)
+	return &models.ReadListFilterApi{
+		Total:           count,
+		Page:            page,
+		LastPage:        lastPage,
+		ReadListFilters: readListFilters,
+	}, nil
+}

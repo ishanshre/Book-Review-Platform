@@ -234,6 +234,36 @@ const display = async () => {
             `
         }).join("")
         displayDiv.innerHTML = displayItems
+    } else if (searchType === "admin-readlists") {
+        let readLists = data.read_lists;
+        let displayItems = readLists.map((obj)=> {
+            const { user_id, username, book_id, book_title, created_at } = obj
+            return `
+                <tr>
+                    <td>${book_title}</td>
+                    <td>${username}</td>
+                    <td>${created_at}</td>
+                    <td>
+                        <div class="action-icons">
+                            <button><a href="/admin/readLists/detail/${book_id}/${user_id}"><img src="/static/images/edit-icon.png" alt="update-icon"/></a></button>
+                            <button ><img width="19px" height="19px" src="/static/images/del-icon.png" alt="del-icon" onclick="openModal('delete-${book_id}-${user_id}')" /></button>
+
+                            <div class="jw-modal" id="delete-${book_id}-${user_id}">
+                                <div class="jw-modal-body">
+                                    <form action="/admin/readLists/detail/${book_id}/${user_id}/delete" method="post">
+                                        <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
+                                        <p>Do you want to delete this relationship?</p>
+                                        <input type="submit" value="Delete Record">
+                                        <button type="button" onclick="closeModal()">No</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `
+        }).join("")
+        displayDiv.innerHTML = displayItems
     }
     paginationNumbers.innerHTML = ''
     const getPaginationNumbers = () => {

@@ -132,6 +132,7 @@ type DatabaseRepo interface {
 	UpdateReadList(u *models.ReadList, book_id, user_id int) error
 	ReadListCount(user_id int) (int, error)
 	GetAllBooksFromReadListByUserId(limit, page, user_id int, searchKey, sort string) (*models.BookApiFilter, error)
+	ReadListFilter(limit, page int, searchKey, sort string) (*models.ReadListFilterApi, error)
 
 	// BuyList interface
 	AllBuyList() ([]*models.BuyList, error)

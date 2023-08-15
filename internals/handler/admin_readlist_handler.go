@@ -15,12 +15,6 @@ import (
 
 // AdminAllReadList fetches all the relation record between user and books in readLists
 func (m *Repository) AdminAllReadList(w http.ResponseWriter, r *http.Request) {
-	readLists, err := m.DB.AllReadList()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	var readList models.ReadList
 	allBooks, err := m.DB.AllBook()
 	if err != nil {
 		helpers.ServerError(w, err)
@@ -31,30 +25,7 @@ func (m *Repository) AdminAllReadList(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
-	readListDatas := []*models.ReadListData{}
-	for _, v := range readLists {
-		book, err := m.DB.GetBookTitleByID(v.BookID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		user, err := m.DB.GetUserByID(v.UserID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		user.ID = v.UserID
-		readListData := &models.ReadListData{
-			BookData:  book,
-			UserData:  user,
-			CreatedAt: v.CreatedAt,
-		}
-		readListDatas = append(readListDatas, readListData)
-	}
 	data := make(map[string]interface{})
-	data["readLists"] = readLists
-	data["readListDatas"] = readListDatas
-	data["readList"] = readList
 	data["allUsers"] = allUsers
 	data["allBooks"] = allBooks
 	data["base_path"] = base_readLists_path
@@ -64,6 +35,26 @@ func (m *Repository) AdminAllReadList(w http.ResponseWriter, r *http.Request) {
 		Form: forms.New(nil),
 	})
 
+}
+
+func (m *Repository) AdminAllReadListApi(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		limit = 10
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		page = 1
+	}
+	searchKey := r.URL.Query().Get("search")
+	sort := r.URL.Query().Get("sort")
+	filterReadLists, err := m.DB.ReadListFilter(limit, page, searchKey, sort)
+	if err != nil {
+		helpers.ServerError(w, err)
+		helpers.StatusInternalServerError(w, err.Error())
+		return
+	}
+	helpers.ApiStatusOkData(w, filterReadLists)
 }
 
 // PostAdminInsertReadList handles post method logic for adding books to read list by admin.
