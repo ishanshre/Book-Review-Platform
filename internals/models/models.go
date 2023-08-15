@@ -208,3 +208,11 @@ type Contact struct {
 	BrowserInfo   string
 	ReferringPage string
 }
+
+type RequestedBook struct {
+	ID             int
+	BookTitle      string
+	Author         string
+	RequestedEmail string
+	RequestedDate  time.Time
+}

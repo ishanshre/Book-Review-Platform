@@ -168,4 +168,10 @@ type DatabaseRepo interface {
 	GetContactByID(id int) (*models.Contact, error)
 	DeleteContact(id int) error
 	InsertContact(*models.Contact) error
+
+	// request_books interface
+	InsertRequestedBook(i *models.RequestedBook) error
+	AllRequestBooks() ([]*models.RequestedBook, error)
+	DeleteRequestBooks(id int) error
+	GetRequestBookById(id int) (*models.RequestedBook, error)
 }
