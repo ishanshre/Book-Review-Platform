@@ -154,6 +154,7 @@ type DatabaseRepo interface {
 	UpdateFollower(u *models.Follower, user_id, author_id int) error
 	FollowerCount(user_id int) (int, error)
 	GetAllFollowingsByUserId(user_id int) ([]*models.Author, error)
+	FollowerFilter(limit, page int, searchKey, sort string) (*models.FollowerFilterApi, error)
 
 	// Review interface
 	AllReviews() ([]*models.Review, error)

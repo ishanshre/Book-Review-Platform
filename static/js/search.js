@@ -294,6 +294,36 @@ const display = async () => {
             `
         }).join("")
         displayDiv.innerHTML = displayItems
+    } else if (searchType === "admin-followers") {
+        let followers = data.followers;
+        let displayItems = followers.map((obj)=> {
+            const { user_id, username, author_id, author_first_name, author_last_name, followed_at } = obj
+            return `
+                <tr>
+                    <td>${author_first_name} ${author_last_name}</td>
+                    <td>${username}</td>
+                    <td>${followed_at}</td>
+                    <td>
+                        <div class="action-icons">
+                            <button><a href="/admin/followers/detail/${author_id}/${user_id}"><img src="/static/images/edit-icon.png" alt="update-icon"/></a></button>
+                            <button ><img width="19px" height="19px" src="/static/images/del-icon.png" alt="del-icon" onclick="openModal('delete-${author_id}-${user_id}')" /></button>
+
+                            <div class="jw-modal" id="delete-${author_id}-${user_id}">
+                                <div class="jw-modal-body">
+                                    <form action="/admin/followers/detail/${author_id}/${user_id}/delete" method="post">
+                                        <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
+                                        <p>Do you want to delete this relationship?</p>
+                                        <input type="submit" value="Delete Record">
+                                        <button type="button" onclick="closeModal()">No</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `
+        }).join("")
+        displayDiv.innerHTML = displayItems
     }
     paginationNumbers.innerHTML = ''
     const getPaginationNumbers = () => {

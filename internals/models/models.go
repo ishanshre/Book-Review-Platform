@@ -228,6 +228,22 @@ type Follower struct {
 	FollowedAt time.Time
 }
 
+type FollowerFilter struct {
+	UserID          int       `json:"user_id"`
+	Username        string    `json:"username"`
+	AuthorID        int       `json:"author_id"`
+	AuthorFirstName string    `json:"author_first_name"`
+	AuthorLastName  string    `json:"author_last_name"`
+	FollowedAt      time.Time `json:"followed_at"`
+}
+
+type FollowerFilterApi struct {
+	Total           int               `json:"total"`
+	Page            int               `json:"page"`
+	LastPage        int               `json:"last_page"`
+	FollowerFilters []*FollowerFilter `json:"followers"`
+}
+
 // Review holds the review table data
 type Review struct {
 	ID        int

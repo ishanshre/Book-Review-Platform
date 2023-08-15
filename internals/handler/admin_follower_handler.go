@@ -15,47 +15,17 @@ import (
 
 // AdminAllFollowers fetches all the relation record between user and books in Followers
 func (m *Repository) AdminAllFollowers(w http.ResponseWriter, r *http.Request) {
-	followers, err := m.DB.AllFollowers()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	var follower models.Follower
 	allAuthors, err := m.DB.AllAuthor()
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
-	allUsers, err := m.DB.AllUsers(1000000, 0)
+	allUsers, err := m.DB.AllUsers(100000000, 0)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
-	followerDatas := []*models.FollowerData{}
-	for _, v := range followers {
-		user, err := m.DB.GetUserByID(v.UserID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		user.ID = v.UserID
-		author, err := m.DB.GetAuthorFullNameByID(v.AuthorID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		author.ID = v.AuthorID
-		followerData := &models.FollowerData{
-			UserData:   user,
-			AuthorData: author,
-			FollowedAt: v.FollowedAt,
-		}
-		followerDatas = append(followerDatas, followerData)
-	}
 	data := make(map[string]interface{})
-	data["followers"] = followers
-	data["followerDatas"] = followerDatas
-	data["follower"] = follower
 	data["allUsers"] = allUsers
 	data["allAuthors"] = allAuthors
 	data["base_path"] = base_followers_path
@@ -63,6 +33,26 @@ func (m *Repository) AdminAllFollowers(w http.ResponseWriter, r *http.Request) {
 		Data: data,
 		Form: forms.New(nil),
 	})
+}
+
+func (m *Repository) AdminAllFollowerApi(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		limit = 10
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		page = 1
+	}
+	searchKey := r.URL.Query().Get("search")
+	sort := r.URL.Query().Get("sort")
+	filterFollowers, err := m.DB.FollowerFilter(limit, page, searchKey, sort)
+	if err != nil {
+		helpers.ServerError(w, err)
+		helpers.StatusInternalServerError(w, err.Error())
+		return
+	}
+	helpers.ApiStatusOkData(w, filterFollowers)
 }
 
 // PostAdminInsertFollower handles post method logic for user following author by admin.
@@ -98,12 +88,6 @@ func (m *Repository) PostAdminInsertFollower(w http.ResponseWriter, r *http.Requ
 		FollowedAt: time.Now(),
 	}
 
-	followers, err := m.DB.AllFollowers()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-
 	allAuthors, err := m.DB.AllAuthor()
 	if err != nil {
 		helpers.ServerError(w, err)
@@ -115,33 +99,10 @@ func (m *Repository) PostAdminInsertFollower(w http.ResponseWriter, r *http.Requ
 		helpers.ServerError(w, err)
 		return
 	}
-	followerDatas := []*models.FollowerData{}
-	for _, v := range followers {
-		user, err := m.DB.GetUserByID(v.UserID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		user.ID = v.UserID
-		author, err := m.DB.GetAuthorFullNameByID(v.AuthorID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		author.ID = v.AuthorID
-		followerData := &models.FollowerData{
-			UserData:   user,
-			AuthorData: author,
-			FollowedAt: v.FollowedAt,
-		}
-		followerDatas = append(followerDatas, followerData)
-	}
 
 	data["allAuthors"] = allAuthors
 	data["allUsers"] = allUsers
 	data["follower"] = follower
-	data["followers"] = followers
-	data["followerDatas"] = followerDatas
 	data["base_path"] = base_followers_path
 	form.Required("author_id", "user_id")
 
