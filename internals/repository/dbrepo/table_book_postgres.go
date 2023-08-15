@@ -314,7 +314,7 @@ func (m *postgresDBRepo) AllBooksFilter(limit, page int, searchKey, sort string)
 	}
 	offset := (page - 1) * limit
 
-	sql := "SELECT id, title, description, cover, isbn, published_date FROM books"
+	sql := "SELECT id, title, description, cover, isbn, published_date, added_at, is_active FROM books"
 	countSql := "SELECT COUNT(*) FROM books"
 	if searchKey != "" {
 		sql = fmt.Sprintf("%s WHERE title LIKE '%%%s%%' OR description LIKE '%%%s%%' OR CAST(isbn AS TEXT) LIKE '%%%s%%'", sql, searchKey, searchKey, searchKey)
@@ -344,6 +344,8 @@ func (m *postgresDBRepo) AllBooksFilter(limit, page int, searchKey, sort string)
 			&book.Cover,
 			&book.Isbn,
 			&book.PublishedDate,
+			&book.AddedAt,
+			&book.IsActive,
 		); err != nil {
 			return nil, err
 		}

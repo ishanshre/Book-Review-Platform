@@ -113,7 +113,7 @@ const display = async () => {
                     </td>
                 </tr>
             `
-        })
+        }).join("")
         displayDiv.innerHTML = displayItems
     } else if (searchType === "admin-publishers") {
         let publishers = data.publishers;
@@ -143,7 +143,7 @@ const display = async () => {
                     </td>
                 </tr>
             `
-        })
+        }).join("")
         displayDiv.innerHTML = displayItems
     } else if (searchType === "admin-authors") {
         let authors = data.authors;
@@ -172,7 +172,38 @@ const display = async () => {
                     </td>
                 </tr>
             `
-        })
+        }).join("")
+        displayDiv.innerHTML = displayItems
+    } else if (searchType === "admin-books") {
+        let books = data.books;
+        let displayItems = books.map((obj)=> {
+            const { id, title, is_active, added_at } = obj
+            return `
+                <tr>
+                    <td>${id}</td>
+                    <td>${title}</td>
+                    <td>${is_active}</td>
+                    <td>${added_at}</td>
+                    <td>
+                        <div class="action-icons">
+                            <button><a href="/admin/books/detail/${id}"><img src="/static/images/edit-icon.png" alt="update-icon"/></a></button>
+                            <button ><img width="19px" height="19px" src="/static/images/del-icon.png" alt="del-icon" onclick="openModal('delete-${id}')" /></button>
+
+                            <div class="jw-modal" id="delete-${id}">
+                                <div class="jw-modal-body">
+                                    <form action="/admin/books/detail/${id}/delete" method="post">
+                                        <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
+                                        <p>Do you want to delete this book ${title}?</p>
+                                        <input type="submit" value="Delete Record">
+                                        <button type="button" onclick="closeModal()">No</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `
+        }).join("")
         displayDiv.innerHTML = displayItems
     }
     paginationNumbers.innerHTML = ''
