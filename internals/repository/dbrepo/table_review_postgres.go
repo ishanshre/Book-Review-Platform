@@ -300,3 +300,76 @@ func (m *postgresDBRepo) UpdateReviewBook(update *models.Review) error {
 	}
 	return nil
 }
+
+func (m *postgresDBRepo) ReviewFilter(limit, page int, searchKey, sort string) (*models.ReviewFilterApi, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+	sql := `
+		SELECT 
+			r.id, r.rating, r.body, b.title, u.username, r.is_active, r.created_at, r.updated_at
+		FROM reviews AS r
+		LEFT JOIN
+			users AS u ON u.id = r.user_id
+		LEFT JOIN
+			books AS b ON b.id = r.book_id
+	`
+	countSql := `
+	SELECT 
+		COUNT(*)
+		FROM reviews AS r
+		LEFT JOIN
+			users AS u ON u.id = r.user_id
+		LEFT JOIN
+			books AS b ON b.id = r.book_id
+	`
+	if searchKey != "" {
+		sql = fmt.Sprintf("%s WHERE b.title LIKE '%%%s%%' OR u.username LIKE '%%%s%%'", sql, searchKey, searchKey)
+		countSql = fmt.Sprintf("%s WHERE b.title LIKE '%%%s%%' OR u.username LIKE '%%%s%%'", countSql, searchKey, searchKey)
+
+	}
+	if sort != "" {
+		sql = fmt.Sprintf("%s ORDER BY r.created_at %s", sql, sort)
+		// countSql = fmt.Sprintf("%s ORDER BY u.username %s", countSql, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countSql).Scan(&count); err != nil {
+		return nil, err
+	}
+	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
+	rows, err := m.DB.QueryContext(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	reviewFilters := []*models.ReviewFilter{}
+	for rows.Next() {
+		reviewFilter := &models.ReviewFilter{}
+		if err := rows.Scan(
+			&reviewFilter.ID,
+			&reviewFilter.Rating,
+			&reviewFilter.Body,
+			&reviewFilter.BookTitle,
+			&reviewFilter.Username,
+			&reviewFilter.IsActive,
+			&reviewFilter.CreatedAt,
+			&reviewFilter.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		reviewFilters = append(reviewFilters, reviewFilter)
+	}
+	lastPage := m.CalculateLastPage(limit, count)
+	return &models.ReviewFilterApi{
+		Total:         count,
+		Page:          page,
+		LastPage:      lastPage,
+		ReviewFilters: reviewFilters,
+	}, nil
+}

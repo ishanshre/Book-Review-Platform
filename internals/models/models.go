@@ -256,6 +256,24 @@ type Review struct {
 	UpdatedAt time.Time
 }
 
+type ReviewFilter struct {
+	ID        int       `json:"id"`
+	Rating    float64   `json:"rating"`
+	Body      string    `json:"body"`
+	BookTitle string    `json:"title"`
+	Username  string    `json:"username"`
+	IsActive  bool      `json:"is_active"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type ReviewFilterApi struct {
+	Total         int             `json:"total"`
+	Page          int             `json:"page"`
+	LastPage      int             `json:"last_page"`
+	ReviewFilters []*ReviewFilter `json:"reviews"`
+}
+
 type Contact struct {
 	ID            int
 	FirstName     string

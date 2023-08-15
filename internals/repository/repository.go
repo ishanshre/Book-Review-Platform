@@ -166,6 +166,7 @@ type DatabaseRepo interface {
 	UpdateReview(u *models.Review) error
 	GetReviewsByBookID(bookID int) ([]*models.Review, error)
 	UpdateReviewBook(update *models.Review) error
+	ReviewFilter(limit, page int, searchKey, sort string) (*models.ReviewFilterApi, error)
 
 	// Contact interface
 	AllContacts() ([]*models.Contact, error)

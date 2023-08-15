@@ -324,6 +324,39 @@ const display = async () => {
             `
         }).join("")
         displayDiv.innerHTML = displayItems
+    } else if (searchType === "admin-reviews") {
+        let reviews = data.reviews;
+        let displayItems = reviews.map((obj)=> {
+            const { id, rating, username, title, created_at, updated_at } = obj
+            return `
+                <tr>
+                    <td>${id}</td>
+                    <td>${rating}</td>
+                    <td>${username}</td>
+                    <td>${title}</td>
+                    <td>${created_at}</td>
+                    <td>${updated_at}</td>
+                    <td>
+                        <div class="action-icons">
+                            <button><a href="/admin/reviews/detail/${id}"><img src="/static/images/edit-icon.png" alt="update-icon"/></a></button>
+                            <button ><img width="19px" height="19px" src="/static/images/del-icon.png" alt="del-icon" onclick="openModal('delete-${id}')" /></button>
+
+                            <div class="jw-modal" id="delete-${id}">
+                                <div class="jw-modal-body">
+                                    <form action="/admin/reviews/detail/${id}/delete" method="post">
+                                        <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
+                                        <p>Do you want to delete this relationship?</p>
+                                        <input type="submit" value="Delete Record">
+                                        <button type="button" onclick="closeModal()">No</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `
+        }).join("")
+        displayDiv.innerHTML = displayItems
     }
     paginationNumbers.innerHTML = ''
     const getPaginationNumbers = () => {

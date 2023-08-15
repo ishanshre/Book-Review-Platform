@@ -16,34 +16,32 @@ import (
 // AdminAllReviews fetches all the record in Reviews.
 // It takes HTTP response writer and request as parameters.
 func (m *Repository) AdminAllReviews(w http.ResponseWriter, r *http.Request) {
-
-	// Get all the reviews from the database
-	reviews, err := m.DB.AllReviews()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	var review models.Review
-	allBooks, err := m.DB.AllBook()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	allUsers, err := m.DB.AllUsers(1000000, 0)
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
 	data := make(map[string]interface{})
-	data["reviews"] = reviews
-	data["review"] = review
-	data["allUsers"] = allUsers
-	data["allBooks"] = allBooks
 	data["base_path"] = base_reviews_path
 	render.Template(w, r, "admin-allreviews.page.tmpl", &models.TemplateData{
 		Data: data,
 		Form: forms.New(nil),
 	})
+}
+
+func (m *Repository) AdminAllReviewApi(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		limit = 10
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		page = 1
+	}
+	searchKey := r.URL.Query().Get("search")
+	sort := r.URL.Query().Get("sort")
+	filterReviews, err := m.DB.ReviewFilter(limit, page, searchKey, sort)
+	if err != nil {
+		helpers.ServerError(w, err)
+		helpers.StatusInternalServerError(w, err.Error())
+		return
+	}
+	helpers.ApiStatusOkData(w, filterReviews)
 }
 
 // AdminInsertReview handles the get method and renders the review add page.
