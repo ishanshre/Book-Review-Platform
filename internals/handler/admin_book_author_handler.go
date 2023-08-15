@@ -22,12 +22,6 @@ import (
 // book-author, all authors, and all books, is stored in a data map. The function then renders the template,
 // passing the data map and an empty form to the template for rendering.
 func (m *Repository) AdminAllBookAuthor(w http.ResponseWriter, r *http.Request) {
-	bookAuthors, err := m.DB.AllBookAuthor()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	var bookAuthor models.BookAuthor
 	allBooks, err := m.DB.AllBook()
 	if err != nil {
 		helpers.ServerError(w, err)
@@ -38,28 +32,8 @@ func (m *Repository) AdminAllBookAuthor(w http.ResponseWriter, r *http.Request) 
 		helpers.ServerError(w, err)
 		return
 	}
-	bookAuthorDatas := []*models.BookAuthorData{}
-	for _, v := range bookAuthors {
-		book, err := m.DB.GetBookTitleByID(v.BookID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		author, err := m.DB.GetAuthorByID(v.AuthorID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		bookAuthorData := models.BookAuthorData{
-			BookData:   book,
-			AuthorData: author,
-		}
-		bookAuthorDatas = append(bookAuthorDatas, &bookAuthorData)
-	}
+
 	data := make(map[string]interface{})
-	data["bookAuthors"] = bookAuthors
-	data["bookAuthorDatas"] = bookAuthorDatas
-	data["bookAuthor"] = bookAuthor
 	data["allAuthors"] = allAuthors
 	data["allBooks"] = allBooks
 	data["base_path"] = base_bookAuthors_path
@@ -67,6 +41,25 @@ func (m *Repository) AdminAllBookAuthor(w http.ResponseWriter, r *http.Request) 
 		Data: data,
 		Form: forms.New(nil),
 	})
+}
+func (m *Repository) AdminAllBookAuthorsApi(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		limit = 10
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		page = 1
+	}
+	searchKey := r.URL.Query().Get("search")
+	sort := r.URL.Query().Get("sort")
+	filteredBookAuthors, err := m.DB.BookAuthorListFilter(limit, page, searchKey, sort)
+	if err != nil {
+		helpers.ServerError(w, err)
+		helpers.StatusInternalServerError(w, err.Error())
+		return
+	}
+	helpers.ApiStatusOkData(w, filteredBookAuthors)
 }
 
 // PostAdminDeleteBookAuthor deletes a book-author relationship based on the provided book ID and author ID.

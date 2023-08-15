@@ -101,6 +101,7 @@ type DatabaseRepo interface {
 	BookAuthorExists(book_id, author_id int) (bool, error)
 	UpdateBookAuthor(u *models.BookAuthor, book_id, author_id int) error
 	InsertBookAuthor(u *models.BookAuthor) error
+	BookAuthorListFilter(limit, page int, searchKey, sort string) (*models.BookAuthorListApi, error)
 
 	// book genre interface
 	AllBookGenre() ([]*models.BookGenre, error)

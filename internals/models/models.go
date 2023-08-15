@@ -150,6 +150,21 @@ type BookAuthor struct {
 	AuthorID int
 }
 
+type BookAuthorList struct {
+	BookID          int    `json:"book_id"`
+	BookTitle       string `json:"book_title"`
+	AuthorID        int    `json:"author_id"`
+	AuthorFirstName string `json:"author_first_name"`
+	AuthorLastName  string `json:"author_last_name"`
+}
+
+type BookAuthorListApi struct {
+	Total       int               `json:"total"`
+	Page        int               `json:"page"`
+	LastPage    int               `json:"last_page"`
+	BookAuthors []*BookAuthorList `json:"book_authors"`
+}
+
 // BookGenre holds the itermediate table between book and genre
 type BookGenre struct {
 	BookID  int
