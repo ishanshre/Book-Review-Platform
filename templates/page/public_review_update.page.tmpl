@@ -1,0 +1,57 @@
+{{template "base" .}}
+
+{{define "title"}}{{$book := index .Data "book"}} Add review for {{$book.Title}}{{end}}
+
+{{define "content"}}
+{{$book := index .Data "book"}}
+{{$review := index .Data "review"}}
+<div class="container">
+    <div class="d-flex d-flex-col">
+
+        <div class="d-flex text-orange d-gap">
+            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r align-center b-radius w-20r h-fit">
+                <img src="/{{$book.Cover}}" alt="{{$book.Isbn}}" width="200px" height="auto" class="b-radius">
+                <h1>{{$book.Title}}</h1>
+            </div>
+            <div class="d-flex-col container text-orange">
+                <div>
+                    <h1>Update review of {{$book.Title}} </h1>
+                </div>
+                <div>
+                    <form method="post" class="d-flex d-flex-col align-center d-gap">
+                        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                        <div>
+                            <label for="rating"><strong>Rating: </strong></label>
+                        <select name="rating" id="rating">
+                            <option value="1" {{if eq $review.Rating 1.0 }} selected {{end}}>1</option>
+                            <option value="1.5" {{if eq $review.Rating 1.5 }} selected {{end}}>1.5</option>
+                            <option value="2" {{if eq $review.Rating 2.0 }} selected {{end}}>2</option>
+                            <option value="2.5" {{if eq $review.Rating 2.5 }} selected {{end}}>2.5</option>
+                            <option value="3" {{if eq $review.Rating 3.0 }} selected {{end}}>3</option>
+                            <option value="3.5" {{if eq $review.Rating 3.5 }} selected {{end}}>3.5</option>
+                            <option value="4" {{if eq $review.Rating 4.0 }} selected {{end}}>4</option>
+                            <option value="4.5" {{if eq $review.Rating 4.5 }} selected {{end}}>4.5</option>
+                            <option value="5" {{if eq $review.Rating 5.0 }} selected {{end}}>5</option>
+                        </select>
+                        {{with .Form.Errors.Get "rating"}}
+                        <label class="d-flex d-center text-danger">{{.}}</label>
+                        {{end}}
+                        </div>
+
+                        <textarea class="textArea" name="body" id="body" cols="50" rows="10"
+                            placeholder="Review">{{$review.Body}}</textarea>
+                        {{with .Form.Errors.Get "body"}}
+                        <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <div class="btn-div"><input type="submit" value="Update Review" class="btn"></div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+{{end}}

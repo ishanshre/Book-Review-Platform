@@ -1,58 +1,66 @@
 {{template "admin" .}}
 
-{{define "title"}}Admin: All Authors{{end}}
-
 {{define "css"}}
-    <link rel="stylesheet" href="/static/css/admin.css">
+<link rel="stylesheet" href="/static/css/admin.css">
 {{end}}
 
+{{define "title"}}Admin: All Authors{{end}}
+
+
 {{define "content"}}
-{{$authors := index .Data "authors"}}
-<div>
-    <div>
-        <h1>All Authors</h1>
-        <button><a href="/admin/authors/create">Add New Author</a></button>
+<section class="main-content">
+
+    <section class="container d-flex-col d-dark b-radius m-br2">
+        <div class="d-flex justify-center d-gap search-all-books">
+            <input type="hidden" id="search-type" value="admin-authors">
+            <input type="search" class="search-all-books-input" id="search-book" placeholder="Search Authors..." onkeyup="display()">
+            <select id="order" onchange="display()">
+                <option value="asc">Ascending Order</option>
+                <option value="desc" >Descending Order</option>
+            </select>
+            <select id="limit" onchange="display()">
+                <option value="10">10</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- This is the title section -->
+    <div class="main-content-title">
+        <h1>All Users</h1>
+        <button class="add-button"><a href="/admin/authors/create">ADD</a></button>
     </div>
-    <div>
+    
+    <!-- This is the table section -->
+    <div class="main-content-table">
         <table>
+            <!-- header section -->
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Country Of Origin</th>
-                    <th>Action</th>
+                    <th>NAME</th>
+                    <th>ACTION</th>
                 </tr>
             </thead>
-            <tbody>
-                {{range $authors}}
-                <tr>
-                    <td>{{.ID}}</td>
-                    <td>{{.FirstName}} {{.LastName}}</td>
-                    <td>{{.Email}}</td>
-                    <td>{{.CountryOfOrigin}}</td>
-                    <td>
-                        <button><a href="/admin/authors/detail/{{.ID}}">Detail</a></button>
-                        <button onclick="openModal('delete-{{.ID}}')">Delete</button>
-                        <div class="jw-modal" id="delete-{{.ID}}">
-                            <div class="jw-modal-body">
-                                <form action="/admin/authors/detail/{{.ID}}/delete" method="post">
-                                    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-                                    <p>Do you want to delete author @{{.FirstName}}?</p>
-                                    <input type="submit" value="Delete">
-                                    <button type="button" onclick="closeModal()">No</button>
-                                </form>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                {{end}}
+            <!-- body section -->
+            <tbody id="displayDiv">
+                
             </tbody>
         </table>
     </div>
-</div>
+    <nav class="pagination-container">
+
+        <div id="pagination-numbers">
+
+        </div>
+
+    </nav>
+</section>
+</section>
 {{end}}
 
 {{define "js"}}
-    <script src="/static/js/admin.js"></script>
+<script src="/static/js/admin.js"></script>
+<script src="/static/js/search.js"></script>
 {{end}}

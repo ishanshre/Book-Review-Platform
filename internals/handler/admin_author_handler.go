@@ -21,17 +21,31 @@ import (
 // The authors are stored in the "authors" key of the data map.
 // The function renders the template with the authors data.
 func (m *Repository) AdminAllAuthor(w http.ResponseWriter, r *http.Request) {
-	authors, err := m.DB.AllAuthor()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
 	data := make(map[string]interface{})
-	data["authors"] = authors
 	data["base_path"] = base_authors_path
 	render.Template(w, r, "admin-allauthors.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
+}
+
+func (m *Repository) AdminAllAuthorApi(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		limit = 10
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		page = 1
+	}
+	searchKey := r.URL.Query().Get("search")
+	sort := r.URL.Query().Get("sort")
+	filteredAuthors, err := m.DB.AllAuthorsFilter(limit, page, searchKey, sort)
+	if err != nil {
+		helpers.ServerError(w, err)
+		helpers.StatusInternalServerError(w, err.Error())
+		return
+	}
+	helpers.ApiStatusOkData(w, filteredAuthors)
 }
 
 // PostAdminDeleteAuthor handles the deletion of an author.
@@ -129,6 +143,10 @@ func (m *Repository) PostAdminUpdateAuthor(w http.ResponseWriter, r *http.Reques
 		CountryOfOrigin: r.Form.Get("country_of_origin"),
 		Avatar:          r.Form.Get("avatar"),
 	}
+	form.MaxLength("first_name", 30)
+	form.MaxLength("last_name", 30)
+	form.MaxLength("email", 255)
+	form.MaxLength("country_of_origin", 50)
 	data := make(map[string]interface{})
 	data["author"] = author
 	data["base_path"] = base_authors_path
@@ -212,6 +230,11 @@ func (m *Repository) PostAdminInsertAuthor(w http.ResponseWriter, r *http.Reques
 		Avatar:          avatar,
 	}
 	form.Required("date_of_birth")
+	form.MaxLength("first_name", 30)
+	form.MaxLength("last_name", 30)
+	form.MaxLength("email", 255)
+	form.MaxLength("country_of_origin", 50)
+	form.MaxLength("bio", 10000)
 	data := make(map[string]interface{})
 	data["author"] = author
 	data["base_path"] = base_authors_path

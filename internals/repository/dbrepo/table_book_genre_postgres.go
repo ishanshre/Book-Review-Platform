@@ -114,3 +114,113 @@ func (m *postgresDBRepo) InsertBookGenre(u *models.BookGenre) error {
 	}
 	return nil
 }
+
+func (m *postgresDBRepo) GetGenresFromBookID(book_id int) ([]*models.Genre, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		SELECT 
+		COALESCE(g.id, 0), COALESCE(g.title, '')
+		FROM
+			book_genres AS bg
+		LEFT JOIN
+			genres AS g ON g.id = bg.genre_id
+		WHERE 
+			book_id = $1
+	`
+	genres := []*models.Genre{}
+	rows, err := m.DB.QueryContext(ctx, query, book_id)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		genre := &models.Genre{}
+		if err := rows.Scan(
+			&genre.ID,
+			&genre.Title,
+		); err != nil {
+			return nil, err
+		}
+		genres = append(genres, genre)
+	}
+	return genres, nil
+}
+
+func (m *postgresDBRepo) GetAllBooksByGenre(limit, page int, searchKey, sort, genre string) (*models.BookApiFilter, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+
+	query := `
+		SELECT 
+			COALESCE(b.id, 0) AS b_id,
+			COALESCE(b.title, '') AS b_title,
+			COALESCE(b.isbn, 0) AS b_isbn,
+			COALESCE(b.cover, '') AS b_cover
+		FROM 
+			book_genres AS bg
+		LEFT JOIN 
+			books AS b ON b.id = bg.book_id
+		LEFT JOIN
+			genres AS g ON g.id = bg.genre_id
+		WHERE
+			g.title = $1
+	`
+	countQuery := `
+		SELECT 
+			COUNT(*)
+		FROM 
+			book_genres AS bg
+		LEFT JOIN 
+			books AS b ON b.id = bg.book_id
+		LEFT JOIN
+			genres AS g ON g.id = bg.genre_id
+		WHERE
+			g.title = $1
+	`
+	if searchKey != "" {
+		query = fmt.Sprintf("%s AND (b.title LIKE '%%%s%%' OR CAST(b.isbn AS TEXT) LIKE '%%%s%%')", query, searchKey, searchKey)
+		countQuery = fmt.Sprintf("%s AND (b.title LIKE '%%%s%%' OR CAST(b.isbn AS TEXT) LIKE '%%%s%%')", countQuery, searchKey, searchKey)
+	}
+	if sort != "" {
+		query = fmt.Sprintf("%s ORDER BY b.title %s", query, sort)
+	}
+
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countQuery, genre).Scan(&count); err != nil {
+		return nil, err
+	}
+
+	query = fmt.Sprintf("%s LIMIT %d OFFSET %d", query, limit, offset)
+	rows, err := m.DB.QueryContext(ctx, query, genre)
+	if err != nil {
+		return nil, err
+	}
+	books := []*models.Book{}
+	for rows.Next() {
+		book := &models.Book{}
+		if err := rows.Scan(
+			&book.ID,
+			&book.Title,
+			&book.Isbn,
+			&book.Cover,
+		); err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+	last_page := m.CalculateLastPage(limit, count)
+	return &models.BookApiFilter{
+		Total:    count,
+		LastPage: last_page,
+		Page:     page,
+		Books:    books,
+	}, nil
+}

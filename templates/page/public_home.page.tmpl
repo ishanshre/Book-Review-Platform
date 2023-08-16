@@ -6,7 +6,7 @@
 <main>
     <section>
         <div class="search-section">
-            <div class="container d-grid">
+            <div class="container d-grid d-dark b-radius">
                 <p class="title-heading">
                     BookWorm
                 </p>
@@ -25,30 +25,62 @@
             </div>
         </div>
     </section>
+
+
+    <div class="container-nopadding browse-book">
+        <section class="genre-section">
+            <div class="d-dark b-radius m-br2">
+                <div class="d-flex d-flex-col d-gap justify-center align-center">
+                    <h1 class="text-white">Browse Books By Genre</h1>
+                    <div class="d-flex d-gap d-wrap pr-2 justify-center">
+                        {{$genres := index .Data "allGenres"}}
+                        {{range $genres}}
+                        <a href="/genres/{{.Title}}"><button class="btn">{{.Title}}</button></a>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <section class="language-section">
+            <div class="d-dark b-radius m-br2">
+                <div class="d-flex d-flex-col d-gap justify-center align-center">
+                    <h1 class="text-white">Browse Books By Language</h1>
+                    <div class="d-flex d-gap d-wrap pr-2 justify-center">
+                        {{$languages := index .Data "allLanguages"}}
+                        {{range $languages}}
+                        <a href="/languages/{{.Language}}"><button class="btn">{{.Language}}</button></a>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+
     <section class="top-rated-section">
-        <div class="container">
+        <div class="container d-dark b-radius m-br2">
             <section aria-label="Top 10 Random Rated Books">
                 <h1 class="text-center text-white">Top Rated Books</h1>
                 <!-- slider container -->
                 <div class="slider">
                     {{$topRatedBooks := index .Data "topRatedBooks"}}
-                        {{range $topID, $topRated := $topRatedBooks}}
+                    {{range $topID, $topRated := $topRatedBooks}}
                     <!-- slide 4 -->
                     <a href="/books/{{$topRated.Book.Isbn}}">
                         <div class="slide d-flex d-flex-row d-gap">
-                            <img src="{{$topRated.Book.Cover}}"
-                                alt="Img1" width="250px" heigth="350px">
+                            <img src="{{$topRated.Book.Cover}}" alt="Img1" width="250px" heigth="350px">
                             <div>
                                 <h1>{{$topRated.Book.Title}}</h1>
                                 <p><strong>Author: </strong>
                                     {{range $i, $author := $topRated.Authors}}
-                                            {{$author.FirstName}} {{$author.LastName}}{{if ne $i $topRated.LenAuthors}},{{end}}                                        
+                                    {{$author.FirstName}} {{$author.LastName}}{{if ne $i $topRated.LenAuthors}},{{end}}
                                     {{end}}
                                 </p>
                                 <p><strong>Description: </strong>
                                     {{$topRated.Book.Description}}
                                 </p>
-                                <p><strong>Published Date: </strong>{{$topRated.Book.PublishedDate}}</p>
+                                <p><strong>Published Date: </strong>{{DateOnly $topRated.Book.PublishedDate}}</p>
                                 <p><strong>Rating: </strong>{{$topRated.AverageRating}}</p>
                             </div>
                         </div>
@@ -61,6 +93,29 @@
                         &#8656
                 </div>
             </section>
+        </div>
+    </section>
+
+    <section class="recent-books-section">
+        <div class="container d-dark b-radius m-br2">
+            <div class="d-flex d-flex-col d-gap justify-center align-center">
+                <h1 class="text-white">Recently Added Books</h1>
+            <div>
+            <div class="card-box-container">
+                {{$recentBooks := index .Data "recentBooks"}}
+                {{range $recentBooks}}
+                <div class="card-box">
+                    <a href="/books/{{.Isbn}}">
+                        <div class="card-img">
+                            <img src="/{{.Cover}}" alt="img-{{.Title}}">
+                        </div>
+                        <div class="card-text">
+                            <span>{{.Title}}</span>
+                        </div>
+                    </a>
+                </div>
+                {{end}}
+            </div>
         </div>
     </section>
 </main>

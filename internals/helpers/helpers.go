@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"runtime/debug"
@@ -75,10 +76,20 @@ func PageNotFound(w http.ResponseWriter, err error) {
 	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 }
 
+func Unauthorized(w http.ResponseWriter) {
+	trace := fmt.Sprintf("%s\n%s", errors.New("user not authorized"), debug.Stack())
+	app.ErrorLog.Println(trace)
+	http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+}
+
 // IsAuthenticated return true if authenticated else false
 func IsAuthenticated(r *http.Request) bool {
 	exists := app.Session.Exists(r.Context(), "user_id")
 	return exists
+}
+
+func IsValidated(r *http.Request) bool {
+	return app.Session.GetBool(r.Context(), "is_validated")
 }
 
 // IsAdmin returns true if authenticated user is admin else return false

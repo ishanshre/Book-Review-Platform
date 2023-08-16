@@ -45,6 +45,13 @@ func (m *Repository) PostContactUs(w http.ResponseWriter, r *http.Request) {
 	}
 	form.Required("first_name", "last_name", "email", "phone", "subject", "message")
 	form.ValidatePhone("phone")
+	form.MaxLength("first_name", 20)
+	form.MaxLength("last_name", 20)
+	form.MaxLength("email", 255)
+	form.MaxLength("phone", 10)
+	form.MaxLength("subject", 100)
+	form.MaxLength("message", 10000)
+	form.MaxLength("message", 10000)
 
 	data["contact"] = contact
 	data["base_path"] = base_contacts_path

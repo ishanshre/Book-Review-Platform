@@ -14,9 +14,10 @@
     
     <section>
         <div class="container text-white">
-            <div class="d-flex d-gap">
-                <div class="d-flex d-flex-col d-gap align-center" style="width: 50%;">
+            <div class="d-flex d-gap text-orange">
+                <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r align-center b-radius w-50r h-fit" style="width: 50%;">
                     <img src="/{{$author.Avatar}}" class="profile_img" alt="{{$author.FirstName}}" width="200px" height="300px">
+                    <h1>{{$author.FirstName}} {{$author.LastName}}</h1>
                     <div class="d-flex d-flex-col">
                         {{ if eq .IsAuthenticated 1}}
                         <button type="button" class="btn" id="follow">Follow</button>
@@ -24,8 +25,7 @@
                         {{end}}
                     </div>
                 </div>
-                <div class="d-flex-col d-left"> 
-                    <h1>{{$author.FirstName}} {{$author.LastName}}</h1>
+                <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r b-radius"> 
                     <p><strong>Bio:</strong></p>
                     <p>{{$author.Bio}}</p>
                     <p><Strong>Date Of Birth: </Strong>{{$author.DateOfBirth}}</p>
@@ -33,7 +33,7 @@
                     <p><strong>Country of Origin: </strong>{{$author.CountryOfOrigin}}</p>
                 </div>
             </div>
-            <div class="d-flex d-flex-col text-center m-t5r">
+            <div class="d-flex d-flex-col text-center m-2r d-dark b-radius d-gap pr-2">
                 <h1>Books Written by Author</h1>
                 {{$books := index .Data "books"}}
                 <div class="card-box-container">

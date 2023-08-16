@@ -314,13 +314,19 @@ func (m *postgresDBRepo) AllBooksFilter(limit, page int, searchKey, sort string)
 	}
 	offset := (page - 1) * limit
 
-	sql := "SELECT id, title, description, cover, isbn, published_date FROM books"
+	sql := "SELECT id, title, description, cover, isbn, published_date, added_at, is_active FROM books"
+	countSql := "SELECT COUNT(*) FROM books"
 	if searchKey != "" {
-		sql = fmt.Sprintf("%s WHERE title LIKE '%%%s%%' OR description LIKE '%%%s%%'", sql, searchKey, searchKey)
+		sql = fmt.Sprintf("%s WHERE title LIKE '%%%s%%' OR description LIKE '%%%s%%' OR CAST(isbn AS TEXT) LIKE '%%%s%%'", sql, searchKey, searchKey, searchKey)
+		countSql = fmt.Sprintf("%s WHERE title LIKE '%%%s%%' OR description LIKE '%%%s%%' OR CAST(isbn AS TEXT) LIKE '%%%s%%'", countSql, searchKey, searchKey, searchKey)
 	}
 
 	if sort != "" {
 		sql = fmt.Sprintf("%s ORDER BY title %s", sql, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countSql).Scan(&count); err != nil {
+		return nil, err
 	}
 	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
 
@@ -338,12 +344,13 @@ func (m *postgresDBRepo) AllBooksFilter(limit, page int, searchKey, sort string)
 			&book.Cover,
 			&book.Isbn,
 			&book.PublishedDate,
+			&book.AddedAt,
+			&book.IsActive,
 		); err != nil {
 			return nil, err
 		}
 		books = append(books, book)
 	}
-	count, _ := m.TotalBooks()
 	lastPage := m.CalculateLastPage(limit, count)
 	return &models.BookApiFilter{
 		Total:    count,
@@ -430,4 +437,37 @@ func (m *postgresDBRepo) BookDetailWithAuthorPublisherWithIsbn(isbn int64) (*mod
 	bookInfo.BookWithPublisherData = book
 	bookInfo.AuthorsData = authors
 	return bookInfo, nil
+}
+
+func (m *postgresDBRepo) AllRecentBooks(limit, page int) ([]*models.Book, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+
+	query := `SELECT id, title, isbn, cover FROM books ORDER BY added_at DESC LIMIT $1 OFFSET $2`
+	books := []*models.Book{}
+	rows, err := m.DB.QueryContext(ctx, query, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		book := &models.Book{}
+		if err := rows.Scan(
+			&book.ID,
+			&book.Title,
+			&book.Isbn,
+			&book.Cover,
+		); err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+	return books, nil
 }

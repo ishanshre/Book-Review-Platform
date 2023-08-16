@@ -2,84 +2,121 @@
 
 {{define "title"}}{{$book := index .Data "book"}}{{$book.Title}}{{end}}
 
+{{define "css"}}
+<link rel="stylesheet" href="/static/css/modal.css">
+{{end}}
+
 
 {{define "content"}}
-{{if eq .IsAuthenticated 1}}
-    <input type="hidden" id="user_id" value="{{.UserID}}">
-    {{else}}
-    <input type="hidden" id="user_id" value='0'>
-{{end}}
-    {{$book := index .Data "book"}}
-    <input type="hidden" id="book_id" value="{{$book.ID}}">
-    <section>
-        <div class="container">
-            <div class="d-flex text-orange d-gap">
-                <div class="d-flex d-flex-col d-gap align-center">
-                    <img src="/{{$book.Cover}}" alt="{{$book.Isbn}}" width="200px" height="200px">
-                    <div class="d-flex d-flex-col d-gap">
-                        {{ if eq .IsAuthenticated 1}}
-                        <button type="button" class="btn" id="addReadList">Add To Read List</button>
-                        <button type="button" class="btn" id="removeReadList">Remove To Read List</button>
-                        <button type="button" class="btn" id="addBuyList">Add To Buy List</button>
-                        <button type="button" class="btn" id="removeBuyList">Remove To Buy List</button>
-                        {{end}}
-                    </div>
+{{$book := index .Data "book"}}
+<input type="hidden" id="book_id" value="{{$book.ID}}">
+<section>
+    <div class="container">
+        <div class="d-flex text-orange d-gap">
+            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r align-center b-radius w-50r h-fit">
+                <img src="/{{$book.Cover}}" alt="{{$book.Isbn}}" width="200px" height="auto" class="b-radius">
+                <h1>{{$book.Title}}</h1>
+                <div class="d-flex d-flex-col d-gap">
+                    {{ if eq .IsAuthenticated 1}}
+                    <button type="button" class="btn" id="addReadList">Add To Read List</button>
+                    <button type="button" class="btn" id="removeReadList">Remove To Read List</button>
+                    <button type="button" class="btn" id="addBuyList">Add To Buy List</button>
+                    <button type="button" class="btn" id="removeBuyList">Remove To Buy List</button>
+                    {{end}}
                 </div>
-                <div class="d-flex-col d-left"> 
-                    <h1>{{$book.Title}}</h1>
-                    <p><strong>By 
+            </div>
+            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r b-radius">
+                <p><strong>Authors:
                         {{$authors := index .Data "authors"}}
                         {{$lastIndexAuthors := index .Data "lastIndexAuthors"}}
                         {{range $id, $author := $authors}}
-                            <a href="/authors/{{$author.ID}}">{{$author.FirstName}} {{$author.LastName}}</a>{{if ne $id $lastIndexAuthors}},{{end}}
+                        <a href="/authors/{{$author.ID}}">{{$author.FirstName}} {{$author.LastName}}</a>{{if ne $id
+                        $lastIndexAuthors}},{{end}}
                         {{end}}
                     </strong></p>
-                    <p>{{$book.Description}}</p>
-                    <p><strong>ISBN: </strong>{{$book.Isbn}}</p>
-                    <p><strong>Pages: </strong>{{$book.Paperback}}</p>
-                    <p><strong>Published Date: </strong>{{DateOnly $book.PublishedDate}}</p>
-                    <p><strong>Published By: </strong>
-                        {{$publisher := index .Data "publisher"}}
-                        {{$publisher.Name}}
-                    </p>
-                    {{$averageRating := index .Data "averageRating"}}
-                    <p><strong>Average Rating: </strong>{{$averageRating}}</p>
-                    <p><strong>Book Added</strong>{{DateOnly $book.AddedAt}}</p>
-                    <p><strong>Last Updated</strong>{{DateOnly $book.UpdatedAt}}</p>
-                    <div>
-                        <div class="d-flex">
-                            <h2>Reviews</h2>
-                            <button class="addBtn"><a href="/books/{{$book.Isbn}}/create-review">Write a Review</a></button>
-                        </div>
-                        {{$reviewDatas := index .Data "reviewDatas"}}
-                        <div class="d-flex-col m-t5">
-                        {{range $id, $reviewData := $reviewDatas}}
-                            <div class="review-box">
-                                <p><strong>Rating: </strong>{{$reviewData.Review.Rating}}</p>
-                                <p><strong>By </strong>@{{$reviewData.User.Username}}</p>
-                                <p>{{$reviewData.Review.Body}}</p>
-                                {{if eq $.IsAuthenticated 1}}
-                                {{if eq $reviewData.Review.UserID $.UserID}}
-                                <button class="btn" id="delete-{{$reviewData.Review.ID}}" onclick="showDeleteForm(this, '{{$reviewData.Review.ID}}')">Delete</button>
-                                <a href="#"><button class="btn">Update</button></a>
-                                {{end}}
-                                {{end}}
-                                <form action="/books/{{$book.Isbn}}/reviews/{{$reviewData.Review.ID}}/delete" class="d-none" method="post" id="{{$reviewData.Review.ID}}">
-                                    <h2>You are deleteing this review?</h2>
-                                    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-                                    <input type="submit" value="Delete" class="btn">
-                                    <button type="button" onclick="removeForm('{{$reviewData.Review.ID}}')" class="btn">Cancel</button>
-                                </form>
-                            </div>
+                <p><strong>Genres:
+                        {{$genres := index .Data "genres"}}
+                        {{$lastIndexGenres := index .Data "lastIndexGenres"}}
+                        {{range $id, $genre := $genres}}
+                        <a href="/genres/{{$genre.Title}}">{{$genre.Title}}</a>{{if ne $id
+                        $lastIndexGenres}},{{end}}
                         {{end}}
+                    </strong></p>
+                <p><strong>Languages Avaliable:
+                        {{$languages := index .Data "languages"}}
+                        {{$lastIndexLanguages := index .Data "lastIndexLanguages"}}
+                        {{range $id, $language := $languages}}
+                        <a href="/languages/{{$language.Language}}">{{$language.Language}}</a>{{if ne $id
+                        $lastIndexLanguages}},{{end}}
+                        {{end}}
+                    </strong></p>
+                <p><strong>Description:</strong></p>
+                <p>{{$book.Description}}</p>
+                <p><strong>ISBN: </strong>{{$book.Isbn}}</p>
+                <p><strong>Pages: </strong>{{$book.Paperback}}</p>
+                <p><strong>Published Date: </strong>{{DateOnly $book.PublishedDate}}</p>
+                <p><strong>Published By: </strong>
+                    {{$publisher := index .Data "publisher"}}
+                    <a href="/publishers/{{$publisher.ID}}">{{$publisher.Name}}</a>
+                </p>
+                {{$averageRating := index .Data "averageRating"}}
+                <p><strong>Average Rating: </strong>{{$averageRating}}</p>
+                <p><strong>Book Added: </strong>{{DateOnly $book.AddedAt}}</p>
+                <p><strong>Last Updated: </strong>{{DateOnly $book.UpdatedAt}}</p>
+                <div class="d-primary b-radius p-10">
+                    <div class="d-flex d-gap justify-center align-center">
+                        <h1>Reviews</h1>
+                        <button class="addBtn"><a href="/books/{{$book.Isbn}}/create-review">Write a Review</a></button>
+                    </div>
+                    {{$reviewDatas := index .Data "reviewDatas"}}
+                    <div class="d-flex-col m-t5">
+                        {{range $id, $reviewData := $reviewDatas}}
+                        <div class="d-flex d-flex-col d-gap review-box">
+                            <div class="d-flex justify-between">
+                                <div>
+                                    <p><strong>Rating: </strong>{{$reviewData.Review.Rating}}</p>
+                                    <p><strong>By </strong>@{{$reviewData.User.Username}}</p>
+                                    <p><strong>Review: </strong></p>
+                                    <p>{{$reviewData.Review.Body}}</p>
+                                </div>
+                                <div>
+                                    <p><strong>Created at: {{TimeSince $reviewData.Review.CreatedAt}}</strong></p>
+                                    <p><strong>Updated at: {{TimeSince $reviewData.Review.UpdatedAt}}</strong></p>
+                                </div>
+                            </div>
+                            {{if eq $.IsAuthenticated 1}}
+                            {{if eq $reviewData.Review.UserID $.UserID}}
+                            <div class="d-flex d-gap">
+                                <button onclick="openModal('delete-{{$reviewData.Review.ID}}')"
+                                    class="btn">Delete</button>
+                                <a href="/books/{{$book.Isbn}}/reviews/{{$reviewData.Review.ID}}/update"><button
+                                        class="btn">Update</button></a>
+                            </div>
+                            {{end}}
+                            {{end}}
+
+                            <div class="jw-modal" id="delete-{{$reviewData.Review.ID}}">
+                                <div class="jw-modal-body">
+                                    <form action="/books/{{$book.Isbn}}/reviews/{{$reviewData.Review.ID}}/delete"
+                                        method="post">
+                                        <input type="hidden" name="csrf_token" id="csrf_token" value="{{$.CSRFToken}}">
+                                        <p>Do you want to delete this review?</p>
+                                        <input type="submit" value="Delete Record">
+                                        <button type="button" onclick="closeModal()">No</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
+                        {{end}}
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 {{end}}
 
 {{define "js"}}
-    <script src="/static/js/list.js"></script>
+<script src="/static/js/list.js"></script>
+<script src="/static/js/modal.js"></script>
 {{end}}

@@ -36,6 +36,9 @@
           <div class="navbar">
             <div class="logo"><a href="/">BookWorm</a></div>
             <ul class="links">
+            {{if eq .IsAuthenticated 1}}
+              <li><a href="/request-book">Request a Book</a></li>
+              {{end}}
               <li><a href="/books">Books</a></li>
               <li><a href="/authors">Authors</a></li>
               <li><a href="#">About Us</a></li>
@@ -54,6 +57,7 @@
             </div>
           </div>
           <div class="dropdown_menu">
+              <li><a href="/request-book">Request a Book</a></li>
               <li><a href="/authors">Authors</a></li>
               <li><a href="/books">Books</a></li>
               <li><a href="#">About Us</a></li>

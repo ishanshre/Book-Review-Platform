@@ -43,17 +43,27 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/{isbn}", handler.Repo.BookDetailByISBN)
 		mux.Route("/", func(mux chi.Router) {
 			mux.Use(middleware.Auth)
+			mux.Use(middleware.KycValidated)
 			mux.Get("/{isbn}/create-review", handler.Repo.PublicCreateReview)
 			mux.Post("/{isbn}/create-review", handler.Repo.PostPublicCreateReview)
 			mux.Post("/{isbn}/reviews/{review_id}/delete", handler.Repo.PostPublicDeleteReview)
+			mux.Get("/{isbn}/reviews/{review_id}/update", handler.Repo.PublicUpdateReview)
+			mux.Post("/{isbn}/reviews/{review_id}/update", handler.Repo.PostPublicUpdateReview)
 		})
 	})
+
+	mux.Get("/publishers/{id}", handler.Repo.PublisherWithBooksDetailByID)
 
 	// Api for clearing the messages
 	mux.Post("/api/clear/{type}", handler.Repo.ClearSessionMessage)
 	mux.Get("/api/books", handler.Repo.AllBooksFilterApi)
 	mux.Get("/api/populateData", handler.Repo.PopulateFakeData)
 	mux.Get("/api/authors", handler.Repo.AuthorFiltersApi)
+	mux.Get("/api/genres", handler.Repo.AllBooksFilterByGenreApi)
+	mux.Get("/api/languages", handler.Repo.AllBooksFilterByLanguageApi)
+
+	mux.Get("/genres/{genre}", handler.Repo.AllBookFilterByGenre)
+	mux.Get("/languages/{language}", handler.Repo.AllBookFilterByLanguage)
 
 	mux.Group(func(mux chi.Router) {
 		mux.Use(middleware.Auth)
@@ -67,6 +77,12 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Post("/api/books/{id}/buy", handler.Repo.AddtoBuyListApi)
 		mux.Delete("/api/books/{id}/buy", handler.Repo.RemoveFromBuyListApi)
 		mux.Get("/user/logout", handler.Repo.Logout)
+		mux.Get("/read-list", handler.Repo.AllBooksFilterFromReadList)
+		mux.Get("/api/read-list", handler.Repo.AllBooksFilterFromReadListApi)
+		mux.Get("/buy-list", handler.Repo.AllBooksFilterFromBuyList)
+		mux.Get("/api/buy-list", handler.Repo.AllBooksFilterFromBuyListApi)
+		mux.Get("/request-book", handler.Repo.RequestBook)
+		mux.Post("/request-book", handler.Repo.PostRequestBook)
 	})
 	mux.Group(func(mux chi.Router) {
 		mux.Use(middleware.AuthRedirect)
@@ -105,6 +121,24 @@ func Router(app *config.AppConfig) http.Handler {
 	mux.Route("/profile", func(mux chi.Router) {
 		mux.Use(middleware.Auth)
 		mux.Get("/", handler.Repo.PersonalProfile)
+		mux.Get("/followings", handler.Repo.GetFollowingsListByUserIdApi)
+		mux.Post("/kyc", handler.Repo.PublicUpdateKYC)
+		mux.Post("/pic", handler.Repo.PostUserProfilePicUpdate)
+	})
+
+	mux.Group(func(mux chi.Router) {
+		mux.Use(middleware.Auth)
+		mux.Use(middleware.Admin)
+		mux.Get("/api/admin-users", handler.Repo.AdminAllUsersApi)
+		mux.Get("/api/admin-publishers", handler.Repo.AdminAllPublisherFilterApi)
+		mux.Get("/api/admin-authors", handler.Repo.AdminAllAuthorApi)
+		mux.Get("/api/admin-books", handler.Repo.AdminAllBookApi)
+		mux.Get("/api/admin-bookauthors", handler.Repo.AdminAllBookAuthorsApi)
+		mux.Get("/api/admin-readlists", handler.Repo.AdminAllReadListApi)
+		mux.Get("/api/admin-buylists", handler.Repo.AdminAllBuyListApi)
+		mux.Get("/api/admin-followers", handler.Repo.AdminAllFollowerApi)
+		mux.Get("/api/admin-reviews", handler.Repo.AdminAllReviewApi)
+		mux.Get("/api/admin-requestedbooks", handler.Repo.AdminAllRequestedBookssApi)
 	})
 
 	mux.Route("/admin", func(mux chi.Router) {
@@ -115,6 +149,8 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/users/detail/{id}", handler.Repo.AdminGetUserDetailByID)
 		mux.Post("/users/detail/{id}", handler.Repo.AdminUpdateUser)
 		mux.Post("/users/detail/{id}/profile", handler.Repo.PostAdminUserProfileUpdate)
+		mux.Post("/users/detail/{id}/document", handler.Repo.PostAdminUserDocumentUpdate)
+		mux.Post("/users/detail/{id}/kyc", handler.Repo.PostAdminKycUpdate)
 
 		mux.Get("/users/create", handler.Repo.AdminUserAdd)
 		mux.Post("/users/create", handler.Repo.PostAdminUserAdd)
@@ -212,6 +248,10 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/contacts", handler.Repo.AdminAllContacts)
 		mux.Post("/contacts/detail/{contact_id}/delete", handler.Repo.PostAdminDeleteContact)
 		mux.Get("/contacts/detail/{contact_id}", handler.Repo.AdminGetContactByID)
+
+		// Request Book handler
+		mux.Get("/request-books", handler.Repo.AdminAllRequestBookList)
+		mux.Post("/request-books/detail/{id}/delete", handler.Repo.AdminDeleteRequestedBook)
 	})
 	return mux
 }

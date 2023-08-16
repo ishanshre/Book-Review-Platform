@@ -15,12 +15,6 @@ import (
 
 // AdminAllBuyList fetches all the relation record between user and books in buyLists
 func (m *Repository) AdminAllBuyList(w http.ResponseWriter, r *http.Request) {
-	buyLists, err := m.DB.AllBuyList()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-	var buyList models.BuyList
 	allBooks, err := m.DB.AllBook()
 	if err != nil {
 		helpers.ServerError(w, err)
@@ -31,30 +25,7 @@ func (m *Repository) AdminAllBuyList(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
-	buyListDatas := []*models.BuyListData{}
-	for _, v := range buyLists {
-		book, err := m.DB.GetBookTitleByID(v.BookID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		user, err := m.DB.GetUserByID(v.UserID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		user.ID = v.UserID
-		buyListData := &models.BuyListData{
-			BookData:  book,
-			UserData:  user,
-			CreatedAt: v.CreatedAt,
-		}
-		buyListDatas = append(buyListDatas, buyListData)
-	}
 	data := make(map[string]interface{})
-	data["buyLists"] = buyLists
-	data["buyListDatas"] = buyListDatas
-	data["buyList"] = buyList
 	data["allUsers"] = allUsers
 	data["allBooks"] = allBooks
 	data["base_path"] = base_buyLists_path
@@ -62,6 +33,26 @@ func (m *Repository) AdminAllBuyList(w http.ResponseWriter, r *http.Request) {
 		Data: data,
 		Form: forms.New(nil),
 	})
+}
+
+func (m *Repository) AdminAllBuyListApi(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		limit = 10
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		page = 1
+	}
+	searchKey := r.URL.Query().Get("search")
+	sort := r.URL.Query().Get("sort")
+	filterBuyLists, err := m.DB.BuyListFilter(limit, page, searchKey, sort)
+	if err != nil {
+		helpers.ServerError(w, err)
+		helpers.StatusInternalServerError(w, err.Error())
+		return
+	}
+	helpers.ApiStatusOkData(w, filterBuyLists)
 }
 
 // PostAdminInsertBuyList handles post method logic for adding books to buy list by admin.
@@ -97,12 +88,6 @@ func (m *Repository) PostAdminInsertBuyList(w http.ResponseWriter, r *http.Reque
 		CreatedAt: time.Now(),
 	}
 
-	buyLists, err := m.DB.AllBuyList()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-
 	allBooks, err := m.DB.AllBook()
 	if err != nil {
 		helpers.ServerError(w, err)
@@ -114,32 +99,10 @@ func (m *Repository) PostAdminInsertBuyList(w http.ResponseWriter, r *http.Reque
 		helpers.ServerError(w, err)
 		return
 	}
-	buyListDatas := []*models.BuyListData{}
-	for _, v := range buyLists {
-		book, err := m.DB.GetBookTitleByID(v.BookID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		user, err := m.DB.GetUserByID(v.UserID)
-		if err != nil {
-			helpers.ServerError(w, err)
-			return
-		}
-		user.ID = v.UserID
-		buyListData := &models.BuyListData{
-			BookData:  book,
-			UserData:  user,
-			CreatedAt: v.CreatedAt,
-		}
-		buyListDatas = append(buyListDatas, buyListData)
-	}
 
 	data["allBooks"] = allBooks
 	data["allUsers"] = allUsers
 	data["buyList"] = buyList
-	data["buyLists"] = buyLists
-	data["buyListDatas"] = buyListDatas
 	data["base_path"] = base_buyLists_path
 	form.Required("book_id", "user_id")
 

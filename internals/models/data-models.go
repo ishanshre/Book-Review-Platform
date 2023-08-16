@@ -69,3 +69,17 @@ type ReviewUserData struct {
 	Review *Review
 	User   *User
 }
+
+type UserKycData struct {
+	User *User
+	Kyc  *Kyc
+}
+
+type AuthorFollowerData struct {
+	Author []*Author
+}
+
+type PublisherWithBooksData struct {
+	Publisher *Publisher
+	Books     []*Book
+}

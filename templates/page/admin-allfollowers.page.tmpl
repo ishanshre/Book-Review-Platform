@@ -41,49 +41,55 @@
             <input type="submit" value="Add">
         </form>
     </div><hr>
-    <div>
-        <h1>Follower List</h1>
+    <section class="container d-flex-col d-dark b-radius m-br2">
+        <div class="d-flex justify-center d-gap search-all-books">
+            <input type="hidden" id="search-type" value="admin-followers">
+            <input type="search" class="search-all-books-input" id="search-book" placeholder="Search Read List..." onkeyup="display()">
+            <select id="order" onchange="display()">
+                <option value="asc">Ascending Order</option>
+                <option value="desc" >Descending Order</option>
+            </select>
+            <select id="limit" onchange="display()">
+                <option value="10">10</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+    </section>
+    <div class="main-content-title">
+        <h1>All Users</h1>
+        <button class="add-button"><a href="/admin/users/create">ADD</a></button>
     </div>
-    <div>
+    
+    <!-- This is the table section -->
+    <div class="main-content-table">
         <table>
+            <!-- header section -->
             <thead>
                 <tr>
-                    <th>Author</th>
-                    <th>Followed By</th>
-                    <th>Followed At</th>
-                    <th>Action</th>
+                    <th>BOOK NAME</th>
+                    <th>USERNAME</th>
+                    <th>CREATED AT</th>
+                    <th>ACTION</th>
                 </tr>
             </thead>
-            <tbody>
-                {{range $followerDatas}}
-                <tr>
-                    
-                    <td>{{.AuthorData.FirstName}}{{.AuthorData.LastName}}</td>
-                    <td>{{.UserData.Username}}</td>
-                    <td>{{TimeSince .FollowedAt}}</td>
-                    <td>
-                        <button><a href="/admin/followers/detail/{{.AuthorData.ID}}/{{.UserData.ID}}">Detail</a></button>
-                        <button  onclick="openModal('delete-{{.AuthorData.ID}}-{{.UserData.ID}}')">Delete</button>
-                        <div id="delete-{{.AuthorData.ID}}-{{.UserData.ID}}" class="jw-modal">
-                            <div class="jw-modal-body">
-                                <form action="/admin/followers/detail/{{.AuthorData.ID}}/{{.UserData.ID}}/delete" method="post">
-                                    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-                                    <p>Do you want to delete this relation ship?</p>
-                                    <input type="submit" value="Delete">
-                                    <button onclick="closeModal()" type="button">No</button>
-                                </form>
-                            </div>
-                        </div>
-                        
-                    </td>
-                </tr>
-                {{end}}
+            <!-- body section -->
+            <tbody id="displayDiv">
+                
             </tbody>
         </table>
     </div>
+    <nav class="pagination-container">
+
+        <div id="pagination-numbers">
+
+        </div>
+
+    </nav>
 </div>
 {{end}}
 
 {{define "js"}}
     <script src="/static/js/admin.js"></script>
+    <script src="/static/js/search.js"></script>
 {{end}}

@@ -3,9 +3,10 @@ const unfollow = document.getElementById("unfollow")
 const user_id = document.getElementById("user_id")
 const author_id = document.getElementById("author_id")
 const csrfToken = document.querySelector('meta[name="csrf_token"]').getAttribute('content')
+const host = window.location.host
 
 const followExists = async () => {
-    const response = await fetch(`http://localhost:8000/api/authors/${author_id.value}/exists`)
+    const response = await fetch(`http://${host}/api/authors/${author_id.value}/exists`)
     const data = await response.json()
     let exists = data.exists
     if (exists === true) {
@@ -18,7 +19,7 @@ const followExists = async () => {
 followExists()
 
 const followAuthor = async () => {
-    const response = await fetch(`http://localhost:8000/api/authors/${author_id.value}/follow`,{
+    const response = await fetch(`http://${host}/api/authors/${author_id.value}/follow`,{
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
@@ -28,7 +29,7 @@ const followAuthor = async () => {
 }
 
 const unfollowAuthor = async () => {
-    const response = await fetch(`http://localhost:8000/api/authors/${author_id.value}/unfollow`,{
+    const response = await fetch(`http://${host}/api/authors/${author_id.value}/unfollow`,{
         method: 'DELETE',
         headers: {
             "Content-Type": "application/json",

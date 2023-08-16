@@ -1,7 +1,10 @@
 package handler
 
 import (
+	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/ishanshre/Book-Review-Platform/internals/forms"
 	"github.com/ishanshre/Book-Review-Platform/internals/helpers"
@@ -61,8 +64,9 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	id, access_level, err := m.DB.Authenticate(user.Username, user.Password)
+	id, access_level, is_validated, err := m.DB.Authenticate(user.Username, user.Password)
 	if err != nil {
+		log.Println(err)
 		form.Errors.Add("username", "Invalid username/password")
 		form.Errors.Add("password", "Invalid username/password")
 		render.Template(w, r, "login.page.tmpl", &models.TemplateData{
@@ -76,15 +80,20 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 		return
 	}
-	m.UpdateSession(w, r, id, access_level, user.Username)
+	log.Println(user)
+	m.UpdateSession(w, r, id, access_level, user.Username, is_validated)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (m *Repository) UpdateSession(w http.ResponseWriter, r *http.Request, id, access_level int, username string) {
+func (m *Repository) UpdateSession(w http.ResponseWriter, r *http.Request, id, access_level int, username string, is_validated bool) {
 	m.App.Session.Put(r.Context(), "user_id", id)
 	m.App.Session.Put(r.Context(), "username", username)
 	m.App.Session.Put(r.Context(), "access_level", access_level)
+	m.App.Session.Put(r.Context(), "is_validated", is_validated)
 	m.App.Session.Put(r.Context(), "flash", "Login Successfull")
+	if !is_validated {
+		m.App.Session.Put(r.Context(), "warning", "Please update your KYC to use its features!")
+	}
 }
 
 // Register handles the get method of the register.
@@ -118,27 +127,23 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 	form := forms.New(r.PostForm)
 	register := models.User{}
 	// storing the form value in user model
-	register.FirstName = r.Form.Get("first_name")
-	register.LastName = r.Form.Get("last_name")
 	register.Email = r.Form.Get("email")
 	register.Username = r.Form.Get("username")
 	register.Password = r.Form.Get("password")
-	register.Gender = r.Form.Get("gender")
+	password2 := r.Form.Get("password2")
 
 	// form.Required() for form  field validation
 	form.Required(
-		"first_name",
-		"last_name",
 		"email",
 		"username",
 		"password",
-		"gender",
+		"password2",
 	)
 	form.MinLength("username", 5)
 	form.MinLength("password", 8)
 	form.HasUpperCase("password")
 	form.HasLowerCase("password")
-	form.HasNumber("password", "username")
+	form.HasNumber("password")
 	form.HasSpecialCharacter("password")
 	form.IsEmail("email")
 	exists, err := m.DB.UsernameExists(register.Username)
@@ -148,6 +153,18 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 	}
 	if exists {
 		form.Errors.Add("username", "This username already exists")
+	}
+	exists, err = m.DB.EmailExists(register.Email)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		form.Errors.Add("email", "This email already exists")
+	}
+	if register.Password != password2 {
+		form.Errors.Add("password", "Password mismtach")
+		form.Errors.Add("password2", "Password mismtach")
 	}
 	if !form.Valid() {
 		data := make(map[string]interface{})
@@ -168,6 +185,16 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	msg := models.MailData{
+		To:      register.Email,
+		From:    "admin@gmail.com",
+		Subject: fmt.Sprintf("Welcome to BookWorm @%s!", register.Username),
+		Content: fmt.Sprintf(`
+			<h1>Welcome to BookWorm @%s!</h1>
+			<p>Thank you for registering to our book review platform. Please update your kyc to access most of the features</p>
+		`, register.Username),
+	}
+	m.App.MailChan <- msg
 	m.App.Session.Put(r.Context(), "flash", "User Registration Successfull")
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 
@@ -198,15 +225,134 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 // creates a data map containing the encoded images and user profile information for rendering the template,
 // and renders the personal profile page.
 func (m *Repository) PersonalProfile(w http.ResponseWriter, r *http.Request) {
-	id := m.App.Session.Get(r.Context(), "user_id")
-	user, err := m.DB.GetProfilePersonal(id.(int))
+	id := m.App.Session.GetInt(r.Context(), "user_id")
+	userKyc, err := m.DB.GetUserWithKyc(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	following, err := m.DB.FollowerCount(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	read_list_count, err := m.DB.ReadListCount(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	buy_list_count, err := m.DB.BuyListCount(id)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
 	data := make(map[string]interface{})
-	data["user_profile"] = user
+	data["user"] = userKyc.User
+	data["kyc"] = userKyc.Kyc
+	data["following"] = following
+	data["read_list_count"] = read_list_count
+	data["buy_list_count"] = buy_list_count
 	render.Template(w, r, "profile.page.tmpl", &models.TemplateData{
 		Data: data,
+		Form: forms.New(nil),
 	})
+}
+
+func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	id := m.App.Session.GetInt(r.Context(), "user_id")
+	update_kyc := &models.Kyc{}
+	form := forms.New(r.PostForm)
+
+	userKyc, err := m.DB.GetUserWithKyc(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	following, err := m.DB.FollowerCount(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	read_list_count, err := m.DB.ReadListCount(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	buy_list_count, err := m.DB.BuyListCount(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	layout := "2006-01-02"
+	dob, err := time.Parse(layout, r.Form.Get("date_of_birth"))
+	if err != nil {
+		form.Errors.Add("date_of_birth", err.Error())
+	}
+	update_kyc.FirstName = r.Form.Get("first_name")
+	update_kyc.LastName = r.Form.Get("last_name")
+	update_kyc.Gender = r.Form.Get("gender")
+	update_kyc.Phone = r.Form.Get("phone")
+	update_kyc.Address = r.Form.Get("address")
+	update_kyc.DateOfBirth = dob
+	update_kyc.DocumentType = r.Form.Get("document_type")
+	update_kyc.DocumentNumber = r.Form.Get("document_number")
+	update_kyc.UpdatedAt = time.Now()
+	update_kyc.ID = userKyc.Kyc.ID
+	document_front, err := helpers.MediaPicUpload(r, "document_front", userKyc.User.Username)
+	if err != nil {
+		form.Errors.Add("document_front", "Document Required!")
+	}
+	document_back, err := helpers.MediaPicUpload(r, "document_back", userKyc.User.Username)
+	if err != nil {
+		form.Errors.Add("document_back", "Document Required!")
+	}
+	update_kyc.DocumentFront = document_front
+	update_kyc.DocumentBack = document_back
+	form.Required("first_name", "last_name", "gender", "phone", "address", "date_of_birth", "document_type", "document_number")
+	form.MaxLength("phone", 10)
+	form.MaxLength("first_name", 50)
+	form.MaxLength("last_name", 50)
+	form.MaxLength("address", 255)
+	form.MaxLength("document_number", 50)
+	data := make(map[string]interface{})
+	data["base_path"] = base_users_path
+	data["user"] = userKyc.User
+	data["kyc"] = userKyc.Kyc
+	data["following"] = following
+	data["read_list_count"] = read_list_count
+	data["buy_list_count"] = buy_list_count
+	if !form.Valid() {
+		log.Println("inside")
+		render.Template(w, r, "profile.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.PublicKycUpdate(update_kyc); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	m.App.Session.Put(r.Context(), "flash", "KYC Updated! Please wait for admin to verify")
+	http.Redirect(w, r, "/profile", http.StatusSeeOther)
+}
+
+func (m *Repository) PostUserProfilePicUpdate(w http.ResponseWriter, r *http.Request) {
+	username := m.App.Session.GetString(r.Context(), "username")
+	user_id := m.App.Session.GetInt(r.Context(), "user_id")
+	path, err := helpers.MediaPicUpload(r, "profile_pic", username)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := m.DB.UpdateProfilePic(path, user_id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	m.App.Session.Put(r.Context(), "flash", "Profile Picture Updated")
+	http.Redirect(w, r, "/profile", http.StatusFound)
 }

@@ -174,3 +174,117 @@ func (m *postgresDBRepo) UpdateFollower(u *models.Follower, user_id, author_id i
 	}
 	return nil
 }
+
+func (m *postgresDBRepo) FollowerCount(user_id int) (int, error) {
+	// create a timeout of 3 second with context
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var count int
+
+	query := `SELECT COUNT(*) FROM followers WHERE user_id = $1`
+	if err := m.DB.QueryRowContext(ctx, query, user_id).Scan(&count); err != nil {
+		return 0, nil
+	}
+	return count, nil
+}
+
+func (m *postgresDBRepo) GetAllFollowingsByUserId(user_id int) ([]*models.Author, error) {
+	// create a timeout of 3 second with context
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		SELECT a.id, a.first_name, a.last_name
+		FROM followers as f
+		JOIN authors AS a ON a.id = f.author_id
+		WHERE f.user_id = $1
+	`
+	rows, err := m.DB.QueryContext(ctx, query, user_id)
+	if err != nil {
+		return nil, err
+	}
+	authors := []*models.Author{}
+	for rows.Next() {
+		author := &models.Author{}
+		if err := rows.Scan(
+			&author.ID,
+			&author.FirstName,
+			&author.LastName,
+		); err != nil {
+			return nil, err
+		}
+		authors = append(authors, author)
+	}
+	return authors, nil
+}
+
+func (m *postgresDBRepo) FollowerFilter(limit, page int, searchKey, sort string) (*models.FollowerFilterApi, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+	sql := `
+		SELECT u.id, u.username, a.id, a.first_name, a.last_name, f.followed_at
+		FROM followers AS f
+		JOIN
+			users AS u ON u.id = f.user_id
+		JOIN
+			authors AS a ON a.id = f.author_id
+	`
+	countSql := `
+		SELECT 
+			COUNT(*)
+		FROM followers AS f
+		JOIN
+			users AS u ON u.id = f.user_id
+		JOIN
+			authors AS a ON a.id = f.author_id
+	`
+	if searchKey != "" {
+		sql = fmt.Sprintf("%s WHERE a.first_name LIKE '%%%s%%' OR a.last_name LIKE '%%%s%%' OR u.username LIKE '%%%s%%'", sql, searchKey, searchKey, searchKey)
+		countSql = fmt.Sprintf("%s WHERE a.first_name LIKE '%%%s%%' OR a.last_name LIKE '%%%s%%' OR u.username LIKE '%%%s%%'", countSql, searchKey, searchKey, searchKey)
+
+	}
+	if sort != "" {
+		sql = fmt.Sprintf("%s ORDER BY f.followed_at %s", sql, sort)
+		// countSql = fmt.Sprintf("%s ORDER BY u.username %s", countSql, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countSql).Scan(&count); err != nil {
+		return nil, err
+	}
+	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
+	rows, err := m.DB.QueryContext(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	followerFilters := []*models.FollowerFilter{}
+	for rows.Next() {
+		followerFilter := &models.FollowerFilter{}
+		if err := rows.Scan(
+			&followerFilter.UserID,
+			&followerFilter.Username,
+			&followerFilter.AuthorID,
+			&followerFilter.AuthorFirstName,
+			&followerFilter.AuthorLastName,
+			&followerFilter.FollowedAt,
+		); err != nil {
+			return nil, err
+		}
+		followerFilters = append(followerFilters, followerFilter)
+	}
+	lastPage := m.CalculateLastPage(limit, count)
+	return &models.FollowerFilterApi{
+		Total:           count,
+		Page:            page,
+		LastPage:        lastPage,
+		FollowerFilters: followerFilters,
+	}, nil
+}

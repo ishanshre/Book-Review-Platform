@@ -2,6 +2,7 @@ package dbrepo
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -64,7 +65,7 @@ func (m *postgresDBRepo) ReviewExists(u *models.Review) (bool, error) {
 	// Preparing the sql query to check for existing relationship
 	query := `
 		SELECT COUNT(*) FROM reviews
-		WHERE (id=$1 AND book_id=$2 AND user_id=$3)
+		WHERE (book_id=$1 AND user_id=$2)
 	`
 
 	// intializing a count variable that stores the no of records
@@ -72,7 +73,7 @@ func (m *postgresDBRepo) ReviewExists(u *models.Review) (bool, error) {
 
 	// Executing the query row context and store the total record in count variable.
 	// If any error occurs, false and error are returned
-	if err := m.DB.QueryRowContext(ctx, query, u.ID, u.BookID, u.UserID).Scan(&count); err != nil {
+	if err := m.DB.QueryRowContext(ctx, query, u.BookID, u.UserID).Scan(&count); err != nil {
 		return false, fmt.Errorf("failed to execute query: %w", err)
 	}
 
@@ -269,4 +270,106 @@ func (m *postgresDBRepo) GetReviewsByBookID(bookID int) ([]*models.Review, error
 		reviews = append(reviews, review)
 	}
 	return reviews, nil
+}
+
+func (m *postgresDBRepo) UpdateReviewBook(update *models.Review) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		UPDATE reviews
+		SET rating = $4, body = $5, updated_at = $6
+		WHERE id = $1 AND book_id = $2 AND user_id = $3
+	`
+	res, err := m.DB.ExecContext(
+		ctx,
+		query,
+		update.ID,
+		update.BookID,
+		update.UserID,
+		update.Rating,
+		update.Body,
+		update.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+	affected, _ := res.RowsAffected()
+	if affected == 0 {
+		return errors.New("row not updated")
+	}
+	return nil
+}
+
+func (m *postgresDBRepo) ReviewFilter(limit, page int, searchKey, sort string) (*models.ReviewFilterApi, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+	sql := `
+		SELECT 
+			r.id, r.rating, r.body, b.title, u.username, r.is_active, r.created_at, r.updated_at
+		FROM reviews AS r
+		LEFT JOIN
+			users AS u ON u.id = r.user_id
+		LEFT JOIN
+			books AS b ON b.id = r.book_id
+	`
+	countSql := `
+	SELECT 
+		COUNT(*)
+		FROM reviews AS r
+		LEFT JOIN
+			users AS u ON u.id = r.user_id
+		LEFT JOIN
+			books AS b ON b.id = r.book_id
+	`
+	if searchKey != "" {
+		sql = fmt.Sprintf("%s WHERE b.title LIKE '%%%s%%' OR u.username LIKE '%%%s%%'", sql, searchKey, searchKey)
+		countSql = fmt.Sprintf("%s WHERE b.title LIKE '%%%s%%' OR u.username LIKE '%%%s%%'", countSql, searchKey, searchKey)
+
+	}
+	if sort != "" {
+		sql = fmt.Sprintf("%s ORDER BY r.created_at %s", sql, sort)
+		// countSql = fmt.Sprintf("%s ORDER BY u.username %s", countSql, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countSql).Scan(&count); err != nil {
+		return nil, err
+	}
+	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
+	rows, err := m.DB.QueryContext(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	reviewFilters := []*models.ReviewFilter{}
+	for rows.Next() {
+		reviewFilter := &models.ReviewFilter{}
+		if err := rows.Scan(
+			&reviewFilter.ID,
+			&reviewFilter.Rating,
+			&reviewFilter.Body,
+			&reviewFilter.BookTitle,
+			&reviewFilter.Username,
+			&reviewFilter.IsActive,
+			&reviewFilter.CreatedAt,
+			&reviewFilter.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		reviewFilters = append(reviewFilters, reviewFilter)
+	}
+	lastPage := m.CalculateLastPage(limit, count)
+	return &models.ReviewFilterApi{
+		Total:         count,
+		Page:          page,
+		LastPage:      lastPage,
+		ReviewFilters: reviewFilters,
+	}, nil
 }

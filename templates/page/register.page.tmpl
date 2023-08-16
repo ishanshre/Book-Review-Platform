@@ -9,31 +9,7 @@
         <div class="container-box">
             <form action="/user/register" method="post" enctype="multipart/form-data" class="form-group" novalidate>
                 <h1>Register</h1>
-                <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
-    
-                <div class="m-t5 form-container">
-                    <input type="text" name="first_name" id="first_name"
-                    class='form-control {{with .Form.Errors.Get "first_name"}} is-invalid {{end}}' placeholder="First Name"
-                    autocomplete="off" required value={{$res.FirstName}}
-                    >
-                    <div class="error-msg">
-                        {{with .Form.Errors.Get "first_name"}}
-                        <label class="text-danger">{{.}}</label>
-                        {{end}}
-                    </div>
-                </div>
-                <div class="m-t5 form-container">
-                    <input type="text" name="last_name" id="last_name"
-                    class='form-control {{with .Form.Errors.Get "last_name"}} is-invalid {{end}}' placeholder="Last Name"
-                    autocomplete="off" required value={{$res.LastName}}
-                    >
-                    <div class="error-msg">
-                        {{with .Form.Errors.Get "last_name"}}
-                        <label class="text-danger">{{.}}</label>
-                        {{end}}
-                    </div>
-                </div>
-    
+                <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">    
                 <div class="m-t5 form-container">
                     <input type="text" name="email" id="email"
                     class="form-control {{with .Form.Errors.Get "email"}} is-invalid {{end}}" placeholder="Email Address"
@@ -68,18 +44,19 @@
                         {{end}}
                     </div>
                 </div>
-                <div class="m-t5 form-container">
-                    <select name="gender" id="gender">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Others">Others</option>
-                    </select>
+
+                <div class="m-t5 form-container">                    
+                    <input type="password" name="password2" id="password2"
+                    class='form-control {{with .Form.Errors.Get "password2"}} is-invalid {{end}}' placeholder="Confirm Password"
+                    autocomplete="off"
+                    >
                     <div class="error-msg">
-                        {{with .Form.Errors.Get "gender"}}
+                        {{with .Form.Errors.Get "password2"}}
                         <label class="text-danger">{{.}}</label>
                         {{end}}
                     </div>
                 </div>
+
                 <div class="btn-div m-t5"><input type="submit" value="Register" class="btn"></div>
             </form>
             <div class="d-flex justify-center m-t5 m-d5"><a href="/user/login">Already have an account? Login</a></div>

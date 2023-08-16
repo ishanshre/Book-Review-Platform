@@ -7,25 +7,24 @@
 {{end}}
 
 {{define "content"}}
-    <div>
+    <div class="d-flex d-flex-col align-center">
         <div>
             <h1>All Genres</h1><hr>
         </div>
         <div>
-            <h2>Add New Genre</h2>
             {{$res := index .Data "add_genre"}}
             <form action="/admin/genres" method="post">
                 <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
                 <label for="title">Genre Title: </label>
-                <input type="text" name="title" id="title"  {{if $res.Title}} value="{{$res.Title}}" {{end}}>
+                <input type="text" name="title" id="title"  {{if $res.Title}} value="{{$res.Title}}" {{end}} class="search-all-books-input">
                 {{with .Form.Errors.Get "title"}}
-                    <label>{{.}}</label>
+                <label>{{.}}</label>
                 {{end}}
-                <input type="submit" value="Add New Genre">
+                <input type="submit" value="Add New Genre" class="add-button">
             </form>
         </div>
         <div>
-            <hr>
+            <h2>Add New Genre</h2>
             {{$genre := index .Data "genres"}}
             <table>
                 <thead>
@@ -41,17 +40,19 @@
                         <td>{{.ID}}</td>
                         <td>{{.Title}}</td>
                         <td>
-                            <button type="button"><a href="/admin/genres/detail/{{.ID}}">Detail</a></button>
-                            <button type="button" onclick="openModal('delete-{{.ID}}')"
-                            >Delete</button>
+                            <div class="action-icons">
+                                <button type="button"><a href="/admin/genres/detail/{{.ID}}"><img src="/static/images/edit-icon.png" alt="update-icon"/></a></button>
+                            <button type="button" onclick="openModal('delete-{{.ID}}')" 
+                            ><img width="19px" height="19px" src="/static/images/del-icon.png" alt="del-icon" /></button>
+                            </div>
                             <div id="delete-{{.ID}}" class="jw-modal">
                                 <div class="jw-modal-body">
                             
                                     <form action="/admin/genres/detail/{{.ID}}/delete" method="post">
                                         <p>Do you want to delete @{{.Title}}?</p>
                                         <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-                                        <input type="submit" value="Delete">
-                                        <button type="button" onclick="closeModal()">No</button>
+                                        <input type="submit" value="Delete" class="add-button">
+                                        <button type="button" onclick="closeModal()" class="del-button">No</button>
                                     </form>
                                 </div>
                             

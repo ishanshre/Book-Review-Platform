@@ -20,17 +20,31 @@ import (
 // A data map is created that stores the books
 // Finally, "admin-allbooks.page.tmpl" go template is rendered with data.
 func (m *Repository) AdminAllBook(w http.ResponseWriter, r *http.Request) {
-	books, err := m.DB.AllBook()
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
 	data := make(map[string]interface{})
-	data["books"] = books
 	data["base_path"] = base_books_path
 	render.Template(w, r, "admin-allbooks.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
+}
+
+func (m *Repository) AdminAllBookApi(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		limit = 10
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		page = 1
+	}
+	searchKey := r.URL.Query().Get("search")
+	sort := r.URL.Query().Get("sort")
+	filteredBooks, err := m.DB.AllBooksFilter(limit, page, searchKey, sort)
+	if err != nil {
+		helpers.ServerError(w, err)
+		helpers.StatusInternalServerError(w, err.Error())
+		return
+	}
+	helpers.ApiStatusOkData(w, filteredBooks)
 }
 
 // PostAdminDeleteBook handles the delete logic of book for admin.
@@ -195,6 +209,8 @@ func (m *Repository) PostAdminInsertBook(w http.ResponseWriter, r *http.Request)
 	form.Required("isbn", "title")
 	form.MinLength("isbn", 13)
 	form.MaxLength("isbn", 13)
+	form.MaxLength("title", 100)
+	form.MaxLength("description", 10000)
 	data["book"] = book
 	data["base_path"] = base_books_path
 	publishers, err := m.DB.AllPublishers()
@@ -312,6 +328,8 @@ func (m *Repository) PostAdminUpdateBook(w http.ResponseWriter, r *http.Request)
 	form.MinLength("isbn", 13)
 	form.MaxLength("isbn", 13)
 
+	form.MaxLength("title", 100)
+	form.MaxLength("description", 10000)
 	data["base_path"] = base_books_path
 
 	if !form.Valid() {

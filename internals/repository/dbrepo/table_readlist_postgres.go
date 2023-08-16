@@ -174,3 +174,157 @@ func (m *postgresDBRepo) UpdateReadList(u *models.ReadList, book_id, user_id int
 	}
 	return nil
 }
+
+func (m *postgresDBRepo) ReadListCount(user_id int) (int, error) {
+	// create a timeout of 3 second with context
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var count int
+	query := `SELECT COUNT(*) FROM read_lists WHERE user_id = $1`
+	if err := m.DB.QueryRowContext(ctx, query, user_id).Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (m *postgresDBRepo) GetAllBooksFromReadListByUserId(limit, page, user_id int, searchKey, sort string) (*models.BookApiFilter, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+
+	query := `
+		SELECT 
+			COALESCE(b.id, 0) AS b_id,
+			COALESCE(b.title, '') AS b_title,
+			COALESCE(b.isbn, 0) AS b_isbn,
+			COALESCE(b.cover, '') AS b_cover
+		FROM 
+			read_lists AS rl
+		LEFT JOIN
+			books AS b ON b.id = rl.book_id
+		where rl.user_id = $1
+	`
+	countQuery := `
+			SELECT 
+				COUNT(*)
+			FROM 
+				read_lists AS rl
+			LEFT JOIN
+				books AS b ON b.id = rl.book_id
+			where rl.user_id = $1
+	`
+	if searchKey != "" {
+		query = fmt.Sprintf("%s AND (b.title LIKE '%%%s%%' OR CAST(b.isbn AS TEXT) LIKE '%%%s%%')", query, searchKey, searchKey)
+		countQuery = fmt.Sprintf("%s AND (b.title LIKE '%%%s%%' OR CAST(b.isbn AS TEXT) LIKE '%%%s%%')", countQuery, searchKey, searchKey)
+	}
+	if sort != "" {
+		query = fmt.Sprintf("%s ORDER BY b.title %s", query, sort)
+	}
+
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countQuery, user_id).Scan(&count); err != nil {
+		return nil, err
+	}
+
+	query = fmt.Sprintf("%s LIMIT %d OFFSET %d", query, limit, offset)
+	rows, err := m.DB.QueryContext(ctx, query, user_id)
+	if err != nil {
+		return nil, err
+	}
+	books := []*models.Book{}
+	for rows.Next() {
+		book := &models.Book{}
+		if err := rows.Scan(
+			&book.ID,
+			&book.Title,
+			&book.Isbn,
+			&book.Cover,
+		); err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+	last_page := m.CalculateLastPage(limit, count)
+	return &models.BookApiFilter{
+		Total:    count,
+		LastPage: last_page,
+		Page:     page,
+		Books:    books,
+	}, nil
+}
+
+func (m *postgresDBRepo) ReadListFilter(limit, page int, searchKey, sort string) (*models.ReadListFilterApi, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+	sql := `
+		SELECT u.id, u.username, b.id, b.title, rl.created_at
+		FROM read_lists as rl
+		JOIN
+			users AS u ON u.id = rl.user_id
+		JOIN
+			books AS b ON b.id = rl.book_id
+	`
+	countSql := `
+	SELECT 
+		COUNT(*)
+		FROM read_lists as rl
+		JOIN
+			users AS u ON u.id = rl.user_id
+		JOIN
+			books AS b ON b.id = rl.book_id
+	`
+	if searchKey != "" {
+		sql = fmt.Sprintf("%s WHERE b.title LIKE '%%%s%%' OR u.username LIKE '%%%s%%'", sql, searchKey, searchKey)
+		countSql = fmt.Sprintf("%s WHERE b.title LIKE '%%%s%%' OR u.username LIKE '%%%s%%'", countSql, searchKey, searchKey)
+
+	}
+	if sort != "" {
+		sql = fmt.Sprintf("%s ORDER BY rl.created_at %s", sql, sort)
+		// countSql = fmt.Sprintf("%s ORDER BY u.username %s", countSql, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countSql).Scan(&count); err != nil {
+		return nil, err
+	}
+	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
+	rows, err := m.DB.QueryContext(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	readListFilters := []*models.ReadListFilter{}
+	for rows.Next() {
+		readListFilter := &models.ReadListFilter{}
+		if err := rows.Scan(
+			&readListFilter.UserID,
+			&readListFilter.Username,
+			&readListFilter.BookID,
+			&readListFilter.BookTitle,
+			&readListFilter.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		readListFilters = append(readListFilters, readListFilter)
+	}
+	lastPage := m.CalculateLastPage(limit, count)
+	return &models.ReadListFilterApi{
+		Total:           count,
+		Page:            page,
+		LastPage:        lastPage,
+		ReadListFilters: readListFilters,
+	}, nil
+}

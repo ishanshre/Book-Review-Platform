@@ -80,6 +80,8 @@ func (m *Repository) PostAdminAddGenre(w http.ResponseWriter, r *http.Request) {
 	if exists {
 		form.Errors.Add("title", "Genre already exists")
 	}
+	form.Required("title")
+	form.MaxLength("title", 100)
 
 	// Create a data map that holds genres and add_genres
 	data := make(map[string]interface{})
@@ -183,6 +185,7 @@ func (m *Repository) PostAdminGetGenreByID(w http.ResponseWriter, r *http.Reques
 
 	// Add a validation to the form field.
 	form.Required("title")
+	form.MaxLength("title", 100)
 
 	// retrive genre using the id
 	genre, err := m.DB.GetGenreByID(id)

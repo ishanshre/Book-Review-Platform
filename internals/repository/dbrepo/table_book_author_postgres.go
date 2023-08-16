@@ -134,3 +134,72 @@ func (m *postgresDBRepo) InsertBookAuthor(u *models.BookAuthor) error {
 	}
 	return nil
 }
+
+func (m *postgresDBRepo) BookAuthorListFilter(limit, page int, searchKey, sort string) (*models.BookAuthorListApi, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+	sql := `
+		SELECT b.id, b.title, a.id, a.first_name, a.last_name
+		FROM book_authors AS ba
+		JOIN 
+			books AS b ON b.id = ba.book_id
+		JOIN 
+			authors AS a ON a.id = ba.author_id
+	`
+	countSql := `
+	SELECT 
+		COUNT(*)
+		FROM book_authors AS ba
+		JOIN 
+			books AS b ON b.id = ba.book_id
+		JOIN 
+			authors AS a ON a.id = ba.author_id
+	`
+	if searchKey != "" {
+		sql = fmt.Sprintf("%s WHERE b.title LIKE '%%%s%%' OR a.first_name LIKE '%%%s%%' OR a.last_name LIKE '%%%s%%'", sql, searchKey, searchKey, searchKey)
+		countSql = fmt.Sprintf("%s WHERE b.title LIKE '%%%s%%' OR a.first_name LIKE '%%%s%%' OR a.last_name LIKE '%%%s%%'", countSql, searchKey, searchKey, searchKey)
+
+	}
+	if sort != "" {
+		sql = fmt.Sprintf("%s ORDER BY b.title %s", sql, sort)
+		// countSql = fmt.Sprintf("%s ORDER BY u.username %s", countSql, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countSql).Scan(&count); err != nil {
+		return nil, err
+	}
+	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
+	rows, err := m.DB.QueryContext(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	book_authors := []*models.BookAuthorList{}
+	for rows.Next() {
+		book_author := &models.BookAuthorList{}
+		if err := rows.Scan(
+			&book_author.BookID,
+			&book_author.BookTitle,
+			&book_author.AuthorID,
+			&book_author.AuthorFirstName,
+			&book_author.AuthorLastName,
+		); err != nil {
+			return nil, err
+		}
+		book_authors = append(book_authors, book_author)
+	}
+	lastPage := m.CalculateLastPage(limit, count)
+	return &models.BookAuthorListApi{
+		Total:       count,
+		Page:        page,
+		LastPage:    lastPage,
+		BookAuthors: book_authors,
+	}, nil
+}

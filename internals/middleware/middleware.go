@@ -55,6 +55,17 @@ func AuthRedirect(next http.Handler) http.Handler {
 	})
 }
 
+func KycValidated(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !helpers.IsValidated(r) {
+			app.Session.Put(r.Context(), "warning", "KYC not validated. Please Update Kyc!")
+			http.Redirect(w, r, "/profile", http.StatusSeeOther)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 // Admin is a middleware function that checks if the user is an admin.
 // If the user is not an admin, it redirects to the home page.
 // It takes a next http.Handler as an argument and returns an http.Handler.

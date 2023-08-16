@@ -46,6 +46,7 @@ const base_buyLists_path = "/admin/buyLists"
 const base_followers_path = "/admin/followers"
 const base_reviews_path = "/admin/reviews"
 const base_contacts_path = "/admin/contacts"
+const base_request_book_path = "/admin/request-books"
 
 // ClearSessionMessage clears the session message like flash, error and warning after being displayed
 func (m *Repository) ClearSessionMessage(w http.ResponseWriter, r *http.Request) {

@@ -154,3 +154,114 @@ func (m *postgresDBRepo) PublisherExists(name string) (bool, error) {
 	}
 	return count > 0, nil
 }
+
+// PublisherExists return false if does not else true
+func (m *postgresDBRepo) PublisherExistsID(id int) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `
+		SELECT COUNT(*) FROM publishers
+		WHERE id=$1
+	`
+	var count int
+	row := m.DB.QueryRowContext(ctx, query, id)
+	if err := row.Scan(&count); err != nil {
+		return false, fmt.Errorf("failed to execute the query: %w", err)
+	}
+	return count > 0, nil
+}
+
+func (m *postgresDBRepo) GetPublisherWithBookByID(publisher_id int) (*models.PublisherWithBooksData, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		SELECT p.id, p.name, p.description, p.pic, p.address, p.phone, p.email, p.website, p.established_date, p.latitude, p.longitude, COALESCE(b.title, ''), COALESCE(b.isbn, 0), COALESCE(b.cover, '')
+		FROM publishers AS p
+		LEFT JOIN books AS b ON b.publisher_id = p.id
+		WHERE p.id = $1;
+	`
+	publisher := &models.Publisher{}
+	books := []*models.Book{}
+	rows, err := m.DB.QueryContext(ctx, query, publisher_id)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		book := &models.Book{}
+		if err := rows.Scan(
+			&publisher.ID,
+			&publisher.Name,
+			&publisher.Description,
+			&publisher.Pic,
+			&publisher.Address,
+			&publisher.Phone,
+			&publisher.Email,
+			&publisher.Website,
+			&publisher.EstablishedDate,
+			&publisher.Latitude,
+			&publisher.Longitude,
+			&book.Title,
+			&book.Isbn,
+			&book.Cover,
+		); err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+	publisherWithBooks := &models.PublisherWithBooksData{
+		Publisher: publisher,
+		Books:     books,
+	}
+	return publisherWithBooks, nil
+}
+
+func (m *postgresDBRepo) AllPublishersFilter(limit, page int, searchKey, sort string) (*models.AdminPublisherListApi, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+
+	query := `SELECT id, name, established_date FROM publishers`
+	countQuery := `SELECT COUNT(*) FROM publishers`
+	if searchKey != "" {
+		query = fmt.Sprintf("%s WHERE name LIKE '%%%s%%' OR address LIKE '%%%s%%' OR email LIKE '%%%s%%' OR website LIKE '%%%s%%'", query, searchKey, searchKey, searchKey, searchKey)
+		countQuery = fmt.Sprintf("%s WHERE name LIKE '%%%s%%' OR address LIKE '%%%s%%' OR email LIKE '%%%s%%' OR website LIKE '%%%s%%'", countQuery, searchKey, searchKey, searchKey, searchKey)
+	}
+	if sort != "" {
+		query = fmt.Sprintf("%s ORDER BY name %s", query, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countQuery).Scan(&count); err != nil {
+		return nil, err
+	}
+	query = fmt.Sprintf("%s LIMIT %d OFFSET %d", query, limit, offset)
+	publishers := []*models.AdminPublisherList{}
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		publisher := &models.AdminPublisherList{}
+		if err := rows.Scan(
+			&publisher.ID,
+			&publisher.Name,
+			&publisher.EstablishedDate,
+		); err != nil {
+			return nil, err
+		}
+		publishers = append(publishers, publisher)
+	}
+	lastPage := m.CalculateLastPage(limit, count)
+	return &models.AdminPublisherListApi{
+		Total:      count,
+		Page:       page,
+		LastPage:   lastPage,
+		Publishers: publishers,
+	}, nil
+}

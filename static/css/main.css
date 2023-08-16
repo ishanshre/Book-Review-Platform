@@ -36,10 +36,12 @@ h6 {
   --xl: 80em;
   /* 1440px */
   --xxl: 90em;
-  --fs-1600: 8rem;
+  --fs-1400: 8rem;
   --fs-1200: 6rem;
   --fs-1000: 4rem;
+  --fs-900: 3rem;
   --fs-800: 2rem;
+  --fs-500: 1.5rem;
   --fs-400: 1rem;
   --fs-300: 0.875rem;
   --fs-200: 0.75rem;
@@ -56,6 +58,7 @@ h6 {
   --fw-1000: 1000;
   --bk-primary: #585b70;
   --bk-primary-dark: #505368;
+  --bk-primary-darker: #4a4c5e;
   --bk-secondary: #F8F9FA;
   --bk-accent: #FF6C00;
   --bk-action: #33CC33;
@@ -95,6 +98,7 @@ a:not([class]) {
 
 a.nav-links {
   text-decoration: none;
+  cursor: pointer;
 }
 
 /* Make images easier to work with */
@@ -280,6 +284,10 @@ header {
   justify-content: space-between;
 }
 
+.justify-around {
+  justify-content: space-around;
+}
+
 .justify-center {
   justify-content: center;
 }
@@ -302,6 +310,38 @@ header {
 
 .w-75 {
   width: 100%;
+}
+
+.w-50 {
+  width: 50%;
+}
+
+.w-50r {
+  width: 50rem;
+}
+
+.w-20r {
+  width: 20rem;
+}
+
+.h-fit {
+  height: fit-content;
+}
+
+.d-dark {
+  background-color: var(--bk-primary-dark);
+}
+
+.d-darker {
+  background-color: var(--bk-primary-darker);
+}
+
+.d-primary {
+  background-color: var(--bk-primary);
+}
+
+.b-shadow {
+  box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 
@@ -353,6 +393,13 @@ header {
   padding: 20px;
 }
 
+.container-nopadding {
+  max-width: 1200px;
+  /* Set a maximum width for the container */
+  margin: 0 auto;
+  /* Center the container horizontally */
+}
+
 .container-box {
   background-color: var(--bk-primary-dark);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -360,6 +407,22 @@ header {
 }
 
 /* Media query for smaller screens */
+@media  (max-width: 1260px) {
+  .container {
+    max-width: 1200px;
+    /* Set a maximum width for the container */
+    margin: 0 2rem;
+    /* Center the container horizontally */
+    padding: 20px;
+  }
+  
+  .container-nopadding {
+    max-width: 1200px;
+    /* Set a maximum width for the container */
+    margin: 0 2rem;
+    /* Center the container horizontally */
+  }
+}
 @media screen and (max-width: 768px) {
   .container {
     padding: 10px;
@@ -374,7 +437,7 @@ header {
 }
 
 .search-section {
-  margin-top: 100px;
+  margin-top: var(--fs-800);
 }
 
 .search-section,
@@ -386,7 +449,7 @@ header {
 .title-heading {
   font-style: normal;
   color: var(--bk-tcolor);
-  font-size: var(--fs-1600);
+  font-size: var(--fs-1200);
   font-weight: var(--fw-900);
   line-height: 1.1em;
   text-align: center;
@@ -406,23 +469,26 @@ header {
 
 @media (max-width: 900px) {
   .title-heading {
-    font-size: var(--fs-1200);
+    font-size: var(--fs-1000);
   }
 }
 
 @media (max-width: 680px) {
   .title-heading {
-    font-size: var(--fs-1000);
+    font-size: var(--fs-800);
+  }
+  .title-paragraph {
+    font-size: var(--fs-400);
   }
 }
 
 @media (max-width: 430px) {
   .title-heading {
-    font-size: var(--fs-800);
+    font-size: var(--fs-400);
   }
 
   .title-paragraph {
-    font-size: var(--fs-600);
+    font-size: var(--fs-300);
   }
 }
 
@@ -494,6 +560,7 @@ form.search button[type=submit]:hover {
 
 footer {
   color: var(--bk-tcolor);
+  background-color: var(--bk-primary-dark);
   left: 0;
   bottom: 0;
   margin-block: 50px;
@@ -513,26 +580,8 @@ footer {
 }
 
 .top-rated-section h1 {
-  font-size: var(--fs-1200);
+  font-size: var(--fs-900);
   margin-bottom: 10px;
-}
-
-@media (max-width: 900px) {
-  .top-rated-section h1 {
-    font-size: var(--fs-1000);
-  }
-}
-
-@media (max-width: 680px) {
-  .top-rated-section h1 {
-    font-size: var(--fs-800);
-  }
-}
-
-@media (max-width: 430px) {
-  .top-rated-section h1 {
-    font-size: var(--fs-400);
-  }
 }
 
 .slider {
@@ -542,6 +591,10 @@ footer {
   position: relative;
   overflow: hidden;
   border-radius: 15px;
+}
+
+.slider h1 {
+  font-size: var(--fs-800);
 }
 
 .slide {
@@ -585,6 +638,98 @@ footer {
   right: 2%;
 }
 
+.browse-book {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.genre-section {
+  width: 50%;
+}
+
+.language-section {
+  width: 50%;
+}
+
+.genre-section h1 {
+  font-size: var(--fs-800);
+  margin-bottom: 10px;
+}
+
+.language-section h1 {
+  font-size: var(--fs-800);
+  margin-bottom: 10px;
+}
+
+.recent-books-section h1 {
+  font-size: var(--fs-900);
+  margin-bottom: 10px;
+}
+
+@media (max-width: 900px) {
+  .top-rated-section h1 {
+    font-size: var(--fs-800);
+  }
+  .genre-section h1 {
+    font-size: var(--fs-500);
+    margin-bottom: 10px;
+  }
+  .language-section h1 {
+    font-size: var(--fs-500);
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 680px) {
+  .top-rated-section h1 {
+    font-size: var(--fs-300);
+  }
+  .slider h1 {
+    font-size: var(--fs-400);
+  }
+  .genre-section {
+    width: 100%;
+  }
+  
+  .language-section {
+    width: 100%;
+  }
+  .genre-section h1 {
+    font-size: var(--fs-500);
+    margin-bottom: 10px;
+  }
+  .language-section h1 {
+    font-size: var(--fs-500);
+    margin-bottom: 10px;
+  }
+  .browse-book {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+@media (max-width: 430px) {
+  .top-rated-section h1 {
+    font-size: var(--fs-200);
+  }
+  .slider h1 {
+    font-size: var(--fs-300);
+  }
+  .genre-section h1 {
+    font-size: var(--fs-500);
+    margin-bottom: 10px;
+  }
+  .language-section h1 {
+    font-size: var(--fs-500);
+    margin-bottom: 10px;
+  }
+}
+
+
 /* carousel ends */
 
 /* book page css */
@@ -601,7 +746,7 @@ footer {
   width: 200px;
   height: 350px;
   background-color: var(--bk-primary-dark);
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 5px;
   margin: 20px;
 }
@@ -619,7 +764,7 @@ footer {
   border-radius: 5px;
   margin: 20px;
   background-color: var(--bk-primary-dark);
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 
@@ -681,7 +826,7 @@ footer {
 .review-box {
   border: 1px solid orange;
   border-radius: 10px;
-  padding: 4px;
+  padding: 10px;
 }
 
 /* Login form */
@@ -727,6 +872,45 @@ footer {
 .form-control:focus {
   border: 4px solid orange;
 }
+.text-area {
+  display: block;
+  width: 50%;
+  margin: auto;
+  min-height: 50px;
+  background: hsla(0, 0%, 100%, 0.644);
+  outline: none;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  padding: 0 0 0 42px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.text-area:hover {
+  border: 1px solid orange;
+}
+
+.text-area:focus {
+  border: 4px solid orange;
+}
+.form-control-nomargin {
+  width: 50%;
+  height: 45px;
+  background: hsla(0, 0%, 100%, 0.644);
+  outline: none;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  font-size: 20px;
+  text-indent: 1rem;
+}
+
+.form-control-nomargin:hover {
+  border: 1px solid orange;
+}
+
+.form-control-nomargin:focus {
+  border: 4px solid orange;
+}
 
 .btn-div {
   width: 100%;
@@ -769,14 +953,14 @@ footer {
 }
 
 
-#gender {
+/* #gender {
   width: 50%;
   height: 45px;
   border: none;
   outline: none;
   border-radius: 10px;
   text-indent: 40px;
-}
+} */
 
 .file-input-container {
   position: relative;
@@ -815,6 +999,10 @@ footer {
   margin-top: 5px;
 }
 
+.m-5 {
+  margin: 5px;
+}
+
 .m-t5r {
   margin-top: 5rem;
 }
@@ -823,11 +1011,35 @@ footer {
   margin-bottom: 5px;
 }
 
+.m-2r {
+  margin: 2rem;
+}
+
 .p-5 {
   padding: 5px;
 }
 .p-10 {
   padding: 10px;
+}
+
+.pr-2 {
+  padding: 2rem;
+}
+
+.m-i5 {
+  margin-inline: 5px;
+}
+
+.m-b5 {
+  margin-block: 5px;
+}
+
+.m-ir2 {
+  margin-inline: 2rem;
+}
+
+.m-br2 {
+  margin-block: 2rem;
 }
 
 .textArea {
@@ -927,3 +1139,36 @@ select:focus {
   text-align: center;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
+
+/* Pagination css */
+
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+}
+
+.pagination-number,
+.pagination-button {
+  font-size: 1.1rem;
+  background-color: transparent;
+  border: none;
+  margin: 0.25rem 0.25rem;
+  cursor: pointer;
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 25px;
+}
+
+.pagination-number:hover,
+.pagination-button:not(.disabled):hover {
+  background: #fff;
+}
+
+.pagination-number.pg-active {
+  color: #fff;
+  background: orange;
+}
+
+/* end pagination css */

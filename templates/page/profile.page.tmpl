@@ -5,40 +5,195 @@
 {{define "meta"}}
 {{end}}
 
+{{define "css"}}
+<link rel="stylesheet" href="/static/css/modal.css">
+{{end}}
 
 {{define "title"}}Profile{{end}}
 
 {{define "content"}}
-    <div class="container">
-        {{$res := index .Data "user_profile"}}
-        <div>
-            <h1>User Profile: {{$res.FirstName}} {{$res.LastName}}</h1>
-        </div>
-        <div>
-            <img src="/{{$res.ProfilePic}}" alt="{{$res.Username}}" width="300px" height="auto" class="profile_img">
-        </div>
-        <div>
-            <p><strong>Username: </strong>{{$res.Username}}</p>
-            <p><strong>Email: </strong>{{$res.Email}}</p>
-            <p><strong>Gender: </strong>{{$res.Gender}}</p>
-            <p><strong>Address: </strong>{{$res.Address}}</p>
-            <p><strong>Phone: </strong>{{$res.Phone}}</p>
-            <p><strong>Date Of Birth: </strong>{{DateOnly $res.DateOfBirth}}</p>
-            <p><strong>Document Type: </strong>{{$res.DocumentType}}</p>
-            <p><strong>Document Number: </strong>{{$res.DocumentNumber}}</p>
-            <p><strong>Document Front: </strong>{{$res.DocumentFront}}</p>
-            <p><strong>Document Back: </strong>{{$res.DocumentBack}}</p>
-            <p><strong>Joined At: </strong>{{TimeSince $res.CreatedAt}}</p>
-            <p><strong>Updated At: </strong>{{TimeSince $res.UpdatedAt}}</p>
-            <p><strong>Last Login: </strong>{{TimeSince $res.LastLogin}}</p>
-            <p><strong></strong></p>
+<div class="container">
+    <div class="d-flex d-flex-col">
+        <div class="d-flex">
+            {{$res := index .Data "user"}}
+            {{$kyc := index .Data "kyc"}}
+            {{$following := index .Data "following"}}
+            {{$read_list_count := index .Data "read_list_count"}}
+            {{$buy_list_count := index .Data "buy_list_count"}}
+            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r b-radius h-fit">
+                <img src="/{{$kyc.ProfilePic}}" alt="{{$res.Username}}" width="300px" height="auto" class="profile_img">
+                <p><strong>Username: </strong>@{{$res.Username}}</p>
+                <p><strong>Email: </strong>{{$res.Email}}</p>
+                <p><strong>Joined At: </strong>{{TimeSince $res.CreatedAt}}</p>
+                <p><strong>Updated At: </strong>{{TimeSince $res.UpdatedAt}}</p>
+                <p><strong>Last Login: </strong>{{TimeSince $res.LastLogin}}</p>
+                <p onclick="openModal('following')"><strong>Author Following: </strong>{{$following}}</p>
+                <p><a href="/read-list"><strong>Books in read list: </strong>{{$read_list_count}}</a></p>
+                <p><a href="/buy-list"><strong>Books in buy list: </strong>{{$buy_list_count}}</a></p>
+            </div>
+            <div class="d-flex d-flex-col d-gap d-dark pr-2 m-2r b-radius" style="width: 48rem;">
+                <h1 class="text-center">Update KYC</h1>
+                <form action="/profile/kyc" method="post" class="d-flex d-flex-col d-gap" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <div class="d-flex justify-between">
+                        <label for="first_name"><strong>First Name: </strong></label>
+                        <input type="text" name="first_name" id="first_name" class="form-control-nomargin"
+                            value="{{$kyc.FirstName}}">
+                        {{with .Form.Errors.Get "first_name"}}
+                        <div class="error-msg">
+                            <label class="text-danger">{{.}}</label>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="d-flex justify-between">
+                        <label for="last_name"><strong>Last Name: </strong></label>
+                        <input type="text" name="last_name" id="last_name" class="form-control-nomargin"
+                            value="{{$kyc.LastName}}">
+                        {{with .Form.Errors.Get "last_name"}}
+                        <div class="error-msg">
+                            <label class="text-danger">{{.}}</label>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="d-flex justify-between">
+                        <label for="gender"><strong>Gender: </strong></label>
+                        <select name="gender" id="gender">
+                            <option value="Unknown" {{if eq $kyc.Gender "Unknown" }} selected {{end}}>Unknown</option>
+                            <option value="Male" {{if eq $kyc.Gender "Male" }} selected {{end}}>Male</option>
+                            <option value="Female" {{if eq $kyc.Gender "Female" }} selected {{end}}>Female</option>
+                            <option value="Others" {{if eq $kyc.Gender "Others" }} selected {{end}}>Others</option>
+                        </select>
+                        {{with .Form.Errors.Get "gender"}}
+                        <div class="error-msg">
+                            <label class="text-danger">{{.}}</label>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="d-flex justify-between">
+                        <label for="address"><strong>Address: </strong></label>
+                        <input type="text" name="address" id="address" class="form-control-nomargin"
+                            value="{{$kyc.Address}}">
+                        {{with .Form.Errors.Get "address"}}
+                        <div class="error-msg">
+                            <label class="text-danger">{{.}}</label>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="d-flex justify-between">
+                        <label for="phone"><strong>Phone: </strong></label>
+                        <input type="text" name="phone" id="phone" class="form-control-nomargin" value="{{$kyc.Phone}}">
+                        {{with .Form.Errors.Get "phone"}}
+                        <div class="error-msg">
+                            <label class="text-danger">{{.}}</label>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="d-flex justify-between">
+                        <label for="date_of_birth"><strong>Date of Birth: </strong></label>
+                        <input type="date" name="date_of_birth" id="date_of_birth" value="{{DateOnly $kyc.DateOfBirth}}"
+                            class="form-control-nomargin">
+                        {{with .Form.Errors.Get "date_of_birth"}}
+                        <div class="error-msg">
+                            <label class="text-danger">{{.}}</label>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="d-flex justify-between">
+                        <label for="document_type"><strong>Document Type: </strong></label>
+                        <select name="document_type" id="document_type">
+                            <option value="Citizenship" {{if eq $kyc.DocumentType "Citizenship" }} selected {{end}}>
+                                Citizenship</option>
+                            <option value="Passport" {{if eq $kyc.DocumentType "Passport" }} selected {{end}}>Passport
+                            </option>
+                            <option value="Driving License" {{if eq $kyc.DocumentType "Driving License" }} selected
+                                {{end}}>
+                                Driving License</option>
+                            <option value="National ID" {{if eq $kyc.DocumentType "National ID" }} selected {{end}}>
+                                National
+                                ID</option>
+                            <option value="Pan Card" {{if eq $kyc.DocumentType "Pan Card" }} selected {{end}}>Pan Card
+                            </option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-between">
+                        <label for="document_number"><strong>Document Number: </strong></label>
+                        <input type="text" name="document_number" id="document_number" class="form-control-nomargin"
+                            value="{{$kyc.DocumentNumber}}">
+                        {{with .Form.Errors.Get "document_number"}}
+                        <div class="error-msg">
+                            <label class="text-danger">{{.}}</label>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="d-flex justify-between">
+                        <label for="document_front"><strong>Document Front Part: </strong></label>
+                        <input type="file" name="document_front" id="document_front" class="form-control-nomargin">
+                        {{with .Form.Errors.Get "document_front"}}
+                        <div class="error-msg">
+                            <label class="text-danger">{{.}}</label>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="d-flex justify-between">
+                        <label for="document_back"><strong>Document Back Part: </strong></label>
+                        <input type="file" name="document_back" id="document_back" class="form-control-nomargin">
+                        {{with .Form.Errors.Get "document_back"}}
+                        <div class="error-msg">
+                            <label class="text-danger">{{.}}</label>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="d-flex d-gap">
+                        <img src="/{{$kyc.DocumentFront}}" alt="document_front" width="200px">
+                        <img src="/{{$kyc.DocumentBack}}" alt="document_back" width="200px">
+                    </div>
+                    {{if eq $kyc.IsValidated true}}
+                    <p><strong>Validatation Status: </strong>Validated</p>
+                    {{else}}
+                    <p><strong>Validatation Status: </strong>Not Validated</p>
+                    {{end}}
+                    <p><strong>KYC last updated: </strong>{{TimeSince $kyc.UpdatedAt}}</p>
+                    <div class="d-flex justify-center">
+                        <input type="submit" value="Update KYC" class="btn">
+                    </div>
+                </form>
+                <div class="d-flex d-flex-col d-gap">
+                    <h1 class="text-center">Update Profile Pic</h1>
+                    <form action="/profile/pic" method="post" class="d-flex d-flex-col d-gap" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                        <div class="d-flex justify-between">
+                            <label for="profile_pic"><strong>Change Profile Picture: </strong></label>
+                            <input type="file" name="profile_pic" id="profile_pic" class="form-control-nomargin">
+                            {{with .Form.Errors.Get "profile_pic"}}
+                            <div class="error-msg">
+                                <label class="text-danger">{{.}}</label>
+                            </div>
+                            {{end}}
+                        </div>
+                        <div class="d-flex justify-center">
+                            <input type="submit" value="Update Profile" class="btn">
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
+</div>
+
+<div class="jw-modal" id="following">
+    <div class="jw-modal-body">
+        <h1>Author Followings</h1>
+        <div id="following-display">
+
+        </div>
+    </div>
+</div>
 {{end}}
 
 
 
 
 {{define "js"}}
-    <script src="/static/js/profile.js"></script>
+<script src="/static/js/profile.js"></script>
+<script src="/static/js/modal.js"></script>
 {{end}}

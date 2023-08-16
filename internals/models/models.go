@@ -6,12 +6,20 @@ import (
 
 // User is a type struct which holds users table data
 type User struct {
+	ID          int       `json:"id"`
+	Username    string    `json:"username"`
+	Email       string    `json:"email"`
+	Password    string    `json:"password"`
+	AccessLevel int       `json:"access_level"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	LastLogin   time.Time `json:"last_login"`
+}
+type Kyc struct {
 	ID             int       `json:"id"`
+	UserID         int       `json:"user_id"`
 	FirstName      string    `json:"first_name"`
 	LastName       string    `json:"last_name"`
-	Username       string    `json:"username"`
-	Email          string    `json:"email"`
-	Password       string    `json:"password"`
 	Gender         string    `json:"gender"`
 	Address        string    `json:"address"`
 	Phone          string    `json:"phone"`
@@ -21,11 +29,23 @@ type User struct {
 	DocumentNumber string    `json:"document_number"`
 	DocumentFront  string    `json:"document_front"`
 	DocumentBack   string    `json:"document_back"`
-	AccessLevel    int       `json:"access_level"`
 	IsValidated    bool      `json:"is_validated"`
-	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
-	LastLogin      time.Time `json:"last_login"`
+}
+
+type AdminUserList struct {
+	ID          int       `json:"id"`
+	Username    string    `json:"username"`
+	AccessLevel int       `json:"access_level"`
+	CreatedAt   time.Time `json:"created_at"`
+	IsValidated bool      `json:"is_validated"`
+}
+
+type AdminUserListApi struct {
+	Total    int              `json:"total"`
+	Page     int              `json:"page"`
+	LastPage int              `json:"last_page"`
+	Users    []*AdminUserList `json:"users"`
 }
 
 // MailData holds the email message
@@ -62,6 +82,19 @@ type Publisher struct {
 	EstablishedDate int
 	Latitude        string
 	Longitude       string
+}
+
+type AdminPublisherList struct {
+	ID              int    `json:"id"`
+	Name            string `json:"name"`
+	EstablishedDate int    `json:"established_date"`
+}
+
+type AdminPublisherListApi struct {
+	Total      int                   `json:"total"`
+	Page       int                   `json:"page"`
+	LastPage   int                   `json:"last_page"`
+	Publishers []*AdminPublisherList `json:"publishers"`
 }
 
 // Author struct holds the authors table data
@@ -117,6 +150,21 @@ type BookAuthor struct {
 	AuthorID int
 }
 
+type BookAuthorList struct {
+	BookID          int    `json:"book_id"`
+	BookTitle       string `json:"book_title"`
+	AuthorID        int    `json:"author_id"`
+	AuthorFirstName string `json:"author_first_name"`
+	AuthorLastName  string `json:"author_last_name"`
+}
+
+type BookAuthorListApi struct {
+	Total       int               `json:"total"`
+	Page        int               `json:"page"`
+	LastPage    int               `json:"last_page"`
+	BookAuthors []*BookAuthorList `json:"book_authors"`
+}
+
 // BookGenre holds the itermediate table between book and genre
 type BookGenre struct {
 	BookID  int
@@ -136,6 +184,21 @@ type ReadList struct {
 	CreatedAt time.Time
 }
 
+type ReadListFilter struct {
+	UserID    int       `json:"user_id"`
+	Username  string    `json:"username"`
+	BookID    int       `json:"book_id"`
+	BookTitle string    `json:"book_title"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type ReadListFilterApi struct {
+	Total           int               `json:"total"`
+	Page            int               `json:"page"`
+	LastPage        int               `json:"last_page"`
+	ReadListFilters []*ReadListFilter `json:"read_lists"`
+}
+
 // BuyList holds the the book id, user id and created at of BuyLists table
 type BuyList struct {
 	UserID    int
@@ -143,11 +206,42 @@ type BuyList struct {
 	CreatedAt time.Time
 }
 
+type BuyListFilter struct {
+	UserID    int       `json:"user_id"`
+	Username  string    `json:"username"`
+	BookID    int       `json:"book_id"`
+	BookTitle string    `json:"book_title"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type BuyListFilterApi struct {
+	Total          int              `json:"total"`
+	Page           int              `json:"page"`
+	LastPage       int              `json:"last_page"`
+	BuyListFilters []*BuyListFilter `json:"buy_lists"`
+}
+
 // Follower hold the book and author id for follower relationship
 type Follower struct {
 	UserID     int
 	AuthorID   int
 	FollowedAt time.Time
+}
+
+type FollowerFilter struct {
+	UserID          int       `json:"user_id"`
+	Username        string    `json:"username"`
+	AuthorID        int       `json:"author_id"`
+	AuthorFirstName string    `json:"author_first_name"`
+	AuthorLastName  string    `json:"author_last_name"`
+	FollowedAt      time.Time `json:"followed_at"`
+}
+
+type FollowerFilterApi struct {
+	Total           int               `json:"total"`
+	Page            int               `json:"page"`
+	LastPage        int               `json:"last_page"`
+	FollowerFilters []*FollowerFilter `json:"followers"`
 }
 
 // Review holds the review table data
@@ -162,6 +256,24 @@ type Review struct {
 	UpdatedAt time.Time
 }
 
+type ReviewFilter struct {
+	ID        int       `json:"id"`
+	Rating    float64   `json:"rating"`
+	Body      string    `json:"body"`
+	BookTitle string    `json:"title"`
+	Username  string    `json:"username"`
+	IsActive  bool      `json:"is_active"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type ReviewFilterApi struct {
+	Total         int             `json:"total"`
+	Page          int             `json:"page"`
+	LastPage      int             `json:"last_page"`
+	ReviewFilters []*ReviewFilter `json:"reviews"`
+}
+
 type Contact struct {
 	ID            int
 	FirstName     string
@@ -174,4 +286,19 @@ type Contact struct {
 	IpAddress     string
 	BrowserInfo   string
 	ReferringPage string
+}
+
+type RequestedBook struct {
+	ID             int       `json:"id"`
+	BookTitle      string    `json:"book_title"`
+	Author         string    `json:"author"`
+	RequestedEmail string    `json:"requested_email"`
+	RequestedDate  time.Time `json:"requested_date"`
+}
+
+type RequestedBookFilterApi struct {
+	Total          int              `json:"total"`
+	Page           int              `json:"page"`
+	LastPage       int              `json:"last_page"`
+	RequestedBooks []*RequestedBook `json:"requested_books"`
 }

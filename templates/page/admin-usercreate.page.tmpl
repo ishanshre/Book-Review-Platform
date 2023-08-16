@@ -6,35 +6,34 @@
 {{$res := index .Data "register"}}
     <div>
         <div>
-            <h1>Create New User</h1>
+            <h1 class="text-center">Create New User</h1>
         </div>
     </div>
     <div>
-        <form method="post" action="/admin/users/create">
-            <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
-            <div>
-                <label for="username">Username: </label>
-                <input type="text" name="username" id="username" value="{{$res.Username}}">
-                {{with .Form.Errors.Get "username"}}
-                <label>{{.}}</label>
-                {{end}}
-            </div>
-            <div>
-                <label for="email">Email: </label>
-                <input type="text" name="email" id="email" value="{{$res.Email}}">
-                {{with .Form.Errors.Get "email"}}
-                <label>{{.}}</label>
-                {{end}}
-            </div>
-            <div>
-                <label for="password">Password: </label>
-                <input type="password" name="password" id="password" value="{{$res.Password}}">
-                {{with .Form.Errors.Get "password"}}
-                <label>{{.}}</label>
-                {{end}}
-            </div>
-            <input type="submit" value="Add">
-            <button type="button"><a href="/admin/users">Cancel</a></button>
-        </form>
+        <section class="d-flex d-gap justify-center align-center m-br2">
+            <form method="post" action="/admin/users/create">
+                <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
+                
+                <div class="from-add-user">
+                    <input class="c-attribute" type="text" placeholder="Username" name="username"/>
+                    {{with .Form.Errors.Get "username"}}
+                        <label>{{.}}</label>
+                        {{end}}
+                    <input class="c-attribute" type="email" placeholder="Email" name="email"/>
+                    {{with .Form.Errors.Get "email"}}
+                        <label>{{.}}</label>
+                        {{end}}
+                    <input class="c-attribute" type="password" placeholder="Password" name="password"/>
+                    {{with .Form.Errors.Get "password"}}
+                        <label>{{.}}</label>
+                        {{end}}
+                    <div class="add-form-buttons">
+                        <button class="c-b-attribute register-button" type="submit"> Register </button>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Register Form -->
+        </section>
     </div>
 {{end}}

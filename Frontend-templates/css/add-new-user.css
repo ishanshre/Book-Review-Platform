@@ -1,0 +1,349 @@
+/* Box sizing rules*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Reset margin, padding and font-size */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Avoid text overflows */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/* Allow percentage-based heights in the application */
+html,
+body {
+  height: 100%;
+}
+
+/* Set core root defaults */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Set core body defaults */
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+}
+
+/* Remove list styles on ul, ol elements with a class attribute */
+ul[class],
+ol[class] {
+  list-style: none;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+  text-decoration-skip-ink: auto;
+}
+a.nav-links {
+  text-decoration: none;
+}
+/* Make images easier to work with */
+img,
+picture,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+/* Blur images when they have no alt attribute */
+img:not([alt]) {
+  filter: blur(10px);
+}
+
+/* Remove all animations and transitions for people that prefer not to see them */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Remove animations and transition on window resize */
+.resize-animation-stopper * {
+  animation: none !important;
+  transition: none !important;
+}
+
+
+:root{
+    --clr-primary:hsl(0, 0%, 96%);
+    --clr-secondary:hsl(193, 38%, 43%);
+    --clr-accent:black;
+    
+    --bs-1:0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+      
+    --fs-800:2rem;
+    --fs-400:1rem;
+    --fs-300:0.875rem;
+    --fs-200:0.75rem;
+
+    --fw-100:100;
+    --fw-200:200;
+    --fw-300:300;
+    --fw-400:400;
+    --fw-500:500;
+    --fw-600:600;
+    --fw-700:700;
+    --fw-800:800;
+    --fw-900:900;
+    
+}
+
+body {
+    font-family: 'Open Sans';
+    font-weight: var(--fw-400);
+    font-size: var(--fs-400);
+}
+
+a:not([class]) {
+    text-decoration-skip-ink: auto;
+}
+
+a {
+    text-decoration: none;
+}
+
+.d-flex {
+    display: flex;
+    gap: var(--gap, 1rem);
+    align-items: var(--ai, center);
+    justify-content: var(--jc, center);
+}
+
+.d-grid {
+    display: grid;
+    gap: var(--gap, 1rem);
+    align-items: var(--ai, center);
+    justify-content: var(--jc, center);
+}
+
+.nav-primary {
+    --jc:space-between;
+    padding: 1.5rem 2rem;
+    box-shadow: var(--bs-1);
+    background-color: var(--clr-primary);
+}
+
+.logo a {
+    font-size: var(--fs-800);
+    color: var(--clr-secondary);
+    font-weight: var(--fw-700);
+}
+
+.nav-links.closed {
+  transform: translateX(-100%);
+}
+
+/* Show the nav links when it's open */
+.nav-links.open {
+  transform: translateX(0);
+  display: block;
+}
+.nav-link a {
+  color: var(--clr-secondary);
+}
+
+.nav-link a i {
+  padding-inline: 2px;
+}
+
+.nav-link :is(:hover){
+  color: var(--clr-accent);
+}
+
+.sidebar-toggle-btn {
+  display: none;
+}
+
+.nav-sidebar{
+    background-color: var(--clr-secondary);
+    box-shadow:var(--bs-1) ;
+    width: clamp(200px, 15vw,256px);
+    transition: transform 0.3s ease;
+}
+
+.nav-sidebar li{
+    padding: 1rem 2rem;
+}
+
+.nav-sidebar :is(li,a):is(:hover,:focus-visible,){
+    background-color: #9bd0df;
+    color: var(--clr-accent);
+}
+
+.nav-sidebar a {
+    color: var(--clr-primary);
+    font-weight: var(--fw-700);
+}
+
+.nav-sidebar.closed {
+  transform: translateX(-100%);
+}
+
+/* Show the sidebar when it's open */
+.nav-sidebar.open {
+  transform: translateX(0);
+  display: block;
+}
+
+.main{
+    grid-template-columns: 1fr 4fr;
+    --ai:start;
+    --jc:start;
+}
+
+.main-content {
+    margin-block: 1.5rem;
+    margin: 2rem 1.5rem 0rem 0.5rem;
+}
+/* Add user CSS starts from here */
+
+.main-content h1{
+  margin-bottom: 20px;
+}
+.c-attribute{
+  display: block;
+  padding: 12px 20px 12px 20px;
+  width: 370px;
+  background: #F7F7F7;
+  border: 1px solid #D9D9D9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.10);
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 15px;
+}
+
+  
+/* .username{
+  width: 100%;
+  height: 40px;
+  background: #F7F7F7;
+  border: 1px solid #D9D9D9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+.password{
+  width: 100%;
+  height: 40px;
+  background: #F7F7F7;
+  border: 1px solid #D9D9D9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.email{
+  width: 100%;
+  height: 40px;
+  background: #F7F7F7;
+  border: 1px solid #D9D9D9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  margin-bottom: 20px;
+} */
+
+
+.add-form-buttons{
+  display: flex;
+  justify-content: left;
+}
+
+.c-b-attribute{
+  padding: 12px 25px 12px 25px;
+  border-radius: 5px;
+  color: white;
+  border: none;
+  font-size: 15px;
+  margin-right: 10px;
+}
+
+
+.register-button{
+  background: #438496;
+}
+
+.cancel-button{
+  background: #E94C4C ;
+}
+
+/* Add user CSS ends here */
+
+/* Add a media query for screens with a maximum width of 768px */
+@media (max-width: 768px) {
+  .main {
+    grid-template-columns: 1fr; /* Change to a single column layout */
+  }
+
+  .nav-sidebar {
+    width: 100%; /* Take up the full width of the screen */
+    display: none;
+  }
+
+  .sidebar-toggle-btn {
+    display: block;
+    cursor: pointer;
+  }  
+  
+  .nav-sidebar li {
+    padding: 0.5rem 1rem; /* Reduce the padding for smaller screens */
+  }
+
+}
+
+/* Add a media query for screens with a maximum width of 480px */
+@media (max-width: 480px) {
+  .nav-primary {
+    flex-direction: column; /* Stack the navigation items vertically */
+    align-items: flex-start; /* Align the items to the start of the container */
+    padding: 1rem; /* Reduce the padding for smaller screens */
+  }
+
+  .sidebar-toggle-btn {
+    display: block;
+    cursor: pointer;
+  }
+
+  .nav-links {
+    margin-top: 1rem; /* Add some spacing between the logo and navigation items */
+    display: none;
+  }
+
+  .nav-sidebar {
+    display: none; /* Hide the sidebar navigation on smaller screens */
+  }
+
+  .main-content {
+    margin-top: 1rem; /* Add some spacing between the header and main content */
+  }
+  
+  /* Add user CSS starts from here */
+  .from-add-user{
+    width: 100%;
+  }
+  .c-attribute{
+    width: 100%;
+  }
+  /* Add user CSS ends here */
+  
+}
