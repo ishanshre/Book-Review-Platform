@@ -154,6 +154,15 @@ func (m *Repository) PostAdminInsertReview(w http.ResponseWriter, r *http.Reques
 	data["allBooks"] = allBooks
 	data["allUsers"] = allUsers
 	data["base_path"] = base_reviews_path
+	exists, err := m.DB.ReviewExists(&review)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		form.Errors.Add("rating", "The review by users already exists")
+		form.Errors.Add("body", "The review by users already exists")
+	}
 	if !form.Valid() {
 		render.Template(w, r, "admin-reviewinsert.page.tmpl", &models.TemplateData{
 			Form: form,

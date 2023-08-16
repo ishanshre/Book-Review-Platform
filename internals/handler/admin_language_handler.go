@@ -84,6 +84,7 @@ func (m *Repository) PostAdminUpdateLanguage(w http.ResponseWriter, r *http.Requ
 		Language: r.Form.Get("language"),
 	}
 	form.Required("language")
+	form.MaxLength("language", 100)
 	data["language"] = language
 	exists, err := m.DB.LanguageExists(language.Language)
 	if err != nil {
@@ -140,6 +141,7 @@ func (m *Repository) PostAdminInsertLanguage(w http.ResponseWriter, r *http.Requ
 		Language: r.Form.Get("language"),
 	}
 	form.Required("language")
+	form.MaxLength("language", 100)
 	data := make(map[string]interface{})
 	data["add_language"] = language
 	languages, err := m.DB.AllLanguage()

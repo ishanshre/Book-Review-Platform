@@ -9,7 +9,7 @@ CREATE TABLE "kycs" (
     profile_pic VARCHAR(255),
     dob DATE,
     document_type document_enum DEFAULT 'Citizenship',
-    document_number VARCHAR(20),
+    document_number VARCHAR(50),
     document_front VARCHAR(255),
     document_back VARCHAR(255),
     is_validated BOOLEAN DEFAULT FALSE,

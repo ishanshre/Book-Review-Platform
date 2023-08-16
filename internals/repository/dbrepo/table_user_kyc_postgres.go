@@ -58,7 +58,7 @@ func (m *postgresDBRepo) GetUserWithKyc(id int) (*models.UserKycData, error) {
 func (m *postgresDBRepo) UpdateProfilePic(path string, id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	stmt := `UPDATE kycs SET profile_pic=$2 WHERE id=$1`
+	stmt := `UPDATE kycs SET profile_pic=$2 WHERE user_id=$1`
 	_, err := m.DB.ExecContext(ctx, stmt, id, path)
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (m *postgresDBRepo) UpdateProfilePic(path string, id int) error {
 func (m *postgresDBRepo) UpdateDocument(front_path, back_path string, id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	stmt := `UPDATE kycs SET document_front=$2, document_back=$3 WHERE id=$1`
+	stmt := `UPDATE kycs SET document_front=$2, document_back=$3 WHERE user_id=$1`
 	_, err := m.DB.ExecContext(ctx, stmt, id, front_path, back_path)
 	if err != nil {
 		return err
@@ -117,7 +117,7 @@ func (m *postgresDBRepo) PublicKycUpdate(update *models.Kyc) error {
 		UPDATE kycs 
 		SET first_name = $2, last_name = $3, gender = $4, phone = $5, address = $6, dob = $7, document_type = $8, document_number = $9, document_front = $10, document_back = $11, updated_at = $12
 		WHERE id=$1`
-	res, err := m.DB.ExecContext(
+	_, err := m.DB.ExecContext(
 		ctx,
 		stmt,
 		update.ID,
@@ -135,10 +135,6 @@ func (m *postgresDBRepo) PublicKycUpdate(update *models.Kyc) error {
 	)
 	if err != nil {
 		return err
-	}
-	affected, _ := res.RowsAffected()
-	if affected == 0 {
-		return errors.New("not updateed")
 	}
 	return nil
 }

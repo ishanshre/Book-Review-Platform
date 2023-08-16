@@ -65,7 +65,7 @@ func (m *postgresDBRepo) ReviewExists(u *models.Review) (bool, error) {
 	// Preparing the sql query to check for existing relationship
 	query := `
 		SELECT COUNT(*) FROM reviews
-		WHERE (id=$1 AND book_id=$2 AND user_id=$3)
+		WHERE (book_id=$1 AND user_id=$2)
 	`
 
 	// intializing a count variable that stores the no of records
@@ -73,7 +73,7 @@ func (m *postgresDBRepo) ReviewExists(u *models.Review) (bool, error) {
 
 	// Executing the query row context and store the total record in count variable.
 	// If any error occurs, false and error are returned
-	if err := m.DB.QueryRowContext(ctx, query, u.ID, u.BookID, u.UserID).Scan(&count); err != nil {
+	if err := m.DB.QueryRowContext(ctx, query, u.BookID, u.UserID).Scan(&count); err != nil {
 		return false, fmt.Errorf("failed to execute query: %w", err)
 	}
 

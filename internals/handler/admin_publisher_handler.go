@@ -128,6 +128,14 @@ func (m *Repository) PostAdminUpdatePublisher(w http.ResponseWriter, r *http.Req
 	}
 	publisher.ID = id
 	form.Required("name")
+	form.MaxLength("name", 255)
+	form.MaxLength("description", 10000)
+	form.MaxLength("address", 255)
+	form.MaxLength("phone", 10)
+	form.MaxLength("email", 255)
+	form.MaxLength("website", 255)
+	form.MaxLength("latitude", 20)
+	form.MaxLength("longitude", 20)
 	data := make(map[string]interface{})
 	data["publisher"] = publisher
 	data["base_path"] = base_publishers_path
@@ -201,6 +209,15 @@ func (m *Repository) PostAdminInsertPublisher(w http.ResponseWriter, r *http.Req
 		Latitude:        r.Form.Get("latitude"),
 		Longitude:       r.Form.Get("longitude"),
 	}
+	form.Required("name")
+	form.MaxLength("name", 255)
+	form.MaxLength("description", 10000)
+	form.MaxLength("address", 255)
+	form.MaxLength("phone", 10)
+	form.MaxLength("email", 255)
+	form.MaxLength("website", 255)
+	form.MaxLength("latitude", 20)
+	form.MaxLength("longitude", 20)
 	data := make(map[string]interface{})
 	data["publisher"] = publisher
 	data["base_path"] = base_publishers_path

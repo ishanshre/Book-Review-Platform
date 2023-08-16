@@ -74,6 +74,15 @@ func (m *Repository) PostPublicCreateReview(w http.ResponseWriter, r *http.Reque
 	}
 	data["review"] = review
 	data["book"] = book
+	exists, err := m.DB.ReviewExists(review)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if exists {
+		form.Errors.Add("rating", "The review by users already exists")
+		form.Errors.Add("body", "The review by users already exists")
+	}
 	if !form.Valid() {
 		render.Template(w, r, "public_review_create.page.tmpl", &models.TemplateData{
 			Form: form,

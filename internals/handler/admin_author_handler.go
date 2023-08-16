@@ -143,6 +143,10 @@ func (m *Repository) PostAdminUpdateAuthor(w http.ResponseWriter, r *http.Reques
 		CountryOfOrigin: r.Form.Get("country_of_origin"),
 		Avatar:          r.Form.Get("avatar"),
 	}
+	form.MaxLength("first_name", 30)
+	form.MaxLength("last_name", 30)
+	form.MaxLength("email", 255)
+	form.MaxLength("country_of_origin", 50)
 	data := make(map[string]interface{})
 	data["author"] = author
 	data["base_path"] = base_authors_path
@@ -226,6 +230,11 @@ func (m *Repository) PostAdminInsertAuthor(w http.ResponseWriter, r *http.Reques
 		Avatar:          avatar,
 	}
 	form.Required("date_of_birth")
+	form.MaxLength("first_name", 30)
+	form.MaxLength("last_name", 30)
+	form.MaxLength("email", 255)
+	form.MaxLength("country_of_origin", 50)
+	form.MaxLength("bio", 10000)
 	data := make(map[string]interface{})
 	data["author"] = author
 	data["base_path"] = base_authors_path

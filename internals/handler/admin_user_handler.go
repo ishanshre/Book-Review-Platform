@@ -111,6 +111,8 @@ func (m *Repository) AdminUpdateUser(w http.ResponseWriter, r *http.Request) {
 			form.Errors.Add("email", "email already exists")
 		}
 	}
+	form.Required("email", "access_level")
+	form.MaxLength("email", 255)
 	data := make(map[string]interface{})
 	data["base_path"] = base_users_path
 	data["user"] = userKyc.User
@@ -147,6 +149,7 @@ func (m *Repository) PostAdminUserProfileUpdate(w http.ResponseWriter, r *http.R
 		helpers.ServerError(w, err)
 		return
 	}
+	log.Println(path)
 	if err := m.DB.UpdateProfilePic(path, id); err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -345,6 +348,10 @@ func (m *Repository) PostAdminKycUpdate(w http.ResponseWriter, r *http.Request) 
 	update_kyc.ID = id
 	form.Required("first_name", "last_name", "gender", "phone", "address", "date_of_birth", "is_validated", "document_type", "document_number")
 	form.MaxLength("phone", 10)
+	form.MaxLength("first_name", 50)
+	form.MaxLength("last_name", 50)
+	form.MaxLength("address", 255)
+	form.MaxLength("document_number", 50)
 	userKyc, err := m.DB.GetUserWithKyc(id)
 	if err != nil {
 		helpers.ServerError(w, err)

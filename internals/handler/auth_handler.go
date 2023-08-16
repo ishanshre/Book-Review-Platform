@@ -142,7 +142,7 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 	form.MinLength("password", 8)
 	form.HasUpperCase("password")
 	form.HasLowerCase("password")
-	form.HasNumber("password", "username")
+	form.HasNumber("password")
 	form.HasSpecialCharacter("password")
 	form.IsEmail("email")
 	exists, err := m.DB.UsernameExists(register.Username)
@@ -290,7 +290,7 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 	update_kyc.DocumentType = r.Form.Get("document_type")
 	update_kyc.DocumentNumber = r.Form.Get("document_number")
 	update_kyc.UpdatedAt = time.Now()
-	update_kyc.ID = id
+	update_kyc.ID = userKyc.Kyc.ID
 	document_front, err := helpers.MediaPicUpload(r, "document_front", userKyc.User.Username)
 	if err != nil {
 		form.Errors.Add("document_front", "Document Required!")
@@ -303,6 +303,10 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 	update_kyc.DocumentBack = document_back
 	form.Required("first_name", "last_name", "gender", "phone", "address", "date_of_birth", "document_type", "document_number")
 	form.MaxLength("phone", 10)
+	form.MaxLength("first_name", 50)
+	form.MaxLength("last_name", 50)
+	form.MaxLength("address", 255)
+	form.MaxLength("document_number", 50)
 	data := make(map[string]interface{})
 	data["base_path"] = base_users_path
 	data["user"] = userKyc.User

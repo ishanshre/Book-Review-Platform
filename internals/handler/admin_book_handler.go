@@ -209,6 +209,8 @@ func (m *Repository) PostAdminInsertBook(w http.ResponseWriter, r *http.Request)
 	form.Required("isbn", "title")
 	form.MinLength("isbn", 13)
 	form.MaxLength("isbn", 13)
+	form.MaxLength("title", 100)
+	form.MaxLength("description", 10000)
 	data["book"] = book
 	data["base_path"] = base_books_path
 	publishers, err := m.DB.AllPublishers()
@@ -326,6 +328,8 @@ func (m *Repository) PostAdminUpdateBook(w http.ResponseWriter, r *http.Request)
 	form.MinLength("isbn", 13)
 	form.MaxLength("isbn", 13)
 
+	form.MaxLength("title", 100)
+	form.MaxLength("description", 10000)
 	data["base_path"] = base_books_path
 
 	if !form.Valid() {

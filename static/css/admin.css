@@ -55,6 +55,7 @@ a:not([class]) {
 }
 a.nav-links {
   text-decoration: none;
+  cursor: pointer;
 }
 /* Make images easier to work with */
 img,
