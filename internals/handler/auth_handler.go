@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -184,6 +185,16 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	msg := models.MailData{
+		To:      register.Email,
+		From:    "admin@gmail.com",
+		Subject: fmt.Sprintf("Welcome to BookWorm @%s!", register.Username),
+		Content: fmt.Sprintf(`
+			<h1>Welcome to BookWorm @%s!</h1>
+			<p>Thank you for registering to our book review platform. Please update your kyc to access most of the features</p>
+		`, register.Username),
+	}
+	m.App.MailChan <- msg
 	m.App.Session.Put(r.Context(), "flash", "User Registration Successfull")
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 
