@@ -116,7 +116,7 @@ func (m *Repository) PostPublicDeleteReview(w http.ResponseWriter, r *http.Reque
 	}
 	user_id := m.App.Session.Get(r.Context(), "user_id").(int)
 	if user_id != int(review.UserID) {
-		helpers.PageNotFound(w, errors.New("user not authorized"))
+		helpers.PageNotFound(w, r, errors.New("user not authorized"))
 		return
 	}
 

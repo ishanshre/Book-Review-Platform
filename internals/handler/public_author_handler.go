@@ -39,7 +39,7 @@ func (h *Repository) AllAuthors(w http.ResponseWriter, r *http.Request) {
 func (h *Repository) PublicGetAuthorByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ClientError(w, http.StatusNotFound)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	authorWithBooks, err := h.DB.GetAuthorWithBooks(id)

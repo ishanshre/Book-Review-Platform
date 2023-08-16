@@ -117,13 +117,13 @@ func (m *Repository) AllBooks(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) BookDetailByISBN(w http.ResponseWriter, r *http.Request) {
 	isbn, err := strconv.ParseInt(chi.URLParam(r, "isbn"), 10, 64)
 	if err != nil {
-		helpers.PageNotFound(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	book, err := m.DB.BookDetailWithAuthorPublisherWithIsbn(isbn)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			helpers.PageNotFound(w, err)
+			helpers.PageNotFound(w, r, err)
 			return
 		}
 		helpers.ServerError(w, err)

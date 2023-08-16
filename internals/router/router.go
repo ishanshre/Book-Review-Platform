@@ -34,6 +34,8 @@ func Router(app *config.AppConfig) http.Handler {
 	// Get route for Home page
 	mux.Get("/", handler.Repo.Home)
 
+	mux.NotFound(handler.Repo.CustomNotFoundError)
+
 	mux.Route("/authors", func(mux chi.Router) {
 		mux.Get("/", handler.Repo.AllAuthors)
 		mux.Get("/{id}", handler.Repo.PublicGetAuthorByID)
