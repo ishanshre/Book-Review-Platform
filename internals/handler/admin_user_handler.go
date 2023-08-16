@@ -26,7 +26,9 @@ func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) AdminAllUsers(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	data["base_path"] = base_users_path
-	render.Template(w, r, "admin-allusers.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "admin-allusers.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
 }
 
 func (m *Repository) AdminAllUsersApi(w http.ResponseWriter, r *http.Request) {

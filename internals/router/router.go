@@ -137,6 +137,7 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/api/admin-buylists", handler.Repo.AdminAllBuyListApi)
 		mux.Get("/api/admin-followers", handler.Repo.AdminAllFollowerApi)
 		mux.Get("/api/admin-reviews", handler.Repo.AdminAllReviewApi)
+		mux.Get("/api/admin-requestedbooks", handler.Repo.AdminAllRequestedBookssApi)
 	})
 
 	mux.Route("/admin", func(mux chi.Router) {
@@ -246,6 +247,10 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/contacts", handler.Repo.AdminAllContacts)
 		mux.Post("/contacts/detail/{contact_id}/delete", handler.Repo.PostAdminDeleteContact)
 		mux.Get("/contacts/detail/{contact_id}", handler.Repo.AdminGetContactByID)
+
+		// Request Book handler
+		mux.Get("/request-books", handler.Repo.AdminAllRequestBookList)
+		mux.Post("/request-books/detail/{id}/delete", handler.Repo.AdminDeleteRequestedBook)
 	})
 	return mux
 }

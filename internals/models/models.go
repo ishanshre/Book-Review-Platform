@@ -289,9 +289,16 @@ type Contact struct {
 }
 
 type RequestedBook struct {
-	ID             int
-	BookTitle      string
-	Author         string
-	RequestedEmail string
-	RequestedDate  time.Time
+	ID             int       `json:"id"`
+	BookTitle      string    `json:"book_title"`
+	Author         string    `json:"author"`
+	RequestedEmail string    `json:"requested_email"`
+	RequestedDate  time.Time `json:"requested_date"`
+}
+
+type RequestedBookFilterApi struct {
+	Total          int              `json:"total"`
+	Page           int              `json:"page"`
+	LastPage       int              `json:"last_page"`
+	RequestedBooks []*RequestedBook `json:"requested_books"`
 }

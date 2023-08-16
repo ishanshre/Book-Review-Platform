@@ -2,6 +2,7 @@ package dbrepo
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
@@ -82,4 +83,64 @@ func (m *postgresDBRepo) GetRequestBookById(id int) (*models.RequestedBook, erro
 		return nil, err
 	}
 	return request_book, nil
+}
+
+func (m *postgresDBRepo) RequestedBooksListFilter(limit, page int, searchKey, sort string) (*models.RequestedBookFilterApi, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+	sql := `
+	SELECT id, book_title, author, requested_email, requested_date
+	FROM request_books
+	`
+	countSql := `
+	SELECT 
+		COUNT(*)
+		FROM request_books
+	`
+	if searchKey != "" {
+		sql = fmt.Sprintf("%s WHERE book_title LIKE '%%%s%%' OR author LIKE '%%%s%%'", sql, searchKey, searchKey)
+		countSql = fmt.Sprintf("%s WHERE book_title LIKE '%%%s%%' OR author LIKE '%%%s%%'", countSql, searchKey, searchKey)
+	}
+	if sort != "" {
+		sql = fmt.Sprintf("%s ORDER BY book_title %s", sql, sort)
+		// countSql = fmt.Sprintf("%s ORDER BY u.username %s", countSql, sort)
+	}
+	var count int
+	if err := m.DB.QueryRowContext(ctx, countSql).Scan(&count); err != nil {
+		return nil, err
+	}
+	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, limit, offset)
+	rows, err := m.DB.QueryContext(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	requestedBooks := []*models.RequestedBook{}
+	for rows.Next() {
+		requestedBook := &models.RequestedBook{}
+		if err := rows.Scan(
+			&requestedBook.ID,
+			&requestedBook.BookTitle,
+			&requestedBook.Author,
+			&requestedBook.RequestedEmail,
+			&requestedBook.RequestedDate,
+		); err != nil {
+			return nil, err
+		}
+		requestedBooks = append(requestedBooks, requestedBook)
+	}
+	lastPage := m.CalculateLastPage(limit, count)
+	return &models.RequestedBookFilterApi{
+		Total:          count,
+		Page:           page,
+		LastPage:       lastPage,
+		RequestedBooks: requestedBooks,
+	}, nil
 }

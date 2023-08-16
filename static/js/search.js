@@ -357,6 +357,37 @@ const display = async () => {
             `
         }).join("")
         displayDiv.innerHTML = displayItems
+    } else if (searchType === "admin-requestedbooks") {
+        let requestedBooks = data.requested_books;
+        let displayItems = requestedBooks.map((obj)=> {
+            const { id, book_title, author, requested_email, requested_date } = obj
+            return `
+                <tr>
+                    <td>${id}</td>
+                    <td>${book_title}</td>
+                    <td>${author}</td>
+                    <td>${requested_email}</td>
+                    <td>${requested_date}</td>
+                    <td>
+                        <div class="action-icons">
+                            <button ><img width="19px" height="19px" src="/static/images/del-icon.png" alt="del-icon" onclick="openModal('delete-${id}')" /></button>
+
+                            <div class="jw-modal" id="delete-${id}">
+                                <div class="jw-modal-body">
+                                    <form action="/admin/request-books/detail/${id}/delete" method="post">
+                                        <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
+                                        <p>Do you want to delete this relationship?</p>
+                                        <input type="submit" value="Delete Record">
+                                        <button type="button" onclick="closeModal()">No</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `
+        }).join("")
+        displayDiv.innerHTML = displayItems
     }
     paginationNumbers.innerHTML = ''
     const getPaginationNumbers = () => {
