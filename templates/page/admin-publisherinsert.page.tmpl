@@ -4,84 +4,84 @@
 
 {{define "content"}}
     <div>
-        <div>
+        <div class="d-flex d-flex-col d-gap align-center m-d5">
             <h1>Add Publisher</h1>
-        </div><hr>
-        <div>
+        </div>
+        <div class="w-fit">
             {{$res := index .Data "publisher"}}
             <form action="/admin/publishers/create" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                <div>
+                <div class="d-flex justify-between align-center d-gap m-d5">
                     <label for="name">Name: </label>
                     {{with .Form.Errors.Get "name"}}
                     <label>{{.}}</label>
                     {{end}}
-                    <input type="text" name="name" id="name" value="{{$res.Name}}">
+                    <input type="text" name="name" id="name" value="{{$res.Name}}" class="c-attribute">
                 </div>
-                <div>
+                <div class="d-flex justify-between align-center d-gap m-d5">
                     <label for="description">Description: </label>
                     {{with .Form.Errors.Get "description"}}
                     <label>{{.}}</label>
                     {{end}}
-                    <input type="text" name="description" id="description" value="{{$res.Description}}">
+                    <input type="text" name="description" id="description" value="{{$res.Description}}" class="c-attribute">
                 </div>
-                <div>
+                <div class="d-flex justify-between align-center d-gap m-d5">
                     <label for="pic">Publisher Pic: </label>
                     {{with .Form.Errors.Get "pic"}}
                     <label>{{.}}</label>
                     {{end}}
-                    <input type="file" name="pic" id="pic" accept="image/jpeg, image/png">
+                    <input type="file" name="pic" id="pic" accept="image/jpeg, image/png" class="c-attribute">
                 </div>
-                <div>
+                <div class="d-flex justify-between align-center d-gap m-d5">
                     <label for="address">Address</label>
                     {{with .Form.Errors.Get "address"}}
                     <label>{{.}}</label>
                     {{end}}
-                    <input type="text" name="address" id="address" value="{{$res.Address}}">
+                    <input type="text" name="address" id="address" value="{{$res.Address}}" class="c-attribute">
                 </div>
-                <div>
+                <div class="d-flex justify-between align-center d-gap m-d5">
                     <label for="phone">Phone</label>
                     {{with .Form.Errors.Get "phone"}}
                     <label>{{.}}</label>
                     {{end}}
-                    <input type="text" name="phone" id="phone" value="{{$res.Phone}}">
+                    <input type="text" name="phone" id="phone" value="{{$res.Phone}}" class="c-attribute">
                 </div>
-                <div>
+                <div class="d-flex justify-between align-center d-gap m-d5">
                     <label for="email">Email</label>
                     {{with .Form.Errors.Get "email"}}
                     <label>{{.}}</label>
                     {{end}}
-                    <input type="text" name="email" id="email" value="{{$res.Email}}">
+                    <input type="text" name="email" id="email" value="{{$res.Email}}" class="c-attribute">
                 </div>
-                <div>
+                <div class="d-flex justify-between align-center d-gap m-d5">
                     <label for="website">Website</label>
                     {{with .Form.Errors.Get "website"}}
                     <label>{{.}}</label>
                     {{end}}
-                    <input type="text" name="website" id="website" value="{{$res.Website}}">
+                    <input type="text" name="website" id="website" value="{{$res.Website}}" class="c-attribute">
                 </div>
-                <div>
+                <div class="d-flex justify-between align-center d-gap m-d5">
                     <label for="established_date">Established Date: </label>
                     {{with .Form.Errors.Get "established_date"}}
                     <label>{{.}}</label>
                     {{end}}
-                    <input type="text" name="established_date" id="established_date" value="{{$res.EstablishedDate}}">
+                    <input type="text" name="established_date" id="established_date" value="{{$res.EstablishedDate}}" class="c-attribute">
                 </div>
-                <div>
+                <div class="d-flex justify-between align-center d-gap m-d5">
                     <label for="latitude">Latitude</label>
                     {{with .Form.Errors.Get "latitude"}}
                     <label>{{.}}</label>
                     {{end}}
-                    <input type="text" name="latitude" id="latitude" value="{{$res.Latitude}}">
+                    <input type="text" name="latitude" id="latitude" value="{{$res.Latitude}}" class="c-attribute">
                 </div>
-                <div>
+                <div class="d-flex justify-between align-center d-gap m-d5">
                     <label for="longitude">Longitude</label>
                     {{with .Form.Errors.Get "longitude"}}
                     <label>{{.}}</label>
                     {{end}}
-                    <input type="text" name="longitude" id="longitude" value="{{$res.Longitude}}">
+                    <input type="text" name="longitude" id="longitude" value="{{$res.Longitude}}" class="c-attribute">
                 </div>
-                <input type="submit" value="Create">
+                <input type="submit" value="Create" class="add-button">
             </form>
         </div>
     </div>

@@ -32,17 +32,17 @@
                     <td>{{.Email}}</td>
                     <td>{{.Subject}}</td>
                     <td>{{DateOnly .SubmittedAt}}</td>
-                    <td>
-                        <button><a href="/admin/contacts/detail/{{.ID}}">Detail</a></button>
-                        <button onclick="openModal('delete-{{.ID}}')">Delete</button>
+                    <td class="d-flex">
+                        <button><a href="/admin/contacts/detail/{{.ID}}"><img src="/static/images/edit-icon.png" alt="update-icon"/></a></button>
+                        <button onclick="openModal('delete-{{.ID}}')"><img width="19px" height="19px" src="/static/images/del-icon.png" alt="del-icon" /></button>
                         <div id="delete-{{.ID}}" class="jw-modal">
                             <div class="jw-modal-body">
 
                                 <form action="/admin/contacts/detail/{{.ID}}/delete" method="post">
                                     <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
                                     <p>Do you want to delete contact by @{{.FirstName}}?</p>
-                                    <input type="submit" value="Delete">
-                                    <button type="button" onclick="closeModal()">No</button>
+                                    <input type="submit" value="Delete" class="del-button">
+                                    <button type="button" onclick="closeModal()" class="add-button">No</button>
                                 </form>
                             </div>
                         </div>

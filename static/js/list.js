@@ -4,9 +4,10 @@ const user_id = document.getElementById("user_id")
 const book_id = document.getElementById("book_id")
 const csrfToken = document.querySelector('meta[name="csrf_token"]').getAttribute('content')
 const host = window.location.host
+const protocol = window.location.protocol
 
 const ReadListExists = async () => {
-    const response = await fetch(`http://${host}/api/books/${book_id.value}/read`, {
+    const response = await fetch(`${protocol}//${host}/api/books/${book_id.value}/read`, {
         method: 'GET',
         headers: {
             "Content-Type": "application/json",
@@ -24,7 +25,7 @@ const ReadListExists = async () => {
 ReadListExists()
 
 const addToReadList = async () => {
-    const response = await fetch(`http://${host}/api/books/${book_id.value}/read`,{
+    const response = await fetch(`${protocol}//${host}/api/books/${book_id.value}/read`,{
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
@@ -34,7 +35,7 @@ const addToReadList = async () => {
 }
 
 const removeFromReadList = async () => {
-    const response = await fetch(`http://${host}/api/books/${book_id.value}/read`,{
+    const response = await fetch(`${protocol}//${host}/api/books/${book_id.value}/read`,{
         method: 'DELETE',
         headers: {
             "Content-Type": "application/json",
@@ -60,7 +61,7 @@ const addBuyList = document.getElementById("addBuyList")
 const removeBuyList = document.getElementById("removeBuyList")
 
 const BuyListExists = async () => {
-    const response = await fetch(`http://${host}/api/books/${book_id.value}/buy`, {
+    const response = await fetch(`${protocol}//${host}/api/books/${book_id.value}/buy`, {
         method: 'GET',
         headers: {
             "Content-Type": "application/json",
@@ -78,7 +79,7 @@ const BuyListExists = async () => {
 BuyListExists()
 
 const addToBuyList = async () => {
-    const response = await fetch(`http://${host}/api/books/${book_id.value}/buy`,{
+    const response = await fetch(`${protocol}//${host}/api/books/${book_id.value}/buy`,{
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
@@ -88,7 +89,7 @@ const addToBuyList = async () => {
 }
 
 const removeFromBuyList = async () => {
-    const response = await fetch(`http://${host}/api/books/${book_id.value}/buy`,{
+    const response = await fetch(`${protocol}//${host}/api/books/${book_id.value}/buy`,{
         method: 'DELETE',
         headers: {
             "Content-Type": "application/json",

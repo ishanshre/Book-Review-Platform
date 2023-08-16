@@ -247,7 +247,7 @@ header {
 }
 
 .dropdown_menu.open {
-  height: 275px;
+  height: fit-content;
   ;
 }
 
@@ -518,7 +518,8 @@ header {
 
 @media (max-width: 992px) {
   .dropdown_menu {
-    left: 2rem;
+    left: 0rem;
+    right: 0rem;
     width: unset;
   }
 }

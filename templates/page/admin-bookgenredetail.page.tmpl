@@ -15,10 +15,10 @@
     <div>
         <h1>Book Genre Detail</h1>
     </div>
-    <div>
+    <div class="d-flex d-flex-col d-gap justify-center align-center">
         <form action="/admin/bookGenres/detail/{{$book.ID}}/{{$genre.ID}}/update" method="post">
             <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-            <div>
+            <div class="d-flex d-gap m-d5 justify-center align-center">
                 <label for="book_id">Book: </label>
                 <select name="book_id" id="book_id">
                     <option value="{{$book.ID}}">{{$book.Title}}</option>
@@ -33,7 +33,7 @@
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <div>
+            <div class="d-flex d-gap m-d5 justify-center align-center">
                 <label for="genre_id">Genre: </label>
                 <select name="genre_id" id="genre_id">
                     <option value="{{$genre.ID}}">{{$genre.Title}}</option>
@@ -47,8 +47,8 @@
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <input type="submit" value="Update">
-            <button type="button" onclick="openModal('delete-{{$book.ID}}-{{$genre.ID}}')">Delete</button>
+            <input type="submit" value="Update" class="add-button">
+            <button type="button" onclick="openModal('delete-{{$book.ID}}-{{$genre.ID}}')" class="del-button">Delete</button>
         </form>
 
         <div  id="delete-{{$book.ID}}-{{$genre.ID}}" class="jw-modal">
@@ -56,8 +56,8 @@
                 <form action="/admin/bookGenres/detail/{{$book.ID}}/{{$genre.ID}}/delete" method="post"> 
                     <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
                     <p>Do you want to delete this relationship?</p>
-                    <input type="submit" value="Delete">
-                    <button type="button" onclick="closeModal()">No</button>
+                    <input type="submit" value="Delete" class="del-button">
+                    <button type="button" onclick="closeModal()" class="add-button">No</button>
                 </form>
             </div>
         </div>

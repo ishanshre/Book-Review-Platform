@@ -11,11 +11,11 @@
 {{$allBooks := index .Data "allBooks"}}
 {{$allAuthors := index .Data "allAuthors"}}
 <div>
-    <div>
+    <div class="d-flex d-flex-col align-center text-center d-gap">
         <h1>Add Book Author</h1>
-        <form action="/admin/bookAuthors/create" method="post" id="createForm">
+        <form action="/admin/bookAuthors/create" method="post" id="createForm" class="d-flex d-flex-col align-center d-gap">
             <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-            <div>
+            <div class="d-flex d-gap justify-between align-center">
                 <label for="book_id">Book: </label>
                 <select name="book_id" id="book_id">
                     {{range $allBooks}}
@@ -26,7 +26,7 @@
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <div>
+            <div class="d-flex d-gap justify-between align-center">
                 <label for="author_id">Author: </label>
                 <select name="author_id" id="author_id">
                     {{range $allAuthors}}
@@ -37,7 +37,7 @@
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <input type="submit" value="Add">
+            <input type="submit" value="Add" class="add-button">
         </form>
     </div>
     <section class="container d-flex-col d-dark b-radius m-br2">
@@ -56,8 +56,7 @@
         </div>
     </section>
     <div class="main-content-title">
-        <h1>All Users</h1>
-        <button class="add-button"><a href="/admin/users/create">ADD</a></button>
+        <h1>All Book Authors</h1>
     </div>
     
     <!-- This is the table section -->
