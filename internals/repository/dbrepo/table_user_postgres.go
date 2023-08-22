@@ -3,7 +3,6 @@ package dbrepo
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
@@ -235,8 +234,6 @@ func (m *postgresDBRepo) InsertUser(u *models.User) error {
 	if err := res.Scan(&id); err != nil {
 		return err
 	}
-
-	log.Println(id)
 	kycquery := `
 		INSERT INTO kycs (user_id, first_name, last_name, gender, address, phone, profile_pic, dob, document_number, document_front, document_back, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 	`
