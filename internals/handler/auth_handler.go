@@ -300,6 +300,7 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 	update_kyc.DateOfBirth = dob
 	update_kyc.DocumentType = r.Form.Get("document_type")
 	update_kyc.DocumentNumber = r.Form.Get("document_number")
+	update_kyc.IsValidated = false
 	update_kyc.UpdatedAt = time.Now()
 	update_kyc.ID = userKyc.Kyc.ID
 	document_front, err := helpers.MediaPicUpload(r, "document_front", userKyc.User.Username)

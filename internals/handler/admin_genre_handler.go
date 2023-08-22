@@ -120,7 +120,7 @@ func (m *Repository) AdminGetGenreByID(w http.ResponseWriter, r *http.Request) {
 	// If any error occurs, a server error is returned
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 
@@ -152,7 +152,7 @@ func (m *Repository) PostAdminGetGenreByID(w http.ResponseWriter, r *http.Reques
 	// If any error occurs, a server error is returned
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 
@@ -228,7 +228,7 @@ func (m *Repository) AdminDeleteGenre(w http.ResponseWriter, r *http.Request) {
 	// If any error occurs, a server error is returned
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 

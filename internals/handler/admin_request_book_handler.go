@@ -41,7 +41,7 @@ func (m *Repository) AdminAllRequestedBookssApi(w http.ResponseWriter, r *http.R
 func (m *Repository) AdminDeleteRequestedBook(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 

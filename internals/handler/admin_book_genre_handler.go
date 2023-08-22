@@ -48,12 +48,12 @@ func (m *Repository) AdminAllBookGenre(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) PostAdminDeleteBookGenre(w http.ResponseWriter, r *http.Request) {
 	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	genre_id, err := strconv.Atoi(chi.URLParam(r, "genre_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	if err := m.DB.DeleteBookGenre(book_id, genre_id); err != nil {
@@ -71,12 +71,12 @@ func (m *Repository) PostAdminDeleteBookGenre(w http.ResponseWriter, r *http.Req
 func (m *Repository) AdminGetBookGenreByID(w http.ResponseWriter, r *http.Request) {
 	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	genre_id, err := strconv.Atoi(chi.URLParam(r, "genre_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	bookGenre, err := m.DB.GetBookGenreByID(book_id, genre_id)
@@ -128,12 +128,12 @@ func (m *Repository) AdminGetBookGenreByID(w http.ResponseWriter, r *http.Reques
 func (m *Repository) PostAdminUpdateBookGenre(w http.ResponseWriter, r *http.Request) {
 	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	genre_id, err := strconv.Atoi(chi.URLParam(r, "genre_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	if err := r.ParseForm(); err != nil {

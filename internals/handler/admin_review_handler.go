@@ -189,7 +189,7 @@ func (m *Repository) PostAdminDeleteReview(w http.ResponseWriter, r *http.Reques
 	// If any error occurs, a server error is returned.
 	review_id, err := strconv.Atoi(chi.URLParam(r, "review_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 
@@ -214,7 +214,7 @@ func (m *Repository) AdminGetReviewByID(w http.ResponseWriter, r *http.Request) 
 	// Return a server error if any error occurs while parsing them
 	review_id, err := strconv.Atoi(chi.URLParam(r, "review_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 
@@ -275,7 +275,7 @@ func (m *Repository) PostAdminUpdateReview(w http.ResponseWriter, r *http.Reques
 	// If any error occurs, a server error is returned
 	review_id, err := strconv.Atoi(chi.URLParam(r, "review_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 

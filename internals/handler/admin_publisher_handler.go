@@ -52,7 +52,7 @@ func (m *Repository) AdminAllPublisherFilterApi(w http.ResponseWriter, r *http.R
 func (m *Repository) PostAdminDeletePublisher(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	if err := m.DB.DeletePublisher(id); err != nil {
@@ -73,7 +73,7 @@ func (m *Repository) PostAdminDeletePublisher(w http.ResponseWriter, r *http.Req
 func (m *Repository) AdminGetPublisherDetailByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	publisher, err := m.DB.GetPublisherByID(id)
@@ -105,7 +105,7 @@ func (m *Repository) AdminGetPublisherDetailByID(w http.ResponseWriter, r *http.
 func (m *Repository) PostAdminUpdatePublisher(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	if err := r.ParseForm(); err != nil {
