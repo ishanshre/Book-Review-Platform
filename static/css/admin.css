@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,100;1,300;1,400;1,500&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,100;1,300;1,400;1,500&display=swap'); */
 
 /* Box sizing rules*/
 *,
@@ -167,6 +167,10 @@ a {
 .d-gap {
   gap: 20px;
 }
+
+.d-gap-1 {
+  gap: 1px;
+}
 .w-75 {
   width: 100%;
 }
@@ -180,6 +184,14 @@ a {
 
 .w-20r {
   width: 20rem;
+}
+
+.h-1r {
+  height: 1rem;
+}
+
+.w-1r {
+  width: 1rem;
 }
 
 .h-fit {
