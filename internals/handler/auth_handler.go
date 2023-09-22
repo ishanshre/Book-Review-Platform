@@ -339,6 +339,16 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	m.App.Session.Put(r.Context(), "flash", "KYC Updated! Please wait for admin to verify")
+	msg := models.MailData{
+		To:      "admin@gmail.com",
+		From:    userKyc.User.Email,
+		Subject: fmt.Sprintf("Please check and validate kyc for username: %s", userKyc.User.Username),
+		Content: fmt.Sprintf(`
+		     <h1>Update and Validate User's Kyc: %s</h1>
+			 <p>Please check, validate the updated KYC of user at <a href="%s/admin/users/detail/%s">@%s</a></p>
+		`, userKyc.User.Username, r.Host, userKyc.User.Username, userKyc.User.Username),
+	}
+	m.App.MailChan <- msg
 	http.Redirect(w, r, "/profile", http.StatusSeeOther)
 }
 
