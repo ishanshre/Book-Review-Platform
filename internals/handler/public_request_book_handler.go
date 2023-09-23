@@ -27,17 +27,16 @@ func (m *Repository) PostRequestBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	form := forms.New(r.PostForm)
+	requested_by := m.App.Session.GetInt(r.Context(), "user_id")
 	requestedBook := models.RequestedBook{
-		BookTitle:      r.Form.Get("book_title"),
-		Author:         r.Form.Get("author"),
-		RequestedEmail: r.Form.Get("requested_email"),
-		RequestedDate:  time.Now(),
+		BookTitle:     r.Form.Get("book_title"),
+		Author:        r.Form.Get("author"),
+		RequestedBy:   requested_by,
+		RequestedDate: time.Now(),
 	}
-	form.Required("book_title", "author", "requested_email")
+	form.Required("book_title", "author")
 	form.MaxLength("book_title", 255)
 	form.MaxLength("author", 255)
-	form.MaxLength("requested_email", 255)
-	form.IsEmail("requested_email")
 	data := make(map[string]interface{})
 	data["requestBook"] = requestedBook
 	if !form.Valid() {
@@ -51,9 +50,14 @@ func (m *Repository) PostRequestBook(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
+	user, err := m.DB.GetGlobalUserByIDAny(requested_by)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
 	msg := models.MailData{
 		To:      "admin@gmail.com",
-		From:    requestedBook.RequestedEmail,
+		From:    user.Email,
 		Subject: fmt.Sprintf("Request for %s", requestedBook.BookTitle),
 		Content: fmt.Sprintf("Requesting for book %s by %s", requestedBook.BookTitle, requestedBook.Author),
 	}

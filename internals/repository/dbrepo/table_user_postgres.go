@@ -57,7 +57,7 @@ func (m *postgresDBRepo) AllReaders(limit, offset int) ([]*models.User, error) {
 	query := `
 		SELECT id, username, email
 		FROM users
-		WHERE access_level=2;
+		WHERE access_level=3;
 		LIMIT=$1 OFFSET=$2
 	`
 	rows, err := m.DB.QueryContext(ctx, query, limit, offset)

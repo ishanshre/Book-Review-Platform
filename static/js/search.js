@@ -361,13 +361,13 @@ const display = async () => {
     } else if (searchType === "admin-requestedbooks") {
         let requestedBooks = data.requested_books;
         let displayItems = requestedBooks.map((obj)=> {
-            const { id, book_title, author, requested_email, requested_date } = obj
+            const { id, book_title, author, requested_by, requested_date } = obj
             return `
                 <tr>
                     <td>${id}</td>
                     <td>${book_title}</td>
                     <td>${author}</td>
-                    <td>${requested_email}</td>
+                    <td>${requested_by.username}</td>
                     <td>${requested_date}</td>
                     <td>
                         <div class="action-icons">
