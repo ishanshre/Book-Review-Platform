@@ -254,6 +254,7 @@ func Router(app *config.AppConfig) http.Handler {
 		// Request Book handler
 		mux.Get("/request-books", handler.Repo.AdminAllRequestBookList)
 		mux.Post("/request-books/detail/{id}/delete", handler.Repo.AdminDeleteRequestedBook)
+		mux.Post("/{user_id}/request-books/detail/{request_id}/update", handler.Repo.PostAdminUpdateRequestBookStatus)
 	})
 	return mux
 }

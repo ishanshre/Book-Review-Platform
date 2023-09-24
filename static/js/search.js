@@ -361,7 +361,7 @@ const display = async () => {
     } else if (searchType === "admin-requestedbooks") {
         let requestedBooks = data.requested_books;
         let displayItems = requestedBooks.map((obj)=> {
-            const { id, book_title, author, requested_by, requested_date } = obj
+            const { id, book_title, author, requested_by, requested_date, is_added } = obj
             return `
                 <tr>
                     <td>${id}</td>
@@ -369,9 +369,19 @@ const display = async () => {
                     <td>${author}</td>
                     <td>${requested_by.username}</td>
                     <td>${requested_date}</td>
+                    <td>${is_added}</td>
                     <td>
                         <div class="action-icons">
+                        <form action="/admin/${requested_by.id}/request-books/detail/${id}/update" method="post">
+                        <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
+                        <button type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 c-black">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                        </button>
+                            </form>
                             <button ><img width="19px" height="19px" src="/static/images/del-icon.png" alt="del-icon" onclick="openModal('delete-${id}')" /></button>
+
 
                             <div class="jw-modal" id="delete-${id}">
                                 <div class="jw-modal-body">

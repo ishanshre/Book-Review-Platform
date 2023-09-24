@@ -157,3 +157,18 @@ func (m *postgresDBRepo) RequestedBooksListFilter(limit, page int, searchKey, so
 		RequestedBooks: requestedBooks,
 	}, nil
 }
+
+func (m *postgresDBRepo) UpdateBookRequestStatus(request_id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `
+		UPDATE request_books
+		SET is_added = true
+		WHERE id = $1
+	`
+	_, err := m.DB.ExecContext(ctx, stmt, request_id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

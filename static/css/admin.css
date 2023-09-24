@@ -252,6 +252,17 @@ a {
   text-align: center;
 }
 
+.w-6 {
+  width: 2rem;
+}
+
+.h-6 {
+  height: 2rem;
+}
+
+.c-black {
+  color: black;
+}
 
 .b-radius {
   border-radius: 25px;
@@ -388,7 +399,7 @@ a {
 /* Main table design section */
 .main-content-table{
   width: 105%;
-  overflow: auto;
+  /* overflow: auto; */
 }
 
 table{

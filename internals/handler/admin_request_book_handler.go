@@ -55,3 +55,33 @@ func (m *Repository) AdminDeleteRequestedBook(w http.ResponseWriter, r *http.Req
 	// Redirect the admin to all users page
 	http.Redirect(w, r, "/admin/request-books", http.StatusSeeOther)
 }
+
+func (m *Repository) PostAdminUpdateRequestBookStatus(w http.ResponseWriter, r *http.Request) {
+	request_id, err := strconv.Atoi(chi.URLParam(r, "request_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user_id, err := strconv.Atoi(chi.URLParam(r, "user_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	if err := m.DB.UpdateBookRequestStatus(request_id); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	user, err := m.DB.GetGlobalUserByIDAny(user_id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	msg := models.MailData{
+		From:    "admin@bookworm.com",
+		To:      user.Email,
+		Subject: "Your requested book added",
+		Content: `<p>Your requested book has been added to the platform.</p>`,
+	}
+	m.App.MailChan <- msg
+	http.Redirect(w, r, "/admin/request-books", http.StatusSeeOther)
+}
