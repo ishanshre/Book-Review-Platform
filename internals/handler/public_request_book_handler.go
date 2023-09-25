@@ -56,7 +56,7 @@ func (m *Repository) PostRequestBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	msg := models.MailData{
-		To:      "admin@gmail.com",
+		To:      m.App.AdminEmail,
 		From:    user.Email,
 		Subject: fmt.Sprintf("Request for %s", requestedBook.BookTitle),
 		Content: fmt.Sprintf("Requesting for book %s by %s", requestedBook.BookTitle, requestedBook.Author),

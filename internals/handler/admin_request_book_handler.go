@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -77,11 +78,12 @@ func (m *Repository) PostAdminUpdateRequestBookStatus(w http.ResponseWriter, r *
 		return
 	}
 	msg := models.MailData{
-		From:    "admin@bookworm.com",
+		From:    m.App.AdminEmail,
 		To:      user.Email,
 		Subject: "Your requested book added",
 		Content: `<p>Your requested book has been added to the platform.</p>`,
 	}
 	m.App.MailChan <- msg
+	m.App.Session.Put(r.Context(), "flash", fmt.Sprintf("Book Added Email Notification Sent to %s", user.Email))
 	http.Redirect(w, r, "/admin/request-books", http.StatusSeeOther)
 }

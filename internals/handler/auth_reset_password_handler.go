@@ -109,7 +109,7 @@ func (m *Repository) PostResetPassword(w http.ResponseWriter, r *http.Request) {
 	`, token, r.Header["Origin"][0])
 	msg := models.MailData{
 		To:      reset_user.Email,
-		From:    "admin@bookworm.com",
+		From:    m.App.AdminEmail,
 		Subject: "Change Password",
 		Content: body,
 	}
@@ -229,7 +229,7 @@ func (m *Repository) PostResetPasswordChange(w http.ResponseWriter, r *http.Requ
 	`, r.Header["Origin"][0])
 	msg := models.MailData{
 		To:      resetToken.Email,
-		From:    "admin@bookworm.com",
+		From:    m.App.AdminEmail,
 		Subject: "Password Reset Successfull",
 		Content: body,
 	}

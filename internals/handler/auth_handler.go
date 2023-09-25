@@ -187,7 +187,7 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 	}
 	msg := models.MailData{
 		To:      register.Email,
-		From:    "admin@gmail.com",
+		From:    m.App.AdminEmail,
 		Subject: fmt.Sprintf("Welcome to BookWorm @%s!", register.Username),
 		Content: fmt.Sprintf(`
 			<h1>Welcome to BookWorm @%s!</h1>
@@ -340,7 +340,7 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 	}
 	m.App.Session.Put(r.Context(), "flash", "KYC Updated! Please wait for admin to verify")
 	msg := models.MailData{
-		To:      "admin@gmail.com",
+		To:      m.App.AdminEmail,
 		From:    userKyc.User.Email,
 		Subject: fmt.Sprintf("Please check and validate kyc for username: %s", userKyc.User.Username),
 		Content: fmt.Sprintf(`
