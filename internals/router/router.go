@@ -33,6 +33,7 @@ func Router(app *config.AppConfig) http.Handler {
 
 	// Get route for Home page
 	mux.Get("/", handler.Repo.Home)
+	mux.Get("/about-us", handler.Repo.PublicAboutUs)
 
 	mux.NotFound(handler.Repo.CustomNotFoundError)
 
