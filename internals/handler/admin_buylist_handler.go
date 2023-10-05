@@ -73,12 +73,12 @@ func (m *Repository) PostAdminInsertBuyList(w http.ResponseWriter, r *http.Reque
 
 	book_id, err := strconv.Atoi(r.Form.Get("book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	user_id, err := strconv.Atoi(r.Form.Get("user_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 
@@ -144,12 +144,12 @@ func (m *Repository) AdminGetBuyListByID(w http.ResponseWriter, r *http.Request)
 	// Return a server error if any error occurs while parsing them
 	user_id, err := strconv.Atoi(chi.URLParam(r, "user_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 
@@ -214,12 +214,12 @@ func (m *Repository) PostAdminDeleteBuyList(w http.ResponseWriter, r *http.Reque
 	// If any error occurs, a server error is returned.
 	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	user_id, err := strconv.Atoi(chi.URLParam(r, "user_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 
@@ -243,12 +243,12 @@ func (m *Repository) PostAdminUpdateBuyList(w http.ResponseWriter, r *http.Reque
 	// If any error occurs, a server error is returned
 	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	user_id, err := strconv.Atoi(chi.URLParam(r, "user_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 

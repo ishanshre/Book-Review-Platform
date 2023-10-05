@@ -2,7 +2,6 @@ package dbrepo
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/ishanshre/Book-Review-Platform/internals/models"
@@ -38,16 +37,47 @@ func (m *postgresDBRepo) GetKycByUserID(user_id int) (*models.Kyc, error) {
 }
 
 func (m *postgresDBRepo) GetUserWithKyc(id int) (*models.UserKycData, error) {
-	_, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	user, err := m.GetUserByID(id)
-	if err != nil {
+	query := `
+		select u.id, u.username, u.email, u.password, u.access_level,
+			u.created_at, u.updated_at, u.last_login, k.id, k.user_id, k.first_name,
+			k.last_name, k.gender, k.address, k.phone, k.profile_pic, k.dob, k.document_number,
+			k.document_front, k.document_back, k.is_validated, k.updated_at
+		from users as u
+		join kycs as k ON u.id=k.user_id
+		where u.id = $1
+	`
+	user := &models.User{}
+	kyc := &models.Kyc{}
+	row := m.DB.QueryRowContext(ctx, query, id)
+	if err := row.Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.Password,
+		&user.AccessLevel,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+		&user.LastLogin,
+		&kyc.ID,
+		&kyc.UserID,
+		&kyc.FirstName,
+		&kyc.LastName,
+		&kyc.Gender,
+		&kyc.Address,
+		&kyc.Phone,
+		&kyc.ProfilePic,
+		&kyc.DateOfBirth,
+		&kyc.DocumentNumber,
+		&kyc.DocumentFront,
+		&kyc.DocumentBack,
+		&kyc.IsValidated,
+		&kyc.UpdatedAt,
+	); err != nil {
 		return nil, err
 	}
-	kyc, err := m.GetKycByUserID(user.ID)
-	if err != nil {
-		return nil, err
-	}
+
 	userWithKyc := &models.UserKycData{}
 	userWithKyc.User = user
 	userWithKyc.Kyc = kyc
@@ -84,11 +114,11 @@ func (m *postgresDBRepo) AdminKycUpdate(update *models.Kyc) error {
 	stmt := `
 		UPDATE kycs 
 		SET first_name = $2, last_name = $3, gender = $4, phone = $5, address = $6, dob = $7, is_validated = $8, document_type = $9, document_number = $10, updated_at = $11
-		WHERE id=$1`
-	res, err := m.DB.ExecContext(
+		WHERE user_id=$1`
+	_, err := m.DB.ExecContext(
 		ctx,
 		stmt,
-		update.ID,
+		update.UserID,
 		update.FirstName,
 		update.LastName,
 		update.Gender,
@@ -103,10 +133,6 @@ func (m *postgresDBRepo) AdminKycUpdate(update *models.Kyc) error {
 	if err != nil {
 		return err
 	}
-	affected, _ := res.RowsAffected()
-	if affected == 0 {
-		return errors.New("not updateed")
-	}
 	return nil
 }
 
@@ -115,7 +141,7 @@ func (m *postgresDBRepo) PublicKycUpdate(update *models.Kyc) error {
 	defer cancel()
 	stmt := `
 		UPDATE kycs 
-		SET first_name = $2, last_name = $3, gender = $4, phone = $5, address = $6, dob = $7, document_type = $8, document_number = $9, document_front = $10, document_back = $11, updated_at = $12
+		SET first_name = $2, last_name = $3, gender = $4, phone = $5, address = $6, dob = $7, document_type = $8, document_number = $9, document_front = $10, document_back = $11, is_validated = $12, updated_at = $13
 		WHERE id=$1`
 	_, err := m.DB.ExecContext(
 		ctx,
@@ -131,6 +157,7 @@ func (m *postgresDBRepo) PublicKycUpdate(update *models.Kyc) error {
 		update.DocumentNumber,
 		update.DocumentFront,
 		update.DocumentBack,
+		update.IsValidated,
 		update.UpdatedAt,
 	)
 	if err != nil {

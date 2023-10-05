@@ -3,7 +3,7 @@
 {{define "title"}}Admin: Detail ReadList{{end}}
 
 {{define "css"}}
-    <link rel="stylesheet" href="/static/css/admin.css">
+<link rel="stylesheet" href="/static/css/admin.css">
 {{end}}
 
 {{define "content"}}
@@ -13,13 +13,13 @@
 {{$user := index .Data "user"}}
 {{$readList := index .Data "readList"}}
 <div>
-    <div>
+    <div class="d-flex d-flex-col d-gap justify-center align-center">
         <h1>Read List Detail</h1>
     </div>
     <div>
         <form action="/admin/readLists/detail/{{$book.ID}}/{{$user.ID}}/update" method="post">
             <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-            <div>
+            <div class="d-flex d-gap justify-center align-center m-d5">
                 <label for="book_id">Book: </label>
                 <select name="book_id" id="book_id">
                     <option value="{{$book.ID}}">{{$book.Title}}</option>
@@ -31,10 +31,10 @@
 
                 </select>
                 {{with .Form.Errors.Get "book_id"}}
-                    <label>{{.}}</label>
+                <label>{{.}}</label>
                 {{end}}
             </div>
-            <div>
+            <div class="d-flex d-gap justify-center align-center m-d5">
                 <label for="user_id">Language: </label>
                 <select name="user_id" id="user_id">
                     <option value="{{$user.ID}}">{{$user.Username}}</option>
@@ -45,27 +45,30 @@
                     {{end}}
                 </select>
                 {{with .Form.Errors.Get "user_id"}}
-                    <label>{{.}}</label>
+                <label>{{.}}</label>
                 {{end}}
             </div>
-            <p><strong>Added At: </strong>{{TimeSince $readList.CreatedAt}}</p>
-            <input type="submit" value="Update">
-            <button type="button" onclick="openModal('delete-{{$book.ID}}-{{$user.ID}}')">Delete</button>
+            <div class="d-flex d-flex-col d-gap justify-center align-center m-d5">
+                <p><strong>Added At: </strong>{{TimeSince $readList.CreatedAt}}</p>
+                <input type="submit" value="Update" class="add-button">
+                <button type="button" onclick="openModal('delete-{{$book.ID}}-{{$user.ID}}')"
+                    class="del-button">Delete</button>
+            </div>
         </form>
-        <div id="delete-{{$book.ID}}-{{$user.ID}}"  class="jw-modal">
+        <div id="delete-{{$book.ID}}-{{$user.ID}}" class="jw-modal">
             <div class="jw-modal-body">
-                <form action="/admin/readLists/detail/{{$book.ID}}/{{$user.ID}}/delete" method="post"> 
+                <form action="/admin/readLists/detail/{{$book.ID}}/{{$user.ID}}/delete" method="post">
                     <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
                     <p>Do you want to delete this relationship?</p>
-                    <input type="submit" value="Delete">
-                    <button type="button" onclick="closeModal()">No</button>
+                    <input type="submit" value="Delete" class="del-button">
+                    <button type="button" onclick="closeModal()" class="add-button">No</button>
                 </form>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 {{end}}
 
 {{define "js"}}
-    <script src="/static/js/admin.js"></script>
+<script src="/static/js/admin.js"></script>
 {{end}}

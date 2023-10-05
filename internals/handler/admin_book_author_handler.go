@@ -71,12 +71,12 @@ func (m *Repository) AdminAllBookAuthorsApi(w http.ResponseWriter, r *http.Reque
 func (m *Repository) PostAdminDeleteBookAuthor(w http.ResponseWriter, r *http.Request) {
 	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	author_id, err := strconv.Atoi(chi.URLParam(r, "author_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	if err := m.DB.DeleteBookAuthor(book_id, author_id); err != nil {
@@ -98,12 +98,12 @@ func (m *Repository) PostAdminDeleteBookAuthor(w http.ResponseWriter, r *http.Re
 func (m *Repository) AdminGetBookAuthorByID(w http.ResponseWriter, r *http.Request) {
 	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	author_id, err := strconv.Atoi(chi.URLParam(r, "author_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	bookAuthor, err := m.DB.GetBookAuthorByID(book_id, author_id)
@@ -160,12 +160,12 @@ func (m *Repository) AdminGetBookAuthorByID(w http.ResponseWriter, r *http.Reque
 func (m *Repository) PostAdminUpdateBookAuthor(w http.ResponseWriter, r *http.Request) {
 	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	author_id, err := strconv.Atoi(chi.URLParam(r, "author_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	if err := r.ParseForm(); err != nil {

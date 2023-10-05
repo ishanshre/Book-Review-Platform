@@ -1,4 +1,5 @@
 const host = window.location.host
+const protocol = window.location.protocol
 let lastPage;
 let currentPage = 1;
 const csrfToken = document.querySelector('meta[name="csrf_token"]').getAttribute('content')
@@ -10,23 +11,23 @@ const getData = async (searchType, search, order, limit) => {
     let url = window.location.pathname
     let parts = url.split("/")
     if (parts[1] === "genres") {
-        const response = await fetch(`http://${host}/api/genres?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}&genre=${parts[2]}`)
+        const response = await fetch(`${protocol}//${host}/api/genres?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}&genre=${parts[2]}`)
         const content = response.json();
         return content;
     } else if (parts[1] === "languages") {
-        const response = await fetch(`http://${host}/api/languages?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}&language=${parts[2]}`)
+        const response = await fetch(`${protocol}//${host}/api/languages?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}&language=${parts[2]}`)
         const content = response.json();
         return content;
     } else if (parts[1] === "read-list") {
-        const response = await fetch(`http://${host}/api/read-list?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}`)
+        const response = await fetch(`${protocol}//${host}/api/read-list?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}`)
         const content = response.json();
         return content;
     } else if (parts[1] === "buy-list") {
-        const response = await fetch(`http://${host}/api/buy-list?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}`)
+        const response = await fetch(`${protocol}//${host}/api/buy-list?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}`)
         const content = response.json();
         return content;
     } else {
-        const response = await fetch(`http://${host}/api/${searchType}?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}`)
+        const response = await fetch(`${protocol}//${host}/api/${searchType}?search=${search}&sort=${order}&limit=${limit}&page=${currentPage}`)
         const content = response.json();
         return content;
     }
@@ -104,8 +105,8 @@ const display = async () => {
                                     <form action="/admin/users/detail/${id}/delete" method="post">
                                         <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
                                         <p>Do you want to delete @${username}?</p>
-                                        <input type="submit" value="Delete Record">
-                                        <button type="button" onclick="closeModal()">No</button>
+                                        <input type="submit" value="Delete Record" class="del-button">
+                                        <button type="button" onclick="closeModal()" class="add-button">No</button>
                                     </form>
                                 </div>
                             </div>
@@ -134,8 +135,8 @@ const display = async () => {
                                     <form action="/admin/publishers/detail/${id}/delete" method="post">
                                         <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
                                         <p>Do you want to delete this publisher ${name}?</p>
-                                        <input type="submit" value="Delete Record">
-                                        <button type="button" onclick="closeModal()">No</button>
+                                        <input type="submit" value="Delete Record" class="del-button">
+                                        <button type="button" onclick="closeModal()" class="add-button">No</button>
                                     </form>
                                 </div>
                             </div>
@@ -163,8 +164,8 @@ const display = async () => {
                                     <form action="/admin/authors/detail/${id}/delete" method="post">
                                         <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
                                         <p>Do you want to delete this author ${first_name} ${last_name}?</p>
-                                        <input type="submit" value="Delete Record">
-                                        <button type="button" onclick="closeModal()">No</button>
+                                        <input type="submit" value="Delete Record"  class="del-button">
+                                        <button type="button" onclick="closeModal()" class="add-button">No</button>
                                     </form>
                                 </div>
                             </div>
@@ -194,8 +195,8 @@ const display = async () => {
                                     <form action="/admin/books/detail/${id}/delete" method="post">
                                         <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
                                         <p>Do you want to delete this book ${title}?</p>
-                                        <input type="submit" value="Delete Record">
-                                        <button type="button" onclick="closeModal()">No</button>
+                                        <input type="submit" value="Delete Record" class="del-button">
+                                        <button type="button" onclick="closeModal()" class="add-button">No</button>
                                     </form>
                                 </div>
                             </div>
@@ -223,8 +224,8 @@ const display = async () => {
                                     <form action="/admin/bookAuthors/detail/${book_id}/${author_id}/delete" method="post">
                                         <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
                                         <p>Do you want to delete this relationship?</p>
-                                        <input type="submit" value="Delete Record">
-                                        <button type="button" onclick="closeModal()">No</button>
+                                        <input type="submit" value="Delete Record" class="del-button">
+                                        <button type="button" onclick="closeModal()" class="add-button">No</button>
                                     </form>
                                 </div>
                             </div>
@@ -253,8 +254,8 @@ const display = async () => {
                                     <form action="/admin/readLists/detail/${book_id}/${user_id}/delete" method="post">
                                         <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
                                         <p>Do you want to delete this relationship?</p>
-                                        <input type="submit" value="Delete Record">
-                                        <button type="button" onclick="closeModal()">No</button>
+                                        <input type="submit" value="Delete Record" class="del-button">
+                                        <button type="button" onclick="closeModal()" class="add-button">No</button>
                                     </form>
                                 </div>
                             </div>
@@ -283,8 +284,8 @@ const display = async () => {
                                     <form action="/admin/buyLists/detail/${book_id}/${user_id}/delete" method="post">
                                         <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
                                         <p>Do you want to delete this relationship?</p>
-                                        <input type="submit" value="Delete Record">
-                                        <button type="button" onclick="closeModal()">No</button>
+                                        <input type="submit" value="Delete Record" class="del-button">
+                                        <button type="button" onclick="closeModal()" class="add-button">No</button>
                                     </form>
                                 </div>
                             </div>
@@ -313,8 +314,8 @@ const display = async () => {
                                     <form action="/admin/followers/detail/${author_id}/${user_id}/delete" method="post">
                                         <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
                                         <p>Do you want to delete this relationship?</p>
-                                        <input type="submit" value="Delete Record">
-                                        <button type="button" onclick="closeModal()">No</button>
+                                        <input type="submit" value="Delete Record" class="del-button">
+                                        <button type="button" onclick="closeModal()" class="add-button">No</button>
                                     </form>
                                 </div>
                             </div>
@@ -346,8 +347,8 @@ const display = async () => {
                                     <form action="/admin/reviews/detail/${id}/delete" method="post">
                                         <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
                                         <p>Do you want to delete this relationship?</p>
-                                        <input type="submit" value="Delete Record">
-                                        <button type="button" onclick="closeModal()">No</button>
+                                        <input type="submit" value="Delete Record" class="del-button">
+                                        <button type="button" onclick="closeModal()" class="add-button">No</button>
                                     </form>
                                 </div>
                             </div>
@@ -360,32 +361,50 @@ const display = async () => {
     } else if (searchType === "admin-requestedbooks") {
         let requestedBooks = data.requested_books;
         let displayItems = requestedBooks.map((obj)=> {
-            const { id, book_title, author, requested_email, requested_date } = obj
-            return `
-                <tr>
-                    <td>${id}</td>
-                    <td>${book_title}</td>
-                    <td>${author}</td>
-                    <td>${requested_email}</td>
-                    <td>${requested_date}</td>
-                    <td>
-                        <div class="action-icons">
-                            <button ><img width="19px" height="19px" src="/static/images/del-icon.png" alt="del-icon" onclick="openModal('delete-${id}')" /></button>
+            const { id, book_title, author, requested_by, requested_date, is_added } = obj
+            let actionButton = `
+            <tr>
+                <td>${id}</td>
+                <td>${book_title}</td>
+                <td>${author}</td>
+                <td>${requested_by.username}</td>
+                <td>${requested_date}</td>
+                <td>${is_added}</td>
+                <td>
+                    <div class="action-icons">
+            `
 
-                            <div class="jw-modal" id="delete-${id}">
-                                <div class="jw-modal-body">
-                                    <form action="/admin/request-books/detail/${id}/delete" method="post">
-                                        <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
-                                        <p>Do you want to delete this relationship?</p>
-                                        <input type="submit" value="Delete Record">
-                                        <button type="button" onclick="closeModal()">No</button>
-                                    </form>
-                                </div>
+            if (!is_added) {
+                actionButton += `
+                <form action="/admin/${requested_by.id}/request-books/detail/${id}/update" method="post">
+                    <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
+                    <button type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 c-black">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                    </button>
+                </form>
+                `
+            }
+            actionButton += `
+            <button ><img width="19px" height="19px" src="/static/images/del-icon.png" alt="del-icon" onclick="openModal('delete-${id}')" /></button>
+
+
+            <div class="jw-modal" id="delete-${id}">
+                            <div class="jw-modal-body">
+                                <form action="/admin/request-books/detail/${id}/delete" method="post">
+                                    <input type="hidden" name="csrf_token" id="csrf_token" value="${csrfToken}">
+                                    <p>Do you want to delete this relationship?</p>
+                                    <input type="submit" value="Delete Record" class="del-button">
+                                    <button type="button" onclick="closeModal()" class="add-button">No</button>
+                                </form>
                             </div>
                         </div>
-                    </td>
-                </tr>
+                    </div>
+                </td>
+            </tr>
             `
+            return actionButton
         }).join("")
         displayDiv.innerHTML = displayItems
     }

@@ -12,9 +12,9 @@
 {{$allAuthors := index .Data "allAuthors"}}
 {{$allUsers := index .Data "allUsers"}}
 <div>
-    <div>
+    <div class="d-flex d-flex-col d-gap align-center m-d5">
         <h1>User to follow author</h1>
-        <form action="/admin/followers/create" method="post" id="createForm">
+        <form action="/admin/followers/create" method="post" id="createForm" class="d-flex d-flex-col align-center">
             <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
             <div>
                 <label for="author_id">Author: </label>
@@ -38,7 +38,7 @@
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <input type="submit" value="Add">
+            <input type="submit" value="Add" class="add-button">
         </form>
     </div><hr>
     <section class="container d-flex-col d-dark b-radius m-br2">
@@ -56,9 +56,8 @@
             </select>
         </div>
     </section>
-    <div class="main-content-title">
-        <h1>All Users</h1>
-        <button class="add-button"><a href="/admin/users/create">ADD</a></button>
+    <div class="main-content-title d-gap align-center">
+        <h1>All Follower List</h1>
     </div>
     
     <!-- This is the table section -->

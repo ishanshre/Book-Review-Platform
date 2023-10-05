@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -57,7 +56,7 @@ func (m *Repository) AdminAllUsersApi(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) AdminGetUserDetailByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	userKyc, err := m.DB.GetUserWithKyc(id)
@@ -148,10 +147,10 @@ func (m *Repository) PostAdminUserProfileUpdate(w http.ResponseWriter, r *http.R
 	}
 	path, err := helpers.MediaPicUpload(r, "profile_pic", user.Username)
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "No Picture provided")
+		http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
 		return
 	}
-	log.Println(path)
 	if err := m.DB.UpdateProfilePic(path, id); err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -171,12 +170,14 @@ func (m *Repository) PostAdminUserDocumentUpdate(w http.ResponseWriter, r *http.
 	}
 	front_path, err := helpers.MediaPicUpload(r, "document_front", user.Username)
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "Document Front not provided")
+		http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
 		return
 	}
 	back_path, err := helpers.MediaPicUpload(r, "document_back", user.Username)
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "Document Front not provided")
+		http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
 		return
 	}
 	if err := m.DB.UpdateDocument(front_path, back_path, id); err != nil {
@@ -347,7 +348,7 @@ func (m *Repository) PostAdminKycUpdate(w http.ResponseWriter, r *http.Request) 
 	update_kyc.DocumentType = r.Form.Get("document_type")
 	update_kyc.DocumentNumber = r.Form.Get("document_number")
 	update_kyc.UpdatedAt = time.Now()
-	update_kyc.ID = id
+	update_kyc.UserID = id
 	form.Required("first_name", "last_name", "gender", "phone", "address", "date_of_birth", "is_validated", "document_type", "document_number")
 	form.MaxLength("phone", 10)
 	form.MaxLength("first_name", 50)
@@ -364,7 +365,6 @@ func (m *Repository) PostAdminKycUpdate(w http.ResponseWriter, r *http.Request) 
 	data["user"] = userKyc.User
 	data["kyc"] = update_kyc
 	if !form.Valid() {
-		log.Println("inside")
 		render.Template(w, r, "admin-userdetail.page.tmpl", &models.TemplateData{
 			Form: form,
 			Data: data,

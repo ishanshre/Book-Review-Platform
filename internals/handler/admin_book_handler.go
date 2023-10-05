@@ -57,7 +57,7 @@ func (m *Repository) AdminAllBookApi(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) PostAdminDeleteBook(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	if err := m.DB.DeleteBook(id); err != nil {
@@ -87,7 +87,7 @@ func (m *Repository) PostAdminDeleteBook(w http.ResponseWriter, r *http.Request)
 func (m *Repository) AdminGetBookDetailByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	book, err := m.DB.GetBookByID(id)
@@ -128,7 +128,7 @@ func (m *Repository) AdminInsertBook(w http.ResponseWriter, r *http.Request) {
 	var book models.Book
 	publishers, err := m.DB.AllPublishers()
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	data := make(map[string]interface{})
@@ -162,7 +162,7 @@ func (m *Repository) AdminInsertBook(w http.ResponseWriter, r *http.Request) {
 // Finally, the function redirects the user to the list of all books in the admin context.
 func (m *Repository) PostAdminInsertBook(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	form := forms.New(r.PostForm)
@@ -261,7 +261,7 @@ func (m *Repository) PostAdminInsertBook(w http.ResponseWriter, r *http.Request)
 func (m *Repository) PostAdminUpdateBook(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	if err := r.ParseForm(); err != nil {

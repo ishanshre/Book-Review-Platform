@@ -187,7 +187,7 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 	}
 	msg := models.MailData{
 		To:      register.Email,
-		From:    "admin@gmail.com",
+		From:    m.App.AdminEmail,
 		Subject: fmt.Sprintf("Welcome to BookWorm @%s!", register.Username),
 		Content: fmt.Sprintf(`
 			<h1>Welcome to BookWorm @%s!</h1>
@@ -300,6 +300,7 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 	update_kyc.DateOfBirth = dob
 	update_kyc.DocumentType = r.Form.Get("document_type")
 	update_kyc.DocumentNumber = r.Form.Get("document_number")
+	update_kyc.IsValidated = false
 	update_kyc.UpdatedAt = time.Now()
 	update_kyc.ID = userKyc.Kyc.ID
 	document_front, err := helpers.MediaPicUpload(r, "document_front", userKyc.User.Username)
@@ -338,6 +339,16 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	m.App.Session.Put(r.Context(), "flash", "KYC Updated! Please wait for admin to verify")
+	msg := models.MailData{
+		To:      m.App.AdminEmail,
+		From:    userKyc.User.Email,
+		Subject: fmt.Sprintf("Please check and validate kyc for username: %s", userKyc.User.Username),
+		Content: fmt.Sprintf(`
+		     <h1>Update and Validate User's Kyc: %s</h1>
+			 <p>Please check, validate the updated KYC of user at <a href="%s/admin/users/detail/%s">@%s</a></p>
+		`, userKyc.User.Username, r.Host, userKyc.User.Username, userKyc.User.Username),
+	}
+	m.App.MailChan <- msg
 	http.Redirect(w, r, "/profile", http.StatusSeeOther)
 }
 

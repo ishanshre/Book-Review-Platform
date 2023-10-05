@@ -8,51 +8,55 @@
 
 {{define "content"}}
 {{$res := index .Data "author"}}
-<br><hr>
+<div class="d-flex d-flex-col d-gap m-d5 align-center">
+    <h1>Author Detail</h1>
+</div>
 <div>
-    <div>
+    <div class="d-flex d-flex-col d-gap align-center">
         <form action="/admin/authors/detail/{{$res.ID}}/update" method="post">
             <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-            <div>
+            <div class="d-flex d-gap justify-between align-center m-d5">
                 <label for="first_name">First Name: </label>
-                <input type="text" name="first_name" id="first_name" value="{{$res.FirstName}}">
+                <input class="c-attribute" type="text" name="first_name" id="first_name" value="{{$res.FirstName}}">
             </div>
-            <div>
+            <div class="d-flex d-gap justify-between align-center m-d5">
                 <label for="last_name">Last Name: </label>
-                <input type="text" name="last_name" id="last_name" value="{{$res.LastName}}">
+                <input class="c-attribute" type="text" name="last_name" id="last_name" value="{{$res.LastName}}">
             </div>
-            <div>
+            <div class="d-flex d-gap justify-between align-center m-d5">
                 <label for="bio">Bio: </label>
-                <input type="text" name="bio" id="bio" value="{{$res.Bio}}">
+                <input class="c-attribute" type="text" name="bio" id="bio" value="{{$res.Bio}}">
             </div>
-            <div>
+            <div class="d-flex d-gap justify-between align-center m-d5">
                 <label for="date_of_birth">Date of Birth: </label>
-                <input type="text" name="date_of_birth" id="date_of_birth" value="{{$res.DateOfBirth}}">
+                <input class="c-attribute" type="text" name="date_of_birth" id="date_of_birth" value="{{$res.DateOfBirth}}">
             </div>
-            <div>
+            <div class="d-flex d-gap justify-between align-center m-d5">
                 <label for="email">Email: </label>
-                <input type="text" name="email" id="email" value="{{$res.Email}}">
+                <input class="c-attribute" type="text" name="email" id="email" value="{{$res.Email}}">
             </div>
-            <div>
+            <div class="d-flex d-gap justify-between align-center m-d5">
                 <label for="country_of_origin">Country of Origin: </label>
-                <input type="text" name="country_of_origin" id="country_of_origin" value="{{$res.CountryOfOrigin}}">
+                <input class="c-attribute" type="text" name="country_of_origin" id="country_of_origin" value="{{$res.CountryOfOrigin}}">
             </div>
-            <div>
+            <div class="d-flex d-gap justify-between align-center m-d5">
                 <label for="avatar">Avatar: </label>
-                <input type="text" name="avatar" id="avatar" value="{{$res.Avatar}}">
+                <input class="c-attribute" type="text" name="avatar" id="avatar" value="{{$res.Avatar}}">
             </div>
-            <input type="submit" value="update">
+            <div class="d-flex justify-center align-center">
+                <input type="submit" value="Update" class="add-button">
+            </div>
         </form>
-    <div>
-        <button onclick="openModal('delete-{{$res.ID}}')">Delete</button>
+    <div class="d-flex d-gap justify-between align-center">
+        <button onclick="openModal('delete-{{$res.ID}}')" class="del-button">Delete</button>
     </div>
     <div id="delete-{{$res.ID}}" class="jw-modal">
         <div class="jw-modal-body">
             <form action="/admin/authors/detail/{{$res.ID}}/delete" method="post">
                 <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                 <p>Do you want to delete author @{{$res.FirstName}}?</p>
-                <input type="submit" value="Delete">
-                <button type="button" onclick="closeModal()">No</button>
+                <input type="submit" value="Delete" class="del-button">
+                <button type="button" onclick="closeModal()" class="add-button">No</button>
             </form>
         </div>
     </div>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,100;1,300;1,400;1,500&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,100;1,300;1,400;1,500&display=swap'); */
 
 /* Box sizing rules*/
 *,
@@ -167,6 +167,10 @@ a {
 .d-gap {
   gap: 20px;
 }
+
+.d-gap-1 {
+  gap: 1px;
+}
 .w-75 {
   width: 100%;
 }
@@ -182,11 +186,19 @@ a {
   width: 20rem;
 }
 
+.h-1r {
+  height: 1rem;
+}
+
+.w-1r {
+  width: 1rem;
+}
+
 .h-fit {
   height: fit-content;
 }
 
-.w-git {
+.w-fit {
   width: fit-content;
 }
 .m-t5 {
@@ -240,6 +252,17 @@ a {
   text-align: center;
 }
 
+.w-6 {
+  width: 2rem;
+}
+
+.h-6 {
+  height: 2rem;
+}
+
+.c-black {
+  color: black;
+}
 
 .b-radius {
   border-radius: 25px;
@@ -260,6 +283,10 @@ a {
     font-size: var(--fs-800);
     color: var(--clr-secondary);
     font-weight: var(--fw-700);
+}
+
+.nav-header {
+  width: 100%;
 }
 
 .nav-links.closed {
@@ -292,6 +319,7 @@ a {
     box-shadow:var(--bs-1) ;
     width: clamp(200px, 15vw,256px);
     transition: transform 0.3s ease;
+    height: 100%;
 }
 
 .nav-sidebar li{
@@ -340,8 +368,8 @@ a {
 .main-content-title{
   width: auto;
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
+  justify-content: center;
+  margin-bottom: auto;
 }
 
 .add-button{
@@ -376,7 +404,7 @@ a {
 /* Main table design section */
 .main-content-table{
   width: 105%;
-  overflow: auto;
+  /* overflow: auto; */
 }
 
 table{
@@ -499,6 +527,18 @@ select:focus {
 }
 
 
+@media (max-width: 1024px) {
+  .nav-header {
+    width: 105%;
+  }
+}
+
+@media (max-width: 800px) {
+  .nav-header {
+    width: 110%;
+  }
+}
+
 /* Add a media query for screens with a maximum width of 768px */
 @media (max-width: 768px) {
   .main {
@@ -589,14 +629,12 @@ select:focus {
 
 /*  user create */
 .c-attribute{
-  display: block;
   padding: 12px 20px 12px 20px;
   width: 370px;
   background: #F7F7F7;
   border: 1px solid #D9D9D9;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.10);
   border-radius: 6px;
-  margin-bottom: 20px;
   font-size: 15px;
 }
 

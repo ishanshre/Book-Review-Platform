@@ -24,7 +24,7 @@ window.addEventListener('load', function () {
 
 
 const getList = async (listType) => {
-    const response = await fetch(`http://${window.location.host}/profile/${listType}`)
+    const response = await fetch(`${window.location.protocol}//${window.location.host}/profile/${listType}`)
     const content = await response.json()
     return content
 }

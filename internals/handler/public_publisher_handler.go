@@ -13,7 +13,7 @@ import (
 func (m *Repository) PublisherWithBooksDetailByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.PageNotFound(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 

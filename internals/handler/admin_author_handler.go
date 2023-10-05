@@ -58,7 +58,7 @@ func (m *Repository) AdminAllAuthorApi(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) PostAdminDeleteAuthor(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	if err := m.DB.DeleteAuthor(id); err != nil {
@@ -83,7 +83,7 @@ func (m *Repository) PostAdminDeleteAuthor(w http.ResponseWriter, r *http.Reques
 func (m *Repository) AdminGetAuthorDetailByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	author, err := m.DB.GetAuthorByID(id)
@@ -120,7 +120,7 @@ func (m *Repository) AdminGetAuthorDetailByID(w http.ResponseWriter, r *http.Req
 func (m *Repository) PostAdminUpdateAuthor(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	if err := r.ParseForm(); err != nil {

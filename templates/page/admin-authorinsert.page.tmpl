@@ -5,62 +5,62 @@
 {{define "content"}}
 {{$res := index .Data "author"}}
 <div>
-    <div>
+    <div class="d-flex d-flex-col d-gap align-center m-d5">
         <h1>Add New Author</h1>
     </div>
-    <div>
+    <div class="w-fit">
         <form action="/admin/authors/create" method="post" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value={{.CSRFToken}}>
-            <div>
+            <div class="d-flex justify-between align-center d-gap m-d5">
                 <label for="first_name">First Name: </label>
-                <input type="text" name="first_name" id="first_name" value="{{$res.FirstName}}">
+                <input class="c-attribute" type="text" name="first_name" id="first_name" value="{{$res.FirstName}}">
                 {{with .Form.Errors.Get "first_name"}}
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <div>
+            <div class="d-flex justify-between align-center d-gap m-d5">
                 <label for="last_name">Last Name: </label>
-                <input type="text" name="last_name" id="last_name" value="{{$res.LastName}}">
+                <input class="c-attribute" type="text" name="last_name" id="last_name" value="{{$res.LastName}}">
                 {{with .Form.Errors.Get "last_name"}}
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <div>
+            <div class="d-flex justify-between align-center d-gap m-d5">
                 <label for="bio">Bio: </label>
-                <input type="text" name="bio" id="bio" value="{{$res.Bio}}">
+                <input class="c-attribute" type="text" name="bio" id="bio" value="{{$res.Bio}}">
                 {{with .Form.Errors.Get "bio"}}
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <div>
+            <div class="d-flex justify-between align-center d-gap m-d5">
                 <label for="date_of_birth">Date of Birth (Year): </label>
-                <input type="text" name="date_of_birth" id="date_of_birth" value="{{$res.DateOfBirth}}">
+                <input class="c-attribute" type="text" name="date_of_birth" id="date_of_birth" value="{{$res.DateOfBirth}}">
                 {{with .Form.Errors.Get "date_of_birth"}}
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <div>
+            <div class="d-flex justify-between align-center d-gap m-d5">
                 <label for="email">Email: </label>
-                <input type="text" name="email" id="email" value="{{$res.Email}}">
+                <input class="c-attribute" type="text" name="email" id="email" value="{{$res.Email}}">
                 {{with .Form.Errors.Get "email"}}
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <div>
+            <div class="d-flex justify-between align-center d-gap m-d5">
                 <label for="country_of_origin">Country of Origin: </label>
-                <input type="text" name="country_of_origin" id="country_of_origin" value="{{$res.CountryOfOrigin}}">
+                <input class="c-attribute" type="text" name="country_of_origin" id="country_of_origin" value="{{$res.CountryOfOrigin}}">
                 {{with .Form.Errors.Get "country_of_origin"}}
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <div>
+            <div class="d-flex justify-between align-center d-gap m-d5">
                 <label for="avatar">Avatar: </label>
-                <input type="file" name="avatar" id="avatar" type="image/jpeg, image/png">
+                <input class="c-attribute" type="file" name="avatar" id="avatar" type="image/jpeg, image/png">
                 {{with .Form.Errors.Get "avatar"}}
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <input type="submit" value="Add Author">
+            <input type="submit" value="Add Author" class="add-button">
         </form>
     </div>
 </div>

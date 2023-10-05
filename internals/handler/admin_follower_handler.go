@@ -73,12 +73,12 @@ func (m *Repository) PostAdminInsertFollower(w http.ResponseWriter, r *http.Requ
 
 	author_id, err := strconv.Atoi(r.Form.Get("author_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	user_id, err := strconv.Atoi(r.Form.Get("user_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 
@@ -143,12 +143,12 @@ func (m *Repository) PostAdminDeleteFollow(w http.ResponseWriter, r *http.Reques
 	// If any error occurs, a server error is returned.
 	author_id, err := strconv.Atoi(chi.URLParam(r, "author_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	user_id, err := strconv.Atoi(chi.URLParam(r, "user_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 
@@ -243,12 +243,12 @@ func (m *Repository) PostAdminUpdateFollower(w http.ResponseWriter, r *http.Requ
 	// If any error occurs, a server error is returned
 	author_id, err := strconv.Atoi(chi.URLParam(r, "author_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	user_id, err := strconv.Atoi(chi.URLParam(r, "user_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 

@@ -180,4 +180,5 @@ type DatabaseRepo interface {
 	DeleteRequestBooks(id int) error
 	GetRequestBookById(id int) (*models.RequestedBook, error)
 	RequestedBooksListFilter(limit, page int, searchKey, sort string) (*models.RequestedBookFilterApi, error)
+	UpdateBookRequestStatus(request_id int) error
 }

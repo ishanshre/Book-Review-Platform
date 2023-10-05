@@ -76,12 +76,12 @@ func (m *Repository) AdminAllBookLanguage(w http.ResponseWriter, r *http.Request
 func (m *Repository) PostAdminDeleteBookLanguage(w http.ResponseWriter, r *http.Request) {
 	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	language_id, err := strconv.Atoi(chi.URLParam(r, "language_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	if err := m.DB.DeleteBookLanguage(book_id, language_id); err != nil {
@@ -104,12 +104,12 @@ func (m *Repository) AdminGetBookLanguageByID(w http.ResponseWriter, r *http.Req
 	// Return a server error if any error occurs while parsing them
 	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	language_id, err := strconv.Atoi(chi.URLParam(r, "language_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 
@@ -174,12 +174,12 @@ func (m *Repository) PostAdminUpdateBookLanguage(w http.ResponseWriter, r *http.
 	// If any error occurs, a server error is returned
 	book_id, err := strconv.Atoi(chi.URLParam(r, "book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	language_id, err := strconv.Atoi(chi.URLParam(r, "language_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 
@@ -313,12 +313,12 @@ func (m *Repository) PostAdminInsertBookLanguage(w http.ResponseWriter, r *http.
 
 	book_id, err := strconv.Atoi(r.Form.Get("book_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 	language_id, err := strconv.Atoi(r.Form.Get("language_id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		helpers.PageNotFound(w, r, err)
 		return
 	}
 

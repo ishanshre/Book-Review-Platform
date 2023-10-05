@@ -289,16 +289,25 @@ type Contact struct {
 }
 
 type RequestedBook struct {
-	ID             int       `json:"id"`
-	BookTitle      string    `json:"book_title"`
-	Author         string    `json:"author"`
-	RequestedEmail string    `json:"requested_email"`
-	RequestedDate  time.Time `json:"requested_date"`
+	ID            int       `json:"id"`
+	BookTitle     string    `json:"book_title"`
+	Author        string    `json:"author"`
+	RequestedBy   int       `json:"requested_by"`
+	RequestedDate time.Time `json:"requested_date"`
+	IsAdded       bool      `json:"is_added"`
+}
+type RequestedBookUser struct {
+	ID            int       `json:"id"`
+	BookTitle     string    `json:"book_title"`
+	Author        string    `json:"author"`
+	RequestedBy   *User     `json:"requested_by"`
+	RequestedDate time.Time `json:"requested_date"`
+	IsAdded       bool      `json:"is_added"`
 }
 
 type RequestedBookFilterApi struct {
-	Total          int              `json:"total"`
-	Page           int              `json:"page"`
-	LastPage       int              `json:"last_page"`
-	RequestedBooks []*RequestedBook `json:"requested_books"`
+	Total          int                  `json:"total"`
+	Page           int                  `json:"page"`
+	LastPage       int                  `json:"last_page"`
+	RequestedBooks []*RequestedBookUser `json:"requested_books"`
 }

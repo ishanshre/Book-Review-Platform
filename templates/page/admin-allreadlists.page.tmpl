@@ -10,9 +10,9 @@
 {{$allBooks := index .Data "allBooks"}}
 {{$allUsers := index .Data "allUsers"}}
 <div>
-    <div>
+    <div class="d-flex d-flex-col d-gap align-center m-d5">
         <h1>Add Book to User ReadList</h1>
-        <form action="/admin/readLists/create" method="post" id="createForm">
+        <form action="/admin/readLists/create" method="post" id="createForm" class="d-flex d-flex-col align-center">
             <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
             <div>
                 <label for="book_id">Book: </label>
@@ -36,9 +36,9 @@
                     <label>{{.}}</label>
                 {{end}}
             </div>
-            <input type="submit" value="Add">
+            <input type="submit" value="Add" class="add-button">
         </form>
-    </div><hr>
+    </div>
     <section class="container d-flex-col d-dark b-radius m-br2">
         <div class="d-flex justify-center d-gap search-all-books">
             <input type="hidden" id="search-type" value="admin-readlists">
@@ -54,9 +54,8 @@
             </select>
         </div>
     </section>
-    <div class="main-content-title">
-        <h1>All Users</h1>
-        <button class="add-button"><a href="/admin/users/create">ADD</a></button>
+    <div class="main-content-title align-center d-gap">
+        <h1>All Read Lists</h1>
     </div>
     
     <!-- This is the table section -->

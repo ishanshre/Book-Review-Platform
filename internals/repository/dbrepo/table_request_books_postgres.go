@@ -13,7 +13,7 @@ func (m *postgresDBRepo) InsertRequestedBook(i *models.RequestedBook) error {
 	defer cancel()
 
 	query := `
-		INSERT INTO request_books (book_title, author, requested_email, requested_date)
+		INSERT INTO request_books (book_title, author, requested_by, requested_date)
 		VALUES ($1, $2, $3, $4)
 	`
 	_, err := m.DB.ExecContext(
@@ -21,7 +21,7 @@ func (m *postgresDBRepo) InsertRequestedBook(i *models.RequestedBook) error {
 		query,
 		i.BookTitle,
 		i.Author,
-		i.RequestedEmail,
+		i.RequestedBy,
 		i.RequestedDate,
 	)
 	if err != nil {
@@ -34,7 +34,7 @@ func (m *postgresDBRepo) AllRequestBooks() ([]*models.RequestedBook, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 	defer cancel()
 	query := `
-		SELECT id, book_title, requested_date
+		SELECT id, book_title, requested_by, requested_date, is_added
 		FROM request_books
 	`
 	rows, err := m.DB.QueryContext(ctx, query)
@@ -47,7 +47,9 @@ func (m *postgresDBRepo) AllRequestBooks() ([]*models.RequestedBook, error) {
 		if err := rows.Scan(
 			&request_book.ID,
 			&request_book.BookTitle,
+			&request_book.RequestedBy,
 			&request_book.RequestedDate,
+			&request_book.IsAdded,
 		); err != nil {
 			return nil, err
 		}
@@ -77,8 +79,9 @@ func (m *postgresDBRepo) GetRequestBookById(id int) (*models.RequestedBook, erro
 		&request_book.ID,
 		&request_book.BookTitle,
 		&request_book.Author,
-		&request_book.RequestedEmail,
+		&request_book.RequestedBy,
 		&request_book.RequestedDate,
+		&request_book.IsAdded,
 	); err != nil {
 		return nil, err
 	}
@@ -97,8 +100,13 @@ func (m *postgresDBRepo) RequestedBooksListFilter(limit, page int, searchKey, so
 	}
 	offset := (page - 1) * limit
 	sql := `
-	SELECT id, book_title, author, requested_email, requested_date
-	FROM request_books
+		SELECT 
+			rb.id, rb.book_title, rb.author, u.id as user_id, u.username, u.email, rb.requested_date, rb.is_added
+		FROM 
+			request_books as rb
+		LEFT JOIN 
+			users AS u on 
+				rb.requested_by=u.id
 	`
 	countSql := `
 	SELECT 
@@ -122,18 +130,23 @@ func (m *postgresDBRepo) RequestedBooksListFilter(limit, page int, searchKey, so
 	if err != nil {
 		return nil, err
 	}
-	requestedBooks := []*models.RequestedBook{}
+	requestedBooks := []*models.RequestedBookUser{}
 	for rows.Next() {
-		requestedBook := &models.RequestedBook{}
+		requestedBook := &models.RequestedBookUser{}
+		user := &models.User{}
 		if err := rows.Scan(
 			&requestedBook.ID,
 			&requestedBook.BookTitle,
 			&requestedBook.Author,
-			&requestedBook.RequestedEmail,
+			&user.ID,
+			&user.Username,
+			&user.Email,
 			&requestedBook.RequestedDate,
+			&requestedBook.IsAdded,
 		); err != nil {
 			return nil, err
 		}
+		requestedBook.RequestedBy = user
 		requestedBooks = append(requestedBooks, requestedBook)
 	}
 	lastPage := m.CalculateLastPage(limit, count)
@@ -143,4 +156,19 @@ func (m *postgresDBRepo) RequestedBooksListFilter(limit, page int, searchKey, so
 		LastPage:       lastPage,
 		RequestedBooks: requestedBooks,
 	}, nil
+}
+
+func (m *postgresDBRepo) UpdateBookRequestStatus(request_id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `
+		UPDATE request_books
+		SET is_added = true
+		WHERE id = $1
+	`
+	_, err := m.DB.ExecContext(ctx, stmt, request_id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

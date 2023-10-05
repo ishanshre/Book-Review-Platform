@@ -14,7 +14,7 @@
             <form method="post" action="/admin/users/create">
                 <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
                 
-                <div class="from-add-user">
+                <div class="d-flex d-flex-col">
                     <input class="c-attribute" type="text" placeholder="Username" name="username"/>
                     {{with .Form.Errors.Get "username"}}
                         <label>{{.}}</label>

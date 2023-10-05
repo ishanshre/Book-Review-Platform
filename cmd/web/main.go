@@ -92,6 +92,9 @@ func Run() (*driver.DB, error) {
 		return nil, fmt.Errorf("error in loading environment files")
 	}
 
+	// Set default admin email
+	app.AdminEmail = "admin@bookworm.com"
+
 	// store the values in the session
 	gob.Register(models.User{})
 

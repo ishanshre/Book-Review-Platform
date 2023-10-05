@@ -14,20 +14,20 @@
     {{$res := index .Data "genre"}}
         <form action="/admin/genres/detail/{{$res.ID}}" method="post">
             <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
-            <input type="text" name="title" id="title" value="{{$res.Title}}">
+            <input class="c-attribute" type="text" name="title" id="title" value="{{$res.Title}}">
             {{with .Form.Errors.Get "title"}}
             <label>{{.}}</label>
             {{end}}
-            <input type="submit" value="update">
+            <input type="submit" value="update" class="add-button">
         </form>
-        <button type="button" onclick="openModal('delete-{{$res.ID}}')">Delete</button>
+        <button type="button" onclick="openModal('delete-{{$res.ID}}')" class="del-button">Delete</button>
         <div class="jw-modal" id='delete-{{$res.ID}}'>
             <div class="jw-modal-body">
                 <form action="/admin/genres/detail/{{$res.ID}}/delete" method="post">
                     <h1>Do you want to delete @{{$res.Title}}?</h1>
                     <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
-                    <input type="submit" value="Delete">
-                    <button type="button" onclick="closeModal()">No</button>
+                    <input type="submit" value="Delete" class="del-button">
+                    <button type="button" onclick="closeModal()" class="add-button">No</button>
                 </form>
             </div>
         </div>

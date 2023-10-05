@@ -8,6 +8,8 @@ import (
 	"runtime/debug"
 
 	"github.com/ishanshre/Book-Review-Platform/internals/config"
+	"github.com/ishanshre/Book-Review-Platform/internals/models"
+	"github.com/ishanshre/Book-Review-Platform/internals/render"
 )
 
 var app *config.AppConfig
@@ -70,10 +72,12 @@ func ServerError(w http.ResponseWriter, err error) {
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
 
-func PageNotFound(w http.ResponseWriter, err error) {
+func PageNotFound(w http.ResponseWriter, r *http.Request, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
 	app.ErrorLog.Println(trace)
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	w.WriteHeader(http.StatusNotFound)
+	// http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	render.Template(w, r, "error404.page.tmpl", &models.TemplateData{})
 }
 
 func Unauthorized(w http.ResponseWriter) {
