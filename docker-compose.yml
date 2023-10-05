@@ -37,13 +37,16 @@ services:
     command: ["/app/web"]
     restart: always
     volumes:
-      - ./media:/media
-      - ./public:/public
+      - media:/media
+      - public:/public
   
   nginx:
     build: ./nginx
     ports:
       - 80:80
+    volumes:
+      - media:/media
+      - public:/public
     depends_on:
       - web1
 
