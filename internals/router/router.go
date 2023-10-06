@@ -92,6 +92,9 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/user/login", handler.Repo.Login)
 		mux.Post("/user/login", handler.Repo.PostLogin)
 
+		mux.Get("/admin-login", handler.Repo.AdminLogin)
+		mux.Post("/admin-login", handler.Repo.PostAdminLogin)
+
 		mux.Get("/user/reset-password", handler.Repo.ResetPassword)
 		mux.Post("/user/reset-password", handler.Repo.PostResetPassword)
 		mux.Get("/user/reset", handler.Repo.ResetPasswordChange)

@@ -1,14 +1,14 @@
 {{template "base" .}}
 
-{{define "title"}}Login{{end}}
+{{define "title"}}Administrator Login{{end}}
 
 {{define "content"}}
 <div class="d-flex">
     <div class="container d-flex-col text-orange">
         {{$res := index .Data "user"}}
         <div class="container-box">
-            <form action="/user/login" method="post" class="form-group" novalidate>
-                <h1>Login</h1>
+            <form action="/admin-login" method="post" class="form-group" novalidate>
+                <h1>Administrator Login</h1>
                 <input type="hidden" name="csrf_token" id="csrf_token" value="{{.CSRFToken}}">
         
                 <div class="mt-3 form-container">
@@ -33,11 +33,10 @@
                         {{end}}
                     </div>
                 </div>        
-                <div class="btn-div"><input type="submit" value="Login" class="btn"></div>
+                <div class="btn-div"><input type="submit" value="Administrator Login" class="btn"></div>
             </form>
             <div class="d-flex justify-center m-t5"><a href="/user/reset-password">Forget Password?</a></div>
             <div class="d-flex justify-center m-t5 m-d5"><a href="/user/register">Don't have account?</a></div>
-            <div class="d-flex justify-center m-t5 m-d5"><a href="/admin-login">Administrator Login?</a></div>
         </div>
     </div>
 </div>
