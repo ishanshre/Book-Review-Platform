@@ -373,3 +373,15 @@ func (m *postgresDBRepo) ReviewFilter(limit, page int, searchKey, sort string) (
 		ReviewFilters: reviewFilters,
 	}, nil
 }
+
+// Get total count of reviews from the database
+func (m *postgresDBRepo) TotalReviewsCount() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT COUNT(*) FROM reviews;`
+	var count int
+	if err := m.DB.QueryRowContext(ctx, query).Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}

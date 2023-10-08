@@ -288,3 +288,14 @@ func (m *postgresDBRepo) GetAllBooksByLanguage(limit, page int, searchKey, sort,
 		Books:    books,
 	}, nil
 }
+
+func (m *postgresDBRepo) TotalLanguageCount() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT COUNT(*) FROM languages;`
+	var count int
+	if err := m.DB.QueryRowContext(ctx, query).Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}

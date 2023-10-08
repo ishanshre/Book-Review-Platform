@@ -28,6 +28,7 @@ type DatabaseRepo interface {
 
 	ChangePassword(password, email string) error
 	UserListFilter(limit, page int, searchKey, sort string) (*models.AdminUserListApi, error)
+	TotalUserCount() int
 
 	// User Kyc
 	GetKycByUserID(user_id int) (*models.Kyc, error)
@@ -54,6 +55,7 @@ type DatabaseRepo interface {
 	PublisherExistsID(id int) (bool, error)
 	GetPublisherWithBookByID(publisher_id int) (*models.PublisherWithBooksData, error)
 	AllPublishersFilter(limit, page int, searchKey, sort string) (*models.AdminPublisherListApi, error)
+	TotalPulbishersCount() (int, error)
 
 	// Author interface
 	AllAuthor() ([]*models.Author, error)
@@ -73,6 +75,7 @@ type DatabaseRepo interface {
 	DeleteLanguage(id int) error
 	GetLanguageByID(id int) (*models.Language, error)
 	LanguageExists(language string) (bool, error)
+	TotalLanguageCount() (int, error)
 
 	// book interface
 	AllBook() ([]*models.Book, error)
@@ -112,6 +115,7 @@ type DatabaseRepo interface {
 	InsertBookGenre(u *models.BookGenre) error
 	GetGenresFromBookID(book_id int) ([]*models.Genre, error)
 	GetAllBooksByGenre(limit, page int, searchKey, sort, genre string) (*models.BookApiFilter, error)
+	TotalGenresCount() (int, error)
 
 	// Book Language interface
 	AllBookLanguage() ([]*models.BookLanguage, error)
@@ -167,6 +171,7 @@ type DatabaseRepo interface {
 	GetReviewsByBookID(bookID int) ([]*models.Review, error)
 	UpdateReviewBook(update *models.Review) error
 	ReviewFilter(limit, page int, searchKey, sort string) (*models.ReviewFilterApi, error)
+	TotalReviewsCount() (int, error)
 
 	// Contact interface
 	AllContacts() ([]*models.Contact, error)

@@ -15,7 +15,24 @@ import (
 
 // AdminDashboard renders admin page for admin user only
 func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "admin-dashboard.page.tmpl", &models.TemplateData{})
+	user_count := m.DB.TotalUserCount()
+	authors_count, _ := m.DB.TotalAuthors()
+	genres_count, _ := m.DB.TotalGenresCount()
+	languages_count, _ := m.DB.TotalLanguageCount()
+	publishers_count, _ := m.DB.TotalPulbishersCount()
+	reviews_count, _ := m.DB.TotalReviewsCount()
+	books_count, _ := m.DB.TotalBooks()
+	data := make(map[string]interface{})
+	data["total_users"] = user_count
+	data["total_authors"] = authors_count
+	data["total_genres"] = genres_count
+	data["total_languages"] = languages_count
+	data["total_books"] = books_count
+	data["total_publishers"] = publishers_count
+	data["total_reviews"] = reviews_count
+	render.Template(w, r, "admin-dashboard.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
 }
 
 // AdminAllUsers is a handler that handles the HTTP request for retrieving all users in the admin panel.

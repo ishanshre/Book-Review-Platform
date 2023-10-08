@@ -484,3 +484,14 @@ func (m *postgresDBRepo) UserListFilter(limit, page int, searchKey, sort string)
 		Users:    users,
 	}, nil
 }
+
+func (m *postgresDBRepo) TotalUserCount() int {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT COUNT(*) FROM users;`
+	var count int
+	if err := m.DB.QueryRowContext(ctx, query).Scan(&count); err != nil {
+		return 0
+	}
+	return count
+}

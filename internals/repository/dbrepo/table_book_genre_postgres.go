@@ -224,3 +224,15 @@ func (m *postgresDBRepo) GetAllBooksByGenre(limit, page int, searchKey, sort, ge
 		Books:    books,
 	}, nil
 }
+
+// Get the total numbers of genres
+func (m *postgresDBRepo) TotalGenresCount() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT COUNT(*) FROM genres`
+	var count int
+	if err := m.DB.QueryRowContext(ctx, query).Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}

@@ -265,3 +265,15 @@ func (m *postgresDBRepo) AllPublishersFilter(limit, page int, searchKey, sort st
 		Publishers: publishers,
 	}, nil
 }
+
+// Get the total publishers from database
+func (m *postgresDBRepo) TotalPulbishersCount() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT COUNT(*) FROM publishers;`
+	var count int
+	if err := m.DB.QueryRowContext(ctx, query).Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}

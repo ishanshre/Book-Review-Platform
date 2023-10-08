@@ -3,7 +3,21 @@
 {{define "title"}}Admin Dashboard{{end}}
 
 {{define "content"}}
+{{$total_users := index .Data "total_users"}}
+{{$total_authors := index .Data "total_authors"}}
+{{$total_genres := index .Data "total_genres"}}
+{{$total_languages := index .Data "total_languages"}}
+{{$total_books := index .Data "total_books"}}
+{{$total_publishers := index .Data "total_publishers"}}
+{{$total_reviews := index .Data "total_reviews"}}
     <div>
         <h1>Admin Dashboard</h1>
+        <p>Total Users: {{$total_users}}</p>
+        <p>Total Authors: {{$total_authors}}</p>
+        <p>Total Genres: {{$total_genres}}</p>
+        <p>Total Languages: {{$total_languages}}</p>
+        <p>Total Books: {{$total_books}}</p>
+        <p>Total Publishers: {{$total_publishers}}</p>
+        <p>Total Reviews: {{$total_reviews}}</p>
     </div>
 {{end}}
