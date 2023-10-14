@@ -161,6 +161,7 @@ a {
 
 a:hover {
   color: rgb(255, 190, 70);
+  cursor: pointer;
 }
 
 

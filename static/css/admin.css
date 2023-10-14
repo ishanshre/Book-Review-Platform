@@ -98,6 +98,7 @@ img:not([alt]) {
     --bs-1:0px 4px 4px 0px rgba(0, 0, 0, 0.25);
       
     --fs-800:2rem;
+    --fs-600:1.5rem;
     --fs-400:1rem;
     --fs-300:0.875rem;
     --fs-200:0.75rem;
@@ -252,6 +253,17 @@ a {
   text-align: center;
 }
 
+.w-6 {
+  width: 2rem;
+}
+
+.h-6 {
+  height: 2rem;
+}
+
+.c-black {
+  color: black;
+}
 
 .b-radius {
   border-radius: 25px;
@@ -272,6 +284,10 @@ a {
     font-size: var(--fs-800);
     color: var(--clr-secondary);
     font-weight: var(--fw-700);
+}
+
+.nav-header {
+  width: 100%;
 }
 
 .nav-links.closed {
@@ -304,6 +320,7 @@ a {
     box-shadow:var(--bs-1) ;
     width: clamp(200px, 15vw,256px);
     transition: transform 0.3s ease;
+    height: 100%;
 }
 
 .nav-sidebar li{
@@ -388,7 +405,7 @@ a {
 /* Main table design section */
 .main-content-table{
   width: 105%;
-  overflow: auto;
+  /* overflow: auto; */
 }
 
 table{
@@ -510,6 +527,18 @@ select:focus {
   box-shadow: 0 0 5px rgba(94, 154, 212, 0.5);
 }
 
+
+@media (max-width: 1024px) {
+  .nav-header {
+    width: 105%;
+  }
+}
+
+@media (max-width: 800px) {
+  .nav-header {
+    width: 110%;
+  }
+}
 
 /* Add a media query for screens with a maximum width of 768px */
 @media (max-width: 768px) {
@@ -666,3 +695,23 @@ select:focus {
   cursor: pointer;
 }
 /* user end */
+
+/* Admin Dashboard */
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  grid-column: span 1;
+  padding: 3rem;
+  background-color: var(--clr-secondary);
+  text-align: center;
+  border-radius: 25px;
+  color: white;
+  font-size: var(--fs-600);
+}
+
+/* end */

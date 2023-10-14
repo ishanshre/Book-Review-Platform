@@ -37,18 +37,7 @@
                             <label class="text-danger"><small>{{.}}</small></label>
                         {{end}}
                     </div>
-                </div>        
-                <div class="mt-3 form-container">
-                    <input type="email" name="requested_email" id="requested_email" placeholder="Requested By (Email)..."
-                    class="form-control {{with .Form.Errors.Get "requested_email"}} is-invalid {{end}}"
-                    value="{{$res.RequestedEmail}}" required
-                    >
-                    <div class="error-msg">
-                        {{with .Form.Errors.Get "requested_email"}}
-                            <label class="text-danger"><small>{{.}}</small></label>
-                        {{end}}
-                    </div>
-                </div>        
+                </div>               
                 <div class="btn-div"><input type="submit" value="Request The Book" class="btn"></div>
             </form>
         </div>

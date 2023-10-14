@@ -19,4 +19,5 @@ type AppConfig struct {
 	ErrorLog      *log.Logger
 	Session       *scs.SessionManager
 	MailChan      chan models.MailData
+	AdminEmail    string
 }

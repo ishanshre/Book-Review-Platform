@@ -57,7 +57,7 @@ func (m *postgresDBRepo) AllReaders(limit, offset int) ([]*models.User, error) {
 	query := `
 		SELECT id, username, email
 		FROM users
-		WHERE access_level=2;
+		WHERE access_level=3;
 		LIMIT=$1 OFFSET=$2
 	`
 	rows, err := m.DB.QueryContext(ctx, query, limit, offset)
@@ -483,4 +483,15 @@ func (m *postgresDBRepo) UserListFilter(limit, page int, searchKey, sort string)
 		LastPage: lastPage,
 		Users:    users,
 	}, nil
+}
+
+func (m *postgresDBRepo) TotalUserCount() int {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT COUNT(*) FROM users;`
+	var count int
+	if err := m.DB.QueryRowContext(ctx, query).Scan(&count); err != nil {
+		return 0
+	}
+	return count
 }

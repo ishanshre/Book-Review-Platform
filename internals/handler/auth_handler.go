@@ -187,7 +187,7 @@ func (m *Repository) PostRegister(w http.ResponseWriter, r *http.Request) {
 	}
 	msg := models.MailData{
 		To:      register.Email,
-		From:    "admin@gmail.com",
+		From:    m.App.AdminEmail,
 		Subject: fmt.Sprintf("Welcome to BookWorm @%s!", register.Username),
 		Content: fmt.Sprintf(`
 			<h1>Welcome to BookWorm @%s!</h1>
@@ -340,7 +340,7 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 	}
 	m.App.Session.Put(r.Context(), "flash", "KYC Updated! Please wait for admin to verify")
 	msg := models.MailData{
-		To:      "admin@gmail.com",
+		To:      m.App.AdminEmail,
 		From:    userKyc.User.Email,
 		Subject: fmt.Sprintf("Please check and validate kyc for username: %s", userKyc.User.Username),
 		Content: fmt.Sprintf(`
@@ -366,4 +366,70 @@ func (m *Repository) PostUserProfilePicUpdate(w http.ResponseWriter, r *http.Req
 	}
 	m.App.Session.Put(r.Context(), "flash", "Profile Picture Updated")
 	http.Redirect(w, r, "/profile", http.StatusFound)
+}
+
+// This function handles the get method of the admin login page.
+// It renders the admin login page.
+func (m *Repository) AdminLogin(w http.ResponseWriter, r *http.Request) {
+	var emptyUser models.User
+	data := make(map[string]interface{})
+	data["user"] = emptyUser
+	render.Template(w, r, "admin_login.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+func (m *Repository) PostAdminLogin(w http.ResponseWriter, r *http.Request) {
+	_ = m.App.Session.RenewToken(r.Context())
+	if err := r.ParseForm(); err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	form := forms.New(r.PostForm)
+
+	form.Required("username", "password")
+	form.MinLength("username", 5)
+	form.MaxLength("username", 25)
+	form.MinLength("password", 8)
+	user := models.User{
+		Username: r.Form.Get("username"),
+		Password: r.Form.Get("password"),
+	}
+	data := make(map[string]interface{})
+	data["user"] = user
+	if !form.Valid() {
+		render.Template(w, r, "admin_login.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	id, access_level, is_validated, err := m.DB.Authenticate(user.Username, user.Password)
+	if err != nil {
+		form.Errors.Add("username", "Invalid username/password")
+		form.Errors.Add("password", "Invalid username/password")
+		render.Template(w, r, "admin_login.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if access_level != 1 {
+		form.Errors.Add("username", "Invalid admin username/password")
+		form.Errors.Add("password", "Invalid admin username/password")
+		render.Template(w, r, "admin_login.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	if err := m.DB.UpdateLastLogin(id); err != nil {
+		helpers.ServerError(w, err)
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		return
+	}
+	m.UpdateSession(w, r, id, access_level, user.Username, is_validated)
+	http.Redirect(w, r, "/admin", http.StatusSeeOther)
 }

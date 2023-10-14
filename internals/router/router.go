@@ -33,6 +33,7 @@ func Router(app *config.AppConfig) http.Handler {
 
 	// Get route for Home page
 	mux.Get("/", handler.Repo.Home)
+	mux.Get("/about-us", handler.Repo.PublicAboutUs)
 
 	mux.NotFound(handler.Repo.CustomNotFoundError)
 
@@ -90,6 +91,9 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Use(middleware.AuthRedirect)
 		mux.Get("/user/login", handler.Repo.Login)
 		mux.Post("/user/login", handler.Repo.PostLogin)
+
+		mux.Get("/admin-login", handler.Repo.AdminLogin)
+		mux.Post("/admin-login", handler.Repo.PostAdminLogin)
 
 		mux.Get("/user/reset-password", handler.Repo.ResetPassword)
 		mux.Post("/user/reset-password", handler.Repo.PostResetPassword)
@@ -254,6 +258,7 @@ func Router(app *config.AppConfig) http.Handler {
 		// Request Book handler
 		mux.Get("/request-books", handler.Repo.AdminAllRequestBookList)
 		mux.Post("/request-books/detail/{id}/delete", handler.Repo.AdminDeleteRequestedBook)
+		mux.Post("/{user_id}/request-books/detail/{request_id}/update", handler.Repo.PostAdminUpdateRequestBookStatus)
 	})
 	return mux
 }
