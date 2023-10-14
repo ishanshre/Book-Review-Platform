@@ -98,6 +98,7 @@ img:not([alt]) {
     --bs-1:0px 4px 4px 0px rgba(0, 0, 0, 0.25);
       
     --fs-800:2rem;
+    --fs-600:1.5rem;
     --fs-400:1rem;
     --fs-300:0.875rem;
     --fs-200:0.75rem;
@@ -694,3 +695,23 @@ select:focus {
   cursor: pointer;
 }
 /* user end */
+
+/* Admin Dashboard */
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  grid-column: span 1;
+  padding: 3rem;
+  background-color: var(--clr-secondary);
+  text-align: center;
+  border-radius: 25px;
+  color: white;
+  font-size: var(--fs-600);
+}
+
+/* end */

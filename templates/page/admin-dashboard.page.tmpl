@@ -10,14 +10,16 @@
 {{$total_books := index .Data "total_books"}}
 {{$total_publishers := index .Data "total_publishers"}}
 {{$total_reviews := index .Data "total_reviews"}}
-    <div>
-        <h1>Admin Dashboard</h1>
-        <p>Total Users: {{$total_users}}</p>
-        <p>Total Authors: {{$total_authors}}</p>
-        <p>Total Genres: {{$total_genres}}</p>
-        <p>Total Languages: {{$total_languages}}</p>
-        <p>Total Books: {{$total_books}}</p>
-        <p>Total Publishers: {{$total_publishers}}</p>
-        <p>Total Reviews: {{$total_reviews}}</p>
+    <div class="text-center">
+        <h1 style="font-size: 2rem;">Admin Dashboard</h1>
+        <div class="card-container">
+            <p class="card">Total Users: {{$total_users}}</p>
+            <p class="card">Total Authors: {{$total_authors}}</p>
+            <p class="card">Total Genres: {{$total_genres}}</p>
+            <p class="card">Total Languages: {{$total_languages}}</p>
+            <p class="card">Total Books: {{$total_books}}</p>
+            <p class="card">Total Publishers: {{$total_publishers}}</p>
+            <p class="card">Total Reviews: {{$total_reviews}}</p>
+        </div>
     </div>
 {{end}}
