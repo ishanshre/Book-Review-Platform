@@ -357,7 +357,9 @@ func (m *Repository) PostUserProfilePicUpdate(w http.ResponseWriter, r *http.Req
 	user_id := m.App.Session.GetInt(r.Context(), "user_id")
 	path, err := helpers.MediaPicUpload(r, "profile_pic", username)
 	if err != nil {
-		helpers.ServerError(w, err)
+		// helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "Please Add a picture to upload")
+		http.Redirect(w, r, "/profile", http.StatusSeeOther)
 		return
 	}
 	if err := m.DB.UpdateProfilePic(path, user_id); err != nil {
