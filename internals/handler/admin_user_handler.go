@@ -392,6 +392,27 @@ func (m *Repository) PostAdminKycUpdate(w http.ResponseWriter, r *http.Request) 
 		helpers.ServerError(w, err)
 		return
 	}
+	if update_kyc.IsValidated {
+		msg := models.MailData{
+			From:    m.App.AdminEmail,
+			To:      userKyc.User.Email,
+			Subject: "KYC Verified. Please enjoy our services. Thank You!",
+			Content: fmt.Sprintf(`
+			<h4>Dear %s,</h4>
+			<p>
+			We are pleased to inform you that your Know Your Customer (KYC) verification process has been successfully completed. Your account is now verified, ensuring a secure and reliable experience with our services.
+			Thank you for providing the necessary documents and information to facilitate this process. KYC verification is a crucial step in ensuring the safety and security of our platform for all users.
+			With your account now verified, you can enjoy uninterrupted access to all features and benefits offered by our platform. If you have any questions or require further assistance, please do not hesitate to contact our customer support team at %s.
+			Once again, thank you for choosing our platform. We look forward to serving you and providing you with a seamless experience.
+			</p>
+			<h4>
+			Best regards,<br>
+			BookWorm
+			%s
+			</h4>`, userKyc.User.Username, m.App.AdminEmail, m.App.AdminEmail),
+		}
+		m.App.MailChan <- msg
+	}
 	m.App.Session.Put(r.Context(), "flash", "KYC Updated")
 	http.Redirect(w, r, fmt.Sprintf("/admin/users/detail/%d", id), http.StatusSeeOther)
 }
