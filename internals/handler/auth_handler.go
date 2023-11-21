@@ -338,7 +338,7 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
-	m.App.Session.Put(r.Context(), "flash", "KYC Updated! Please wait for admin to verify")
+	m.App.Session.Put(r.Context(), "flash", "KYC Form Uploaded! Email Notification sent to admin. Please wait for admin to verify")
 	msg := models.MailData{
 		To:      m.App.AdminEmail,
 		From:    userKyc.User.Email,
