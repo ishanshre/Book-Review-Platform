@@ -84,9 +84,15 @@ func Router(app *config.AppConfig) http.Handler {
 		mux.Get("/api/read-list", handler.Repo.AllBooksFilterFromReadListApi)
 		mux.Get("/buy-list", handler.Repo.AllBooksFilterFromBuyList)
 		mux.Get("/api/buy-list", handler.Repo.AllBooksFilterFromBuyListApi)
+	})
+
+	mux.Group(func(mux chi.Router) {
+		mux.Use(middleware.Auth)
+		mux.Use(middleware.KycValidated)
 		mux.Get("/request-book", handler.Repo.RequestBook)
 		mux.Post("/request-book", handler.Repo.PostRequestBook)
 	})
+
 	mux.Group(func(mux chi.Router) {
 		mux.Use(middleware.AuthRedirect)
 		mux.Get("/user/login", handler.Repo.Login)
