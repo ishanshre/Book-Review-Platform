@@ -94,6 +94,7 @@ func (m *Repository) PostPublicCreateReview(w http.ResponseWriter, r *http.Reque
 		helpers.ServerError(w, err)
 		return
 	}
+	m.App.Session.Put(r.Context(), "flash", "Review/Rating added Successfull")
 	http.Redirect(w, r, fmt.Sprintf("/books/%d", isbn), http.StatusSeeOther)
 
 }
@@ -124,6 +125,7 @@ func (m *Repository) PostPublicDeleteReview(w http.ResponseWriter, r *http.Reque
 		helpers.ServerError(w, err)
 		return
 	}
+	m.App.Session.Put(r.Context(), "flash", "Review/Rating Deleted Successfully")
 	http.Redirect(w, r, fmt.Sprintf("/books/%d", isbn), http.StatusSeeOther)
 }
 
