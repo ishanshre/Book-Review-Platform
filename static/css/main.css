@@ -317,6 +317,18 @@ header {
   width: 100%;
 }
 
+.w-85r {
+  width: 85rem;
+}
+
+.w-150r {
+  width: 150rem;
+}
+
+.w-300r {
+  width: 300rem;
+}
+
 .w-50 {
   width: 50%;
 }
