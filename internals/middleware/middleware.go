@@ -58,7 +58,7 @@ func AuthRedirect(next http.Handler) http.Handler {
 func KycValidated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !helpers.IsValidated(r) {
-			app.Session.Put(r.Context(), "warning", "KYC not validated. Please Update Kyc!")
+			app.Session.Put(r.Context(), "warning", "KYC not verified. Please Update Your KYC!")
 			http.Redirect(w, r, "/profile", http.StatusSeeOther)
 			return
 		}

@@ -338,7 +338,7 @@ func (m *Repository) PublicUpdateKYC(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
-	m.App.Session.Put(r.Context(), "flash", "KYC Updated! Please wait for admin to verify")
+	m.App.Session.Put(r.Context(), "flash", "KYC Form Uploaded! Email Notification sent to admin. Please wait for admin to verify")
 	msg := models.MailData{
 		To:      m.App.AdminEmail,
 		From:    userKyc.User.Email,
@@ -357,7 +357,9 @@ func (m *Repository) PostUserProfilePicUpdate(w http.ResponseWriter, r *http.Req
 	user_id := m.App.Session.GetInt(r.Context(), "user_id")
 	path, err := helpers.MediaPicUpload(r, "profile_pic", username)
 	if err != nil {
-		helpers.ServerError(w, err)
+		// helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "Please Add a picture to upload")
+		http.Redirect(w, r, "/profile", http.StatusSeeOther)
 		return
 	}
 	if err := m.DB.UpdateProfilePic(path, user_id); err != nil {

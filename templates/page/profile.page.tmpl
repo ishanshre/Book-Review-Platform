@@ -127,7 +127,7 @@
                     </div>
                     <div class="d-flex justify-between">
                         <label for="document_front"><strong>Document Front Part: </strong></label>
-                        <input type="file" name="document_front" id="document_front" class="form-control-nomargin">
+                        <input type="file" name="document_front" id="document_front" class="form-control-nomargin" accept="image/jpeg, image/png">
                         {{with .Form.Errors.Get "document_front"}}
                         <div class="error-msg">
                             <label class="text-danger">{{.}}</label>
@@ -136,7 +136,7 @@
                     </div>
                     <div class="d-flex justify-between">
                         <label for="document_back"><strong>Document Back Part: </strong></label>
-                        <input type="file" name="document_back" id="document_back" class="form-control-nomargin">
+                        <input type="file" name="document_back" id="document_back" class="form-control-nomargin" accept="image/jpeg, image/png">
                         {{with .Form.Errors.Get "document_back"}}
                         <div class="error-msg">
                             <label class="text-danger">{{.}}</label>
@@ -163,7 +163,7 @@
                         <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                         <div class="d-flex justify-between">
                             <label for="profile_pic"><strong>Change Profile Picture: </strong></label>
-                            <input type="file" name="profile_pic" id="profile_pic" class="form-control-nomargin">
+                            <input type="file" name="profile_pic" id="profile_pic" class="form-control-nomargin" accept="image/jpeg, image/png">
                             {{with .Form.Errors.Get "profile_pic"}}
                             <div class="error-msg">
                                 <label class="text-danger">{{.}}</label>

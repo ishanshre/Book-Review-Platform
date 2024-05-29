@@ -317,6 +317,18 @@ header {
   width: 100%;
 }
 
+.w-85r {
+  width: 85rem;
+}
+
+.w-150r {
+  width: 150rem;
+}
+
+.w-300r {
+  width: 300rem;
+}
+
 .w-50 {
   width: 50%;
 }
@@ -629,9 +641,8 @@ footer {
 }
 
 .slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 242px;
+  height: 338px;
 }
 
 .carousel-btn {
@@ -817,7 +828,7 @@ footer {
 
 .card-img img {
   width: 100%;
-  height: 100%;
+  height: 287px;
   object-fit: cover;
   object-position: center;
 }
@@ -842,6 +853,8 @@ footer {
   padding: 10px;
   display: flex;
   flex-direction: column;
+  text-align: center;
+  font-weight: 700;
 }
 
 .card-text span {
