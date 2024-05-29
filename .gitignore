@@ -23,3 +23,7 @@ media/
 go.work
 
 .env
+
+
+/db_data/
+/redis_data/
